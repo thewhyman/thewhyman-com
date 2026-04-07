@@ -2,7 +2,13 @@
   "name": "Anand Vallamsetla",
   "headline": "Applied AI Engineering Leader | Evaluation-First LLM & Agent Platforms | Reliability & Guardrail Design | ex-Google",
   "about": "Engineering executive with 20+ years leading distributed systems at Google scale — including software platforms managing $40B annual capex delivered with $500M+ ROI. Now bridging the gap between model capability and production reality through evaluation-first architectures. I treat evaluation as infrastructure, ensuring AI systems are reliable, guardrail-aware, and built for real-world deployment. Taught 1,500+ Fortune 500 executives at UC Berkeley on AI system design and governance. Recent work includes cross-model agent interoperability, reliability scaffolding for agentic systems, and frontier experimentation (DeepMind Hackathon – Tree of Souls).",
-  "skills": ["Engineering Leadership", "AI Systems Architecture", "Platform Engineering", "LLM Evaluation", "Guardrail Design"],
+  "skills": [
+    "Engineering Leadership",
+    "AI Systems Architecture",
+    "Platform Engineering",
+    "LLM Evaluation",
+    "Guardrail Design"
+  ],
   "experience": [
     {
       "role": "Applied AI Platform Engineer (Independent)",
@@ -83,20 +89,23 @@
     {
       "title": "Building a Reliable AI Agent: 10 Architectural Decisions",
       "date": "Mar 2026",
+      "image": "https://media.licdn.com/dms/image/v2/D5612AQFugj6-cBV6lw/article-cover_image-shrink_720_1280/B56Zz9C4iTJIAI-/0/1773771918076?e=1776902400&v=beta&t=TnnckVtWWk1bhKgCyk5yFwb_VptTxCFmfrt7lcdrATU",
       "description": "Published LinkedIn article detailing the architectural decisions behind deploying a Medicaid Copilot for FQHCs using a 5-layer LLM defense strategy.",
       "url": "https://www.linkedin.com/pulse/building-reliable-ai-agent-10-architectural-decisions-vallamsetla-ygacc/"
     },
     {
-      "title": "Supply Chain Analytics: Tracing Recall from 6 Months to 30 Seconds",
-      "date": "May 2023",
-      "description": "Demonstrated AI/Blockchain supply chain solution yielding a 51,840,000% efficiency gain inside Google.",
-      "url": "https://www.linkedin.com/posts/thewhyman_supplychain-hackathon-mostcomplex-activity-7064763422067884032-ReAT"
-    },
-    {
       "title": "Everyone's Talking About Socratic Prompting. Here's What Comes After.",
       "date": "April 2026",
+      "image": "https://media.licdn.com/dms/image/v2/D5612AQEzp4wqNUS_Tw/article-cover_image-shrink_720_1280/B56Z0gwejDKkAI-/0/1774371072706?e=1776902400&v=beta&t=EzElYP57JoXemMkGI4L0_l9J4ks5Xqx6heJy26XvXBc",
       "description": "Published LinkedIn article and launch of 'Co-Dialectic' — an open-source, bidirectional AI coaching system that corrects prompt quality in real-time.",
       "url": "https://www.linkedin.com/posts/thewhyman_ai-promptengineering-socraticprompting-activity-7442253066516672512-7wGU"
+    },
+    {
+      "title": "Supply Chain Analytics: Tracing Recall from 6 Months to 30 Seconds",
+      "date": "May 2023",
+      "image": "https://media.licdn.com/dms/image/v2/D5622AQH8QmsRv6N-ag/feedshare-shrink_2048_1536/feedshare-shrink_2048_1536/0/1684370854685?e=1776902400&v=beta&t=kMR5drki4dSAH5wNJm0wQ8uNQziLFVmTLP508bDRbRc",
+      "description": "Demonstrated AI/Blockchain supply chain solution yielding a 51,840,000% efficiency gain inside Google.",
+      "url": "https://www.linkedin.com/posts/thewhyman_supplychain-hackathon-mostcomplex-activity-7064763422067884032-ReAT"
     }
   ],
   "recommendations": [

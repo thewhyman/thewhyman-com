@@ -46,7 +46,7 @@ export default function HeroPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black tracking-tight mb-12 leading-[0.9]"
+            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-12 leading-[0.9]"
           >
             I DON&apos;T JUST BUILD AI. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 drop-shadow-[0_0_40px_rgba(52,211,153,0.3)]">I ASK A CURIOUS WHY.</span>
@@ -62,14 +62,31 @@ export default function HeroPage() {
             Scaling distributed systems at Google, moonshot innovation, and reliability-first AI platforms.
           </motion.p>
 
-          <div className="flex gap-6">
-            <a href="https://app.reclaim.ai/m/anand-career/intro" target="_blank" rel="noopener noreferrer" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center gap-3 hover:bg-emerald-400 transition-all">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
+            <a href="https://app.reclaim.ai/m/anand-career/intro" target="_blank" rel="noopener noreferrer" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
               Intro Meeting <ChevronRight className="w-4 h-4" />
             </a>
-            <a href="#methodology" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center hover:bg-white/10 transition-all">
+            <a href="#methodology" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center hover:bg-white/10 transition-all w-full md:w-auto">
               The Methodology
             </a>
           </div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-10 flex items-center gap-6"
+          >
+             <a href="https://linkedin.com/in/thewhyman" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-[#0A66C2] transition-colors uppercase tracking-widest">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                LinkedIn Profile
+             </a>
+             <div className="w-1 h-1 rounded-full bg-zinc-700" />
+             <a href="https://github.com/thewhyman" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                GitHub Actions
+             </a>
+          </motion.div>
         </div>
       </section>
 
@@ -151,11 +168,11 @@ export default function HeroPage() {
             </motion.div>
         </div>
 
-        {/* Featured Publications Section */}
-        <div className="max-w-screen-xl mx-auto mt-32">
-          <div className="flex flex-col items-center text-center">
-            <div className="text-[10px] font-black text-purple-400 tracking-[0.3em] uppercase mb-4">THOUGHT LEADERSHIP</div>
-            <h2 className="text-4xl font-bold mb-16 text-white tracking-tight">Featured Publications</h2>
+        {/* Thought Leadership Section */}
+        <div id="thought-leadership" className="max-w-screen-xl mx-auto mt-32">
+          <div className="flex flex-col items-center text-center px-6">
+            <div className="text-[10px] font-black text-purple-400 tracking-[0.3em] uppercase mb-4">PUBLICATIONS & ESSAYS</div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-white tracking-tight">Thought Leadership</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {linkedinData.featured_posts.map((post, i) => (
@@ -168,15 +185,31 @@ export default function HeroPage() {
                 whileInView={{ opacity: 1, y: 0 }} 
                 viewport={{ once: true }} 
                 transition={{ delay: i * 0.2 }} 
-                className="glass-card p-10 group hover:border-purple-500/30 transition-all border-white/5 relative flex flex-col justify-between"
+                className="glass-card p-10 group hover:border-purple-500/30 transition-all border-white/5 relative flex flex-col justify-start overflow-hidden"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-xs font-black text-purple-400 tracking-widest uppercase">{post.date}</div>
-                    <Zap className="text-purple-500/30 w-5 h-5 group-hover:text-purple-400 transition-colors" />
+                {(post as any).image && (
+                  <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden border border-white/5 relative bg-black shrink-0 flex items-center justify-center">
+                    {/* Blurred background */}
+                    <div className="absolute inset-0 w-full h-full transform scale-110">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={(post as any).image} alt="" className="w-full h-full object-cover blur-2xl opacity-40 mix-blend-screen" />
+                    </div>
+                    {/* Foreground image */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={(post as any).image} alt={post.title} className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-105 duration-700" />
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60 z-20 pointer-events-none" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-4 leading-tight group-hover:text-purple-300 transition-colors">{post.title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed mb-6">{post.description}</p>
+                )}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-xs font-black text-purple-400 tracking-widest uppercase">{post.date}</div>
+                      <Zap className="text-purple-500/30 w-5 h-5 group-hover:text-purple-400 transition-colors" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-4 leading-tight group-hover:text-purple-300 transition-colors">{post.title}</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">{post.description}</p>
+                  </div>
                 </div>
               </motion.a>
             ))}
