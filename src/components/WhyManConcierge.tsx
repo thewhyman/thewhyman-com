@@ -17,7 +17,7 @@ export default function WhyManConcierge() {
     { 
       id: 1, 
       role: 'bot', 
-      content: "Welcome. I am the Why Man Concierge. I can speak to my 26-year engineering history across three specific dimensions. Which would you like to explore?" 
+      content: "Welcome. I am the Why Man Concierge. I can speak to Anand's 26-year engineering history across three specific dimensions. Which would you like to explore?" 
     }
   ]);
   const [inputValue, setInputValue] = useState('');
