@@ -6,11 +6,11 @@ The hub site — Anand's personal brand and portfolio. Links to all ..OS product
 
 ## Workspace Mapping
 
-- **Specs & design reqs:** `~/anand-career-os/WIP/thewhyman-com-product/`
-- **Handoff:** `~/anand-career-os/WIP/thewhyman-com-product/NEXT_SESSION_HANDOFF.md`
-- **Cross-agent relay:** `~/anand-career-os/NEXT_SESSION_HANDOFF.md`
-- **Brand identity:** `~/anand-career-os/.career-os/memory/brand-identity.md`
-- **Routing manifest:** `~/anand-career-os/workspace.manifest.yaml`
+- **Specs & design reqs:** `$CAREER_OS_HOME/WIP/thewhyman-com-product/`
+- **Handoff:** `$CAREER_OS_HOME/WIP/thewhyman-com-product/NEXT_SESSION_HANDOFF.md`
+- **Cross-agent relay:** `$CAREER_OS_HOME/NEXT_SESSION_HANDOFF.md`
+- **Brand identity:** `$CAREER_OS_HOME/.career-os/memory/brand-identity.md`
+- **Routing manifest:** `$CAREER_OS_HOME/workspace.manifest.yaml`
 
 ## Engineering Principles
 
