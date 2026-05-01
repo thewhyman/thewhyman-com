@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "node scripts/build-cloudflare-function.js"
+    "prebuild": "node scripts/fetch-substack.mjs && node scripts/build-cloudflare-function.js"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.2",

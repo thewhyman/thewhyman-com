@@ -6,6 +6,7 @@ import { Cpu, Rocket, Users, ChevronRight, MessageSquare, ShieldCheck, Zap } fro
 import Link from 'next/link';
 import WhyManConcierge from '../components/WhyManConcierge';
 import linkedinData from '../../data/linkedin_public.json';
+import substackPosts from '../../data/substack_posts.json';
 
 type FeaturedPost = (typeof linkedinData.featured_posts)[number];
 
@@ -290,7 +291,7 @@ export default function HeroPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {linkedinData.featured_posts.map((post, i) => (
+            {substackPosts.map((post, i) => (
               <PostCard key={i} post={post} i={i} />
             ))}
           </div>
