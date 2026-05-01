@@ -34,7 +34,16 @@ function extractContentImage(itemXml) {
 }
 
 function stripCdata(str) {
-  return str.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim();
+  return str
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&#8212;/g, '—')
+    .replace(/&#8211;/g, '–')
+    .replace(/&#038;/g, '&')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8217;/g, '’')
+    .trim();
 }
 
 function getTagContent(xml, tag) {
