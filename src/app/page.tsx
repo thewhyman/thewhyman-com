@@ -63,9 +63,9 @@ export default function HeroPage() {
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
-            <a href="https://app.reclaim.ai/m/anand-career/intro" target="_blank" rel="noopener noreferrer" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
-              Intro Meeting <ChevronRight className="w-4 h-4" />
-            </a>
+            <Link href="/contact" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
+              Work With Me <ChevronRight className="w-4 h-4" />
+            </Link>
             <a href="#methodology" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center hover:bg-white/10 transition-all w-full md:w-auto">
               The Methodology
             </a>

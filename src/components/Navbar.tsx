@@ -33,14 +33,12 @@ export default function Navbar() {
             <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
         </div>
-        <a 
-          href="https://app.reclaim.ai/m/anand-career/intro" 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <Link
+          href="/contact"
           className="text-white border border-white/10 px-8 py-3 rounded-xl hover:bg-white/5 hover:border-teal-500/50 transition-all font-black"
         >
-          Intro Meeting
-        </a>
+          Work With Me
+        </Link>
       </div>
 
       {/* Mobile Menu Toggle */}
@@ -89,16 +87,14 @@ export default function Navbar() {
               <span>Thought Leadership</span>
               <div className="w-8 h-px bg-purple-400/0 group-hover:w-12 group-hover:bg-purple-400 transition-all" />
             </Link>
-            <a 
-              href="https://app.reclaim.ai/m/anand-career/intro" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               onClick={() => setIsOpen(false)}
               className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-teal-400 transition-all"
             >
-              <span>Intro Meeting</span>
+              <span>Work With Me</span>
               <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
-            </a>
+            </Link>
 
             <div className="mt-8 pt-8 border-t border-white/5">
               <div className="text-[11px] font-black text-teal-400/50 tracking-[0.4em] uppercase mb-6">
