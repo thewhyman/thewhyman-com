@@ -1,11 +1,79 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Cpu, Rocket, Users, ChevronRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
 import Link from 'next/link';
 import WhyManConcierge from '../components/WhyManConcierge';
 import linkedinData from '../../data/linkedin_public.json';
+
+type FeaturedPost = (typeof linkedinData.featured_posts)[number];
+
+function getInitials(title: string): string {
+  const words = title.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return 'W';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function PostCard({ post, i }: { post: FeaturedPost; i: number }) {
+  const [imageError, setImageError] = useState(false);
+  const imageUrl = (post as { image?: string }).image;
+  const showFallback = !imageUrl || imageError;
+
+  return (
+    <motion.a
+      href={post.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.2 }}
+      className="glass-card p-10 group hover:border-purple-500/30 transition-all border-white/5 relative flex flex-col justify-start overflow-hidden"
+    >
+      {showFallback ? (
+        <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden border border-white/5 relative bg-gradient-to-br from-zinc-900 to-zinc-800 shrink-0 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+              <Zap className="w-7 h-7 text-purple-400" />
+            </div>
+            <span className="text-3xl font-black tracking-tighter text-purple-300/80 uppercase">
+              {getInitials(post.title)}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden border border-white/5 relative bg-black shrink-0 flex items-center justify-center">
+          {/* Blurred background */}
+          <div className="absolute inset-0 w-full h-full transform scale-110">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="" aria-hidden="true" className="w-full h-full object-cover blur-2xl opacity-40 mix-blend-screen" />
+          </div>
+          {/* Foreground image */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={post.title}
+            onError={() => setImageError(true)}
+            className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-105 duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60 z-20 pointer-events-none" />
+        </div>
+      )}
+      <div className="flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs font-black text-purple-400 tracking-widest uppercase">{post.date}</div>
+            <Zap className="text-purple-500/30 w-5 h-5 group-hover:text-purple-400 transition-colors" />
+          </div>
+          <h3 className="text-xl font-bold text-white mb-4 leading-tight group-hover:text-purple-300 transition-colors">{post.title}</h3>
+          <p className="text-zinc-400 text-sm leading-relaxed mb-6">{post.description}</p>
+        </div>
+      </div>
+    </motion.a>
+  );
+}
 
 export default function HeroPage() {
   const containerVariants: Variants = {
@@ -63,7 +131,7 @@ export default function HeroPage() {
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
-            <Link href="/contact" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
+            <Link href="/meet" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
               Work With Me <ChevronRight className="w-4 h-4" />
             </Link>
             <a href="#methodology" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center hover:bg-white/10 transition-all w-full md:w-auto">
@@ -223,42 +291,7 @@ export default function HeroPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {linkedinData.featured_posts.map((post, i) => (
-              <motion.a 
-                href={post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={i} 
-                initial={{ opacity: 0, y: 20 }} 
-                whileInView={{ opacity: 1, y: 0 }} 
-                viewport={{ once: true }} 
-                transition={{ delay: i * 0.2 }} 
-                className="glass-card p-10 group hover:border-purple-500/30 transition-all border-white/5 relative flex flex-col justify-start overflow-hidden"
-              >
-                {(post as any).image && (
-                  <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden border border-white/5 relative bg-black shrink-0 flex items-center justify-center">
-                    {/* Blurred background */}
-                    <div className="absolute inset-0 w-full h-full transform scale-110">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={(post as any).image} alt="" className="w-full h-full object-cover blur-2xl opacity-40 mix-blend-screen" />
-                    </div>
-                    {/* Foreground image */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={(post as any).image} alt={post.title} className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-105 duration-700" />
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60 z-20 pointer-events-none" />
-                  </div>
-                )}
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-xs font-black text-purple-400 tracking-widest uppercase">{post.date}</div>
-                      <Zap className="text-purple-500/30 w-5 h-5 group-hover:text-purple-400 transition-colors" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-4 leading-tight group-hover:text-purple-300 transition-colors">{post.title}</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">{post.description}</p>
-                  </div>
-                </div>
-              </motion.a>
+              <PostCard key={i} post={post} i={i} />
             ))}
           </div>
 

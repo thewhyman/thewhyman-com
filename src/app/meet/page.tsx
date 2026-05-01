@@ -104,7 +104,7 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase"
           >
-            WORK WITH ME • ANAND VALLAMSETLA
+            BOOK A MEETING • ANAND VALLAMSETLA
           </motion.div>
 
           <motion.h1
