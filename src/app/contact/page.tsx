@@ -21,9 +21,9 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     icon: MessageSquare,
     title: 'Intro',
     price: 'Free · 30 min',
-    description: "Quick alignment call — learn how I think, whether there's a fit.",
+    description: "No pitch, no fluff. Thirty minutes to figure out if there's a real fit — for both of us. Come with a specific problem or question.",
     ctaLabel: 'Book Intro',
-    ctaHref: 'https://app.reclaim.ai/m/anand-career/intro',
+    ctaHref: 'https://thewhyman.bio',
     external: true,
     highlight: false,
     accent: 'teal',
@@ -32,10 +32,10 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     icon: Zap,
     title: 'Consulting',
     price: '$500 / hr',
-    description: 'Deep-dive on your AI strategy, architecture, or product.',
+    description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
     ctaLabel: 'Book Consulting',
-    ctaHref: 'mailto:avallam@thewhyman.com?subject=Consulting%20Inquiry',
-    external: false,
+    ctaHref: 'https://thewhyman.bio',
+    external: true,
     highlight: true,
     accent: 'emerald',
   },
@@ -43,10 +43,10 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     icon: ShieldCheck,
     title: 'VIP',
     price: 'Custom',
-    description: 'Embedded advisory, long-term partnership, or build-together.',
-    ctaLabel: 'Get in Touch',
-    ctaHref: 'mailto:avallam@thewhyman.com?subject=VIP%20Inquiry',
-    external: false,
+    description: 'Embedded advisory or build-together partnership. For founders and leaders who want depth, not surface advice — and are ready to move fast.',
+    ctaLabel: 'Start VIP',
+    ctaHref: 'https://thewhyman.bio',
+    external: true,
     highlight: false,
     accent: 'indigo',
   },
@@ -125,7 +125,7 @@ export default function ContactPage() {
             transition={{ delay: 0.2 }}
             className="max-w-2xl text-lg md:text-xl text-zinc-400 mb-16 leading-relaxed"
           >
-            Pick the right shape for the work — a quick alignment call, an hour of deep technical strategy, or an embedded advisory partnership.
+            I guard my calendar the way I guard production systems — no waste, no noise. The pricing is intentional: it signals that your time matters too. Show up prepared and we&apos;ll move fast.
           </motion.p>
         </div>
       </section>
@@ -201,7 +201,7 @@ export default function ContactPage() {
           transition={{ delay: 0.4 }}
           className="text-center text-xs font-bold text-zinc-500 tracking-[0.3em] uppercase mt-16"
         >
-          All sessions are remote • Response within 24h
+          All sessions remote • Book at thewhyman.bio • Time is the only non-renewable resource
         </motion.p>
       </section>
 
