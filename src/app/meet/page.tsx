@@ -29,6 +29,17 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     accent: 'amber',
   },
   {
+    icon: Zap,
+    title: 'Consulting',
+    price: '$500/hr · 30 min or 1 hr',
+    description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
+    ctaLabel: 'Book Consulting',
+    ctaHref: 'https://app.reclaim.ai/m/consult-anand',
+    external: true,
+    highlight: false,
+    accent: 'emerald',
+  },
+  {
     icon: ShieldCheck,
     title: 'VIP & Friends',
     price: 'By invite · 15, 25 or 45 min',
@@ -49,17 +60,6 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     external: true,
     highlight: false,
     accent: 'teal',
-  },
-  {
-    icon: Zap,
-    title: 'Consulting',
-    price: '$500/hr · 30 min or 1 hr',
-    description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
-    ctaLabel: 'Book Consulting',
-    ctaHref: 'https://app.reclaim.ai/m/consult-anand',
-    external: true,
-    highlight: false,
-    accent: 'emerald',
   },
 ];
 
