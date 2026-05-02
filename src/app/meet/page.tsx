@@ -23,7 +23,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     price: 'Free · 30 min',
     description: "No pitch, no fluff. Thirty minutes to figure out if there's a real fit — for both of us. Come with a specific problem or question.",
     ctaLabel: 'Book Intro',
-    ctaHref: 'https://thewhyman.bio',
+    ctaHref: 'https://app.reclaim.ai/m/intros',
     external: true,
     highlight: false,
     accent: 'teal',
