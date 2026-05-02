@@ -18,17 +18,6 @@ type EngagementCard = {
 
 const ENGAGEMENT_CARDS: EngagementCard[] = [
   {
-    icon: MessageSquare,
-    title: 'Intro',
-    price: 'Free · 15 or 25 min',
-    description: "No pitch, no fluff. Thirty minutes to figure out if there's a real fit — for both of us. Come with a specific problem or question.",
-    ctaLabel: 'Book Intro',
-    ctaHref: 'https://app.reclaim.ai/m/intros',
-    external: true,
-    highlight: false,
-    accent: 'teal',
-  },
-  {
     icon: Briefcase,
     title: 'Recruiter Connect',
     price: 'Free · 30 min or 1 hr',
@@ -49,6 +38,17 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     external: true,
     highlight: false,
     accent: 'indigo',
+  },
+  {
+    icon: MessageSquare,
+    title: 'Intro',
+    price: 'Free · 15 or 25 min',
+    description: "No pitch, no fluff. Fifteen minutes to figure out if there's a real fit — for both of us. Come with a specific problem or question.",
+    ctaLabel: 'Book Intro',
+    ctaHref: 'https://app.reclaim.ai/m/intros',
+    external: true,
+    highlight: false,
+    accent: 'teal',
   },
   {
     icon: Zap,
@@ -153,7 +153,7 @@ export default function ContactPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8"
         >
           {ENGAGEMENT_CARDS.map((card) => {
             const Icon = card.icon;
