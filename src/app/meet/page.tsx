@@ -29,17 +29,6 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     accent: 'teal',
   },
   {
-    icon: Zap,
-    title: 'Consulting',
-    price: '$500 / hr',
-    description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
-    ctaLabel: 'Book Consulting',
-    ctaHref: 'https://app.reclaim.ai/m/mtgs',
-    external: true,
-    highlight: true,
-    accent: 'emerald',
-  },
-  {
     icon: Briefcase,
     title: 'Recruiter Connect',
     price: 'Free · 20 min',
@@ -60,6 +49,17 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     external: true,
     highlight: false,
     accent: 'indigo',
+  },
+  {
+    icon: Zap,
+    title: 'Consulting',
+    price: '$500 / hr',
+    description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
+    ctaLabel: 'Book Consulting',
+    ctaHref: 'https://app.reclaim.ai/m/mtgs',
+    external: true,
+    highlight: false,
+    accent: 'emerald',
   },
 ];
 
