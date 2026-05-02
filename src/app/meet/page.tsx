@@ -20,7 +20,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
   {
     icon: MessageSquare,
     title: 'Intro',
-    price: 'Free · 30 min',
+    price: 'Free · 15 or 25 min',
     description: "No pitch, no fluff. Thirty minutes to figure out if there's a real fit — for both of us. Come with a specific problem or question.",
     ctaLabel: 'Book Intro',
     ctaHref: 'https://app.reclaim.ai/m/intros',
@@ -31,7 +31,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
   {
     icon: Briefcase,
     title: 'Recruiter Connect',
-    price: 'Free · 20 min',
+    price: 'Free · 30 min or 1 hr',
     description: 'For recruiters with a specific role that matches my background. Come with the JD and compensation range. No fishing expeditions.',
     ctaLabel: 'Book Recruiter Connect',
     ctaHref: 'https://app.reclaim.ai/m/anand-career',
@@ -42,7 +42,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
   {
     icon: ShieldCheck,
     title: 'VIP & Friends',
-    price: 'By invite',
+    price: 'By invite · 15, 25 or 45 min',
     description: 'For people I know and trust. A dedicated slot to connect, think together, or just catch up — no agenda required.',
     ctaLabel: 'Book VIP & Friends',
     ctaHref: 'https://app.reclaim.ai/m/mtgs',
@@ -53,7 +53,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
   {
     icon: Zap,
     title: 'Consulting',
-    price: '$500 / hr',
+    price: '$500/hr · 30 min or 1 hr',
     description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
     ctaLabel: 'Book Consulting',
     ctaHref: 'https://app.reclaim.ai/m/mtgs',
