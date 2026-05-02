@@ -56,7 +56,7 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     price: '$500/hr · 30 min or 1 hr',
     description: 'One focused hour on your hardest AI architecture, strategy, or product problem. Come prepared. Leave with a real answer, not a framework.',
     ctaLabel: 'Book Consulting',
-    ctaHref: 'https://app.reclaim.ai/m/mtgs',
+    ctaHref: 'https://app.reclaim.ai/m/consult-anand',
     external: true,
     highlight: false,
     accent: 'emerald',
