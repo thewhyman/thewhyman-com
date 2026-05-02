@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ChevronRight, MessageSquare, Zap, ShieldCheck } from 'lucide-react';
+import { ChevronRight, MessageSquare, Zap, ShieldCheck, Briefcase } from 'lucide-react';
 
 type EngagementCard = {
   icon: React.ComponentType<{ className?: string }>;
@@ -40,6 +40,17 @@ const ENGAGEMENT_CARDS: EngagementCard[] = [
     accent: 'emerald',
   },
   {
+    icon: Briefcase,
+    title: 'Recruiter Connect',
+    price: 'Free · 20 min',
+    description: 'For recruiters with a specific role that matches my background. Come with the JD and compensation range. No fishing expeditions.',
+    ctaLabel: 'Book Recruiter Connect',
+    ctaHref: 'https://app.reclaim.ai/m/anand-career',
+    external: true,
+    highlight: false,
+    accent: 'amber',
+  },
+  {
     icon: ShieldCheck,
     title: 'VIP',
     price: 'Custom',
@@ -70,6 +81,12 @@ const ACCENT_STYLES: Record<string, { iconBg: string; iconBorder: string; iconTe
     iconBorder: 'border-indigo-500/20',
     iconText: 'text-indigo-400',
     titleText: 'text-indigo-400',
+  },
+  amber: {
+    iconBg: 'bg-amber-500/10',
+    iconBorder: 'border-amber-500/20',
+    iconText: 'text-amber-400',
+    titleText: 'text-amber-400',
   },
 };
 
