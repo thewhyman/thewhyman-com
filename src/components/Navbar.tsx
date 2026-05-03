@@ -25,7 +25,7 @@ export default function Navbar() {
         <Link href="/#methodology" className="hover:text-teal-400 transition-colors">Methodology</Link>
         <Link href="/#dimensions" className="hover:text-teal-400 transition-colors">Case Studies</Link>
         <Link href="/#thought-leadership" className="hover:text-purple-400 transition-colors">Thought Leadership</Link>
-        <Link href="/ai-resources" className="hover:text-teal-400 transition-colors">AI Resources</Link>
+        <Link href="/resources" className="hover:text-teal-400 transition-colors">Resources</Link>
         <a
           href="https://thewhyman.bio"
           target="_blank"
@@ -97,11 +97,11 @@ export default function Navbar() {
               <div className="w-8 h-px bg-purple-400/0 group-hover:w-12 group-hover:bg-purple-400 transition-all" />
             </Link>
             <Link
-              href="/ai-resources"
+              href="/resources"
               onClick={() => setIsOpen(false)}
               className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-teal-400 transition-all"
             >
-              <span>AI Resources</span>
+              <span>Resources</span>
               <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
             </Link>
             <a
