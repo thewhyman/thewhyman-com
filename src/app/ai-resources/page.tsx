@@ -6,7 +6,7 @@ import { ExternalLink } from 'lucide-react';
 
 const resources = [
   {
-    title: 'AI Resources — Deck 1',
+    title: 'AI Resources',
     embedUrl: 'https://docs.google.com/presentation/d/15IxsbAc0x_dOALrvXwgNxY7Kc67U4sunudrVTYAD5gs/embed?start=false&loop=false',
     viewUrl: 'https://docs.google.com/presentation/d/15IxsbAc0x_dOALrvXwgNxY7Kc67U4sunudrVTYAD5gs/edit',
   },
