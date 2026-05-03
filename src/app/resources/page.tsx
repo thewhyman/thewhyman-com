@@ -156,7 +156,7 @@ export default function ResourcesPage() {
           transition={{ delay: 0.2 }}
           className="max-w-2xl text-xl text-zinc-400 mb-20 leading-relaxed"
         >
-          Articles, frameworks, and decks for building with AI.
+          Articles, frameworks, and decks across AI, blockchain, and beyond.
         </motion.p>
 
         {/* Pinned */}
