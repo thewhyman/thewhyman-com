@@ -11,7 +11,7 @@ const resources = [
     viewUrl: 'https://docs.google.com/presentation/d/15IxsbAc0x_dOALrvXwgNxY7Kc67U4sunudrVTYAD5gs/edit',
   },
   {
-    title: 'AI Resources — Deck 2',
+    title: 'Blockchain Resources',
     embedUrl: 'https://docs.google.com/presentation/d/1t7uV8uUH1p3pMirrqQgG-87_YN1NCH7dulpjKD4K5u0/embed?start=false&loop=false',
     viewUrl: 'https://docs.google.com/presentation/d/1t7uV8uUH1p3pMirrqQgG-87_YN1NCH7dulpjKD4K5u0/edit',
   },
