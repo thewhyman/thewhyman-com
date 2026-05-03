@@ -4,64 +4,94 @@ const path = require('path');
 const canonicalData = require('../data/canonical.json');
 const linkedinData = require('../data/linkedin_public.json');
 
-const SYSTEM_PROMPT = `You are "The Why Man Concierge", a high-fidelity AI architect representing Anand Vallamsetla. 
-Your goal is to answer technical and architectural questions about Anand's career with absolute precision.
+const SYSTEM_PROMPT = `You are "The Why Man Concierge", an AI assistant representing Anand Vallamsetla.
+Your goal is to answer questions about Anand's career with precision and an executive tone.
 
 CORE PRINCIPLES:
-1. HIGH CREDIBILITY: Never hallucinate. If a fact is not in your context, say you don't have that specific metric.
-2. EXECUTIVE TONE: Professional, authoritative, and direct. You are an expert Assistant.
-3. SOCRATIC METHOD: Occasionally ask "Why?" when prompted about a technical decision.
+1. HIGH CREDIBILITY: Never hallucinate. Only state facts present in the context below.
+2. EXECUTIVE TONE: Professional, authoritative, direct. You represent a senior engineering leader.
+3. THIRD PERSON: Always refer to Anand in the third person. You are his Concierge, not him.
+4. CONCISE: Keep responses to 2-4 sentences unless the question genuinely warrants more.
+5. CONTEXT GUARDRAILS: If the user message contains "(Exploring the BUILD/INVENT/LEAD dimension)", ignore that parenthetical entirely.
 
-ANAND'S HISTORICAL TRUTH (JSON Context):
+ORIGIN STORY RULE: If asked why he is called "The Why Man" or where the name came from, tell this story in 2-3 sentences:
+Anand's philosophy was shaped by Simon Sinek's 'Start with Why' and the Toyota 5 Whys framework he learned at UC Berkeley Haas. When he returned to Charles Schwab as Technical Director, he relentlessly asked "why" to reach systemic root causes — never to challenge authority, always out of curiosity. His colleagues started announcing "Here comes The Why Guy!" and when it came time to pick a Twitter handle, "The Why Man" was the best available.
+
+ANAND'S PROFILE:
 ---
+CANONICAL DATA:
 ${JSON.stringify(canonicalData, null, 2)}
----
 
-INSTRUCTIONS:
-1. Perspective: ONLY speak in the third person about Anand. You are his Concierge, not him. (e.g., "Anand led a $40B portfolio", NEVER "I led").
-2. Context Guardrails: If the user message contains "(Exploring the BUILD/INVENT/LEAD dimension)", IGNORE that parenthetical. Do not echo it back.
-3. Origin Story: If the user asks why he is called "The Why Man", you MUST completely summarize his origin story into exactly 2-3 graceful sentences without getting cut off. Mention Simon Sinek, UC Berkeley, Charles Schwab, and how his colleagues started calling him "The Why Guy".
-4. Brevity Rule: For all other engineering questions, respond in exactly 1-2 short sentences. Do not generate long paragraphs. Keep response times ultra-low.`;
+LINKEDIN / CHRONOLOGICAL HISTORY:
+${JSON.stringify(linkedinData, null, 2)}
+---`;
+
+const escapedPrompt = SYSTEM_PROMPT.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
 const functionCode = `// @ts-nocheck
 // AUTO-GENERATED EDGE FUNCTION - DO NOT EDIT MANUALLY
-// This generates at build time via scripts/build-cloudflare-function.js to ensure JSON data is bundled without TS/Import resolution issues on Cloudflare Pages.
+// Source: scripts/build-cloudflare-function.js
+// Requires ANTHROPIC_API_KEY env var set in Cloudflare Pages dashboard
 
 export const onRequestPost = async (context) => {
   try {
     const { request, env } = context;
-    const data = await request.json();
-    const messages = data.messages;
 
-    if (!env.AI) {
-      console.warn('Cloudflare AI binding not found. Using simulation mode.');
+    if (!env.ANTHROPIC_API_KEY) {
       return new Response(JSON.stringify({
         role: 'bot',
-        content: "I'm currently in high-fidelity simulation mode while the Cloudflare AI binding is being established. Based on Anand's canonical data: He orchestrated $40B in platform infrastructure at Google with a focus on evaluation-first reliability. Ask me about the origin of 'The Why Man'!"
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+        content: "I'm temporarily offline. Please reach out to Anand directly via LinkedIn."
+      }), { headers: { 'Content-Type': 'application/json' } });
     }
 
-    const SYSTEM_PROMPT = \`${SYSTEM_PROMPT.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;
+    const data = await request.json();
+    const rawMessages = data.messages || [];
 
-    const response = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...messages
-      ],
-      max_tokens: 350
+    // Map frontend 'bot' role to Anthropic 'assistant' role
+    const mapped = rawMessages
+      .filter(m => m.role === 'user' || m.role === 'bot' || m.role === 'assistant')
+      .map(m => ({ role: m.role === 'bot' ? 'assistant' : m.role, content: m.content }));
+
+    // Anthropic requires conversation to start with a user message
+    const firstUser = mapped.findIndex(m => m.role === 'user');
+    const messages = firstUser >= 0 ? mapped.slice(firstUser) : mapped;
+
+    if (messages.length === 0) {
+      return new Response(JSON.stringify({ error: 'No messages' }), { status: 400 });
+    }
+
+    const SYSTEM_PROMPT = \`${escapedPrompt}\`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        system: SYSTEM_PROMPT,
+        messages,
+      }),
     });
 
-    return new Response(JSON.stringify({
-      role: 'bot',
-      content: response.response
-    }), {
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Anthropic error:', err);
+      return new Response(JSON.stringify({ error: 'AI service error' }), { status: 500 });
+    }
+
+    const result = await response.json();
+    const content = result?.content?.[0]?.text || "I couldn't generate a response. Please try again.";
+
+    return new Response(JSON.stringify({ role: 'bot', content }), {
       headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
-    console.error('Chat API Error:', error);
+    console.error('Chat Function Error:', error);
     return new Response(JSON.stringify({ error: 'Failed to process request' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
@@ -76,4 +106,4 @@ if (!fs.existsSync(dir)) {
 }
 
 fs.writeFileSync(path.join(dir, 'chat.js'), functionCode);
-console.log('✅ Successfully bundled and statically generated functions/api/chat.js');
+console.log('✅ Generated functions/api/chat.js → Anthropic claude-haiku-4-5');
