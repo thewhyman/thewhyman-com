@@ -25,13 +25,14 @@ export default function Navbar() {
         <Link href="/#methodology" className="hover:text-teal-400 transition-colors">Methodology</Link>
         <Link href="/#dimensions" className="hover:text-teal-400 transition-colors">Case Studies</Link>
         <Link href="/#thought-leadership" className="hover:text-purple-400 transition-colors">Thought Leadership</Link>
+        <Link href="/ai-resources" className="hover:text-teal-400 transition-colors">AI Resources</Link>
         <a
           href="https://thewhyman.bio"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-teal-400 transition-colors"
         >
-          Contact
+          Contact Info
         </a>
         <div className="flex items-center gap-4">
           <a href="https://github.com/thewhyman" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="GitHub">
@@ -87,13 +88,21 @@ export default function Navbar() {
               <span>Case Studies</span>
               <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
             </Link>
-            <Link 
-              href="/#thought-leadership" 
+            <Link
+              href="/#thought-leadership"
               onClick={() => setIsOpen(false)}
               className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-purple-400 transition-all"
             >
               <span>Thought Leadership</span>
               <div className="w-8 h-px bg-purple-400/0 group-hover:w-12 group-hover:bg-purple-400 transition-all" />
+            </Link>
+            <Link
+              href="/ai-resources"
+              onClick={() => setIsOpen(false)}
+              className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-teal-400 transition-all"
+            >
+              <span>AI Resources</span>
+              <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
             </Link>
             <a
               href="https://thewhyman.bio"
@@ -102,7 +111,7 @@ export default function Navbar() {
               onClick={() => setIsOpen(false)}
               className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-teal-400 transition-all"
             >
-              <span>Contact</span>
+              <span>Contact Info</span>
               <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
             </a>
             <Link
