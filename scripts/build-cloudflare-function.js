@@ -31,13 +31,14 @@ const escapedPrompt = SYSTEM_PROMPT.replace(/\\/g, '\\\\').replace(/`/g, '\\`').
 const functionCode = `// @ts-nocheck
 // AUTO-GENERATED EDGE FUNCTION - DO NOT EDIT MANUALLY
 // Source: scripts/build-cloudflare-function.js
-// Requires ANTHROPIC_API_KEY env var set in Cloudflare Pages dashboard
+// Requires the AI binding enabled in Cloudflare Pages dashboard (free, no API key needed)
+// Settings → Functions → AI bindings → Add binding → Variable name: AI
 
 export const onRequestPost = async (context) => {
   try {
     const { request, env } = context;
 
-    if (!env.ANTHROPIC_API_KEY) {
+    if (!env.AI) {
       return new Response(JSON.stringify({
         role: 'bot',
         content: "I'm temporarily offline. Please reach out to Anand directly via LinkedIn."
@@ -62,29 +63,15 @@ export const onRequestPost = async (context) => {
 
     const SYSTEM_PROMPT = \`${escapedPrompt}\`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
-        system: SYSTEM_PROMPT,
-        messages,
-      }),
+    const result = await env.AI.run('@cf/meta/llama-3.3-70b-instruct', {
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...messages,
+      ],
+      max_tokens: 512,
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('Anthropic error:', err);
-      return new Response(JSON.stringify({ error: 'AI service error' }), { status: 500 });
-    }
-
-    const result = await response.json();
-    const content = result?.content?.[0]?.text || "I couldn't generate a response. Please try again.";
+    const content = result?.response || "I couldn't generate a response. Please try again.";
 
     return new Response(JSON.stringify({ role: 'bot', content }), {
       headers: { 'Content-Type': 'application/json' }
@@ -106,4 +93,4 @@ if (!fs.existsSync(dir)) {
 }
 
 fs.writeFileSync(path.join(dir, 'chat.js'), functionCode);
-console.log('✅ Generated functions/api/chat.js → Anthropic claude-haiku-4-5');
+console.log('✅ Generated functions/api/chat.js → Cloudflare Workers AI llama-3.3-70b-instruct');
