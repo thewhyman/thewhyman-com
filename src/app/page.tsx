@@ -178,9 +178,9 @@ export default function HeroPage() {
               <h2 className="text-4xl font-bold mb-8 leading-tight text-white">Reliability is a byproduct of profound curiosity.</h2>
               <div className="space-y-6 text-zinc-400 leading-relaxed text-lg">
                 <p>
-                  As an Engineering Leader, I have found that the most complex technical challenges—from managing $40B portfolios at Google to compressing supply chain recall from months to seconds—are solved by identifying the core "Why." 
+                  As an Engineering Leader, I have found that the most complex technical challenges—from managing $40B portfolios at Google to compressing supply chain recall from months to seconds—are solved by identifying the core &ldquo;Why.&rdquo;
                   <br /><br />
-                  <span className="text-teal-400/80 italic">To be clear: this is a strictly curious "Why". It is never about challenging authority or arrogance. It is a relentless drive to drill down to the fundamental root cause and fix the broken system.</span>
+                  <span className="text-teal-400/80 italic">To be clear: this is a strictly curious &ldquo;Why&rdquo;. It is never about challenging authority or arrogance. It is a relentless drive to drill down to the fundamental root cause and fix the broken system.</span>
                 </p>
                 <p>
                   My methodology focuses on **Evaluation-First Architecture**: building the infrastructure that proves a system works before building the system itself. This ensures I don&apos;t just ship features, I ship outcomes.

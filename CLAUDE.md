@@ -20,8 +20,8 @@ Read `~/.claude/CLAUDE.md` for P0-P17. They govern all decisions here.
 
 - **Framework:** Next.js 15, React 19, TypeScript
 - **Styling:** Tailwind CSS
-- **Deploy:** Cloudflare Pages (`wrangler.toml`)
-- **AI:** Cloudflare Workers AI binding
+- **Deploy:** Cloudflare Pages via GitHub auto-deploy (push to main → Cloudflare builds + deploys automatically)
+- **AI:** Cloudflare Workers AI binding (`wrangler.toml` declares the `[ai]` binding)
 
 ## Before You Code
 
@@ -32,9 +32,11 @@ Read `~/.claude/CLAUDE.md` for P0-P17. They govern all decisions here.
 
 ```bash
 npm run dev          # local dev server
-npm run build        # production build
-npx wrangler pages deploy out  # deploy to Cloudflare
+npm run build        # production build (must pass before pushing)
+git push             # triggers Cloudflare Pages auto-deploy via GitHub integration
 ```
+
+**Do NOT use `wrangler pages deploy out` directly.** Deploys flow through GitHub → Cloudflare Pages. Direct-upload projects cannot have GitHub attached after the fact (GitHub-first invariant — see workspace CLAUDE.md).
 
 ## After Every Change
 

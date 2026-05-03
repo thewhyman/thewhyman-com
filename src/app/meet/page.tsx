@@ -130,7 +130,7 @@ export default function ContactPage() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[0.9]"
           >
-            Let's <br />
+            Let&apos;s <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 drop-shadow-[0_0_40px_rgba(52,211,153,0.3)]">
               Connect
             </span>
