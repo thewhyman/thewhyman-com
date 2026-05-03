@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Zap, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Zap, ArrowUpRight, Pin } from 'lucide-react';
 import substackPosts from '../../../data/substack_posts.json';
+import linkedinData from '../../../data/linkedin_public.json';
 
-type Post = (typeof substackPosts)[number];
+type FeaturedPost = (typeof linkedinData.featured_posts)[number];
+type SubstackPost = (typeof substackPosts)[number];
 
 function getInitials(title: string): string {
   const words = title.trim().split(/\s+/).filter(Boolean);
@@ -14,7 +16,61 @@ function getInitials(title: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-function ArticleCard({ post, i }: { post: Post; i: number }) {
+function PinnedCard({ post, i }: { post: FeaturedPost; i: number }) {
+  const [imageError, setImageError] = useState(false);
+  const showFallback = !post.image || imageError;
+
+  return (
+    <motion.a
+      href={post.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.12 }}
+      className="glass-card p-0 group hover:border-teal-500/30 transition-all border-white/5 flex flex-col overflow-hidden"
+    >
+      <div className="w-full aspect-video bg-zinc-900 border-b border-white/5 relative flex items-center justify-center overflow-hidden shrink-0">
+        {showFallback ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-teal-400/60" />
+            </div>
+            <span className="text-2xl font-black tracking-tighter text-teal-300/40 uppercase">{getInitials(post.title)}</span>
+          </div>
+        ) : (
+          <>
+            <div className="absolute inset-0 scale-110">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.image} alt="" aria-hidden="true" className="w-full h-full object-cover blur-xl opacity-30" />
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image}
+              alt={post.title}
+              onError={() => setImageError(true)}
+              className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-105 duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-50 z-20 pointer-events-none" />
+          </>
+        )}
+      </div>
+      <div className="p-6 flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[10px] font-black text-teal-400 tracking-widest uppercase">{post.date}</div>
+            <ArrowUpRight className="w-4 h-4 text-zinc-700 group-hover:text-teal-400 transition-colors" />
+          </div>
+          <h3 className="text-base font-bold text-white leading-snug mb-2 group-hover:text-teal-300 transition-colors">{post.title}</h3>
+          <p className="text-xs text-zinc-500 leading-relaxed line-clamp-3">{post.description}</p>
+        </div>
+      </div>
+    </motion.a>
+  );
+}
+
+function ArticleCard({ post, i }: { post: SubstackPost; i: number }) {
   const [imageError, setImageError] = useState(false);
   const imageUrl = (post as { image?: string }).image;
   const showFallback = !imageUrl || imageError;
@@ -102,6 +158,19 @@ export default function ResourcesPage() {
         >
           Articles, frameworks, and decks for building with AI.
         </motion.p>
+
+        {/* Pinned */}
+        <div className="mb-24">
+          <div className="flex items-center gap-2 mb-8">
+            <Pin className="w-3 h-3 text-teal-400" />
+            <div className="text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase">Pinned</div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {linkedinData.featured_posts.map((post, i) => (
+              <PinnedCard key={i} post={post} i={i} />
+            ))}
+          </div>
+        </div>
 
         {/* Latest Articles */}
         <div className="mb-24">
