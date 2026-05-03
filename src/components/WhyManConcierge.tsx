@@ -40,10 +40,10 @@ export default function WhyManConcierge() {
   }, []);
 
   const suggestions = [
+    { label: "Why the name?", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
     { label: "AI Architecture (Build)", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
     { label: "Moonshot Wins (Invent)", dimension: 'INVENT', icon: <Rocket className="w-3 h-3" /> },
     { label: "Org Scale (Lead)", dimension: 'LEAD', icon: <Users className="w-3 h-3" /> },
-    { label: "Why the name?", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> }
   ];
 
   const handleSend = async (text: string, dimension?: 'BUILD' | 'INVENT' | 'LEAD') => {
