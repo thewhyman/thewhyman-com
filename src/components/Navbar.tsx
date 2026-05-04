@@ -26,7 +26,7 @@ export default function Navbar() {
         <Link href="/#dimensions" className="hover:text-teal-400 transition-colors">Case Studies</Link>
         <Link href="/#thought-leadership" className="hover:text-purple-400 transition-colors">Thought Leadership</Link>
         <Link href="/resources" className="hover:text-teal-400 transition-colors">Resources</Link>
-        <Link href="/talks/cyborg" className="hover:text-blue-400 transition-colors">Talks</Link>
+        <Link href="/talks" className="hover:text-blue-400 transition-colors">Talks</Link>
         <a
           href="https://thewhyman.bio"
           target="_blank"
@@ -106,7 +106,7 @@ export default function Navbar() {
               <div className="w-8 h-px bg-teal-400/0 group-hover:w-12 group-hover:bg-teal-400 transition-all" />
             </Link>
             <Link
-              href="/talks/cyborg"
+              href="/talks"
               onClick={() => setIsOpen(false)}
               className="group flex items-center justify-between text-xl font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-blue-400 transition-all"
             >
