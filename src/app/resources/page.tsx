@@ -3,11 +3,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Zap, ArrowUpRight, Pin } from 'lucide-react';
-import substackPosts from '../../../data/substack_posts.json';
 import linkedinData from '../../../data/linkedin_public.json';
 
 type FeaturedPost = (typeof linkedinData.featured_posts)[number];
-type SubstackPost = (typeof substackPosts)[number];
 
 function getInitials(title: string): string {
   const words = title.trim().split(/\s+/).filter(Boolean);
@@ -70,47 +68,6 @@ function PinnedCard({ post, i }: { post: FeaturedPost; i: number }) {
   );
 }
 
-function ArticleCard({ post, i }: { post: SubstackPost; i: number }) {
-  const [imageError, setImageError] = useState(false);
-  const imageUrl = (post as { image?: string }).image;
-  const showFallback = !imageUrl || imageError;
-
-  return (
-    <motion.a
-      href={post.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: i * 0.1 }}
-      className="glass-card p-6 group hover:border-purple-500/30 transition-all border-white/5 flex gap-5 items-start"
-    >
-      <div className="shrink-0 w-24 h-16 rounded-lg overflow-hidden border border-white/5 bg-zinc-900 flex items-center justify-center">
-        {showFallback ? (
-          <div className="flex flex-col items-center gap-1">
-            <Zap className="w-4 h-4 text-purple-400/60" />
-            <span className="text-[10px] font-black text-purple-300/50 uppercase">{getInitials(post.title)}</span>
-          </div>
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imageUrl}
-            alt={post.title}
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover"
-          />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[10px] font-black text-purple-400 tracking-widest uppercase mb-1.5">{post.date}</div>
-        <h3 className="text-sm font-bold text-white leading-snug mb-1.5 group-hover:text-purple-300 transition-colors line-clamp-2">{post.title}</h3>
-        <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">{post.description}</p>
-      </div>
-      <ArrowUpRight className="shrink-0 w-4 h-4 text-zinc-700 group-hover:text-purple-400 transition-colors mt-0.5" />
-    </motion.a>
-  );
-}
 
 const decks = [
   {
@@ -173,25 +130,6 @@ export default function ResourcesPage() {
         </div>
 
         {/* Latest Articles */}
-        <div className="mb-24">
-          <div className="flex items-center justify-between mb-8">
-            <div className="text-[10px] font-black text-purple-400 tracking-[0.3em] uppercase">Latest Articles</div>
-            <a
-              href="https://thewhyman.blog"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-[11px] font-black text-zinc-500 hover:text-purple-400 transition-colors uppercase tracking-widest"
-            >
-              All essays <ArrowUpRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {substackPosts.map((post, i) => (
-              <ArticleCard key={i} post={post} i={i} />
-            ))}
-          </div>
-        </div>
-
         {/* Decks */}
         <div className="space-y-16">
           {decks.map((deck, i) => (
