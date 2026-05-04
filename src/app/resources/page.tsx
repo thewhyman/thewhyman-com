@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Zap, ArrowUpRight, Pin } from 'lucide-react';
+import { ExternalLink, Zap, ArrowUpRight, Pin, Download, Presentation } from 'lucide-react';
+import Link from 'next/link';
 import substackPosts from '../../../data/substack_posts.json';
 import linkedinData from '../../../data/linkedin_public.json';
 
@@ -112,6 +113,18 @@ function ArticleCard({ post, i }: { post: SubstackPost; i: number }) {
   );
 }
 
+const talks = [
+  {
+    title: 'Your Cyborg Goes to Work',
+    event: 'ClawCamp · AI Infra Summit 5 · May 1, 2026',
+    description: 'Your employer is about to give you an AI assistant. The question is: whose assistant is it? A talk on AI sovereignty, the walled garden problem, and the missing identity + sovereignty layer.',
+    embedUrl: '/presentations/clawcamp-2026-05-01.pdf',
+    viewUrl: '/talks/cyborg',
+    downloadUrl: '/presentations/clawcamp-2026-05-01.pdf',
+    isPdf: true,
+  },
+];
+
 const decks = [
   {
     title: 'AI Resources',
@@ -188,6 +201,57 @@ export default function ResourcesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {substackPosts.map((post, i) => (
               <ArticleCard key={i} post={post} i={i} />
+            ))}
+          </div>
+        </div>
+
+        {/* Talks */}
+        <div id="talks" className="mb-24">
+          <div className="flex items-center gap-2 mb-8">
+            <Presentation className="w-3 h-3 text-blue-400" />
+            <div className="text-[10px] font-black text-blue-400 tracking-[0.3em] uppercase">Talks & Presentations</div>
+          </div>
+          <div className="space-y-8">
+            {talks.map((talk, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="glass-card p-8 border-white/5"
+              >
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+                  <div>
+                    <div className="text-[10px] font-black text-blue-400 tracking-[0.3em] uppercase mb-2">{talk.event}</div>
+                    <h3 className="text-xl font-black text-white mb-2">{talk.title}</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed max-w-xl">{talk.description}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <a
+                      href={talk.downloadUrl}
+                      download
+                      className="flex items-center gap-2 h-9 px-5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-black text-zinc-400 hover:text-teal-400 hover:border-teal-500/30 transition-all uppercase tracking-widest"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      PDF
+                    </a>
+                    <Link
+                      href={talk.viewUrl}
+                      className="flex items-center gap-2 h-9 px-5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[11px] font-black text-blue-400 hover:bg-blue-500/20 transition-all uppercase tracking-widest"
+                    >
+                      View Talk <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+                <div className="w-full rounded-xl overflow-hidden border border-white/5 bg-black" style={{ height: '60vh', minHeight: '400px' }}>
+                  <iframe
+                    src={talk.embedUrl}
+                    className="w-full h-full"
+                    title={talk.title}
+                  />
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
