@@ -6,9 +6,8 @@ import { Menu, X, Sparkles, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PRODUCTS = [
-  { label: 'xHumanOS', sub: 'Career intelligence for individuals', href: 'https://exponentialos.io', external: true },
-  { label: 'xTeamOS', sub: 'Team performance & culture', href: 'https://exponentialos.io', external: true },
-  { label: 'xFamilyOS', sub: 'Family health, culture & memory', href: null, external: false },
+  { label: 'xHumanOS', sub: 'Career intelligence for individuals', href: 'https://exponentialos.io/xhumanOS/', external: true },
+  { label: 'xTeamOS', sub: 'Team performance & culture', href: 'https://exponentialos.io/xteamos/', external: true },
   { label: 'Co-Dialectic', sub: 'AI coaching protocol', href: 'https://github.com/thewhyman/prompt-engineering-in-action', external: true },
   { label: 'xos.name', sub: 'Namespace & brand hub', href: 'https://xos.name', external: true },
 ];

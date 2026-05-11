@@ -7,6 +7,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 
 import Navbar from "../components/Navbar";
+import AnnouncementBar from "../components/AnnouncementBar";
 import WhyManConcierge from "../components/WhyManConcierge";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen bg-[#050505] text-zinc-100 selection:bg-teal-500/20`}>
+        <AnnouncementBar />
         <Navbar />
         {children}
         <WhyManConcierge />
