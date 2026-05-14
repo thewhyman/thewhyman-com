@@ -108,7 +108,7 @@ export default function HeroPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase"
           >
-            THE WHY MAN • APPLIED AI ENGINEERING LEADER
+            THE WHY MAN • FOUNDER, EXPONENTIALOS • EX-GOOGLE • BERKELEY HAAS EMBA 2026
           </motion.div>
           
           <motion.h1 
@@ -127,17 +127,17 @@ export default function HeroPage() {
             transition={{ delay: 0.2 }}
             className="max-w-2xl text-xl text-zinc-400 mb-12 leading-relaxed"
           >
-            Engineering leader with 26 years of experience across three specialized dimensions: 
-            Scaling distributed systems at Google, moonshot innovation, and reliability-first AI platforms.
+            Founder, ExponentialOS — building the Distribution OS for CMOs and professionals.
+            22 years at Google ($40B infrastructure portfolio). Berkeley Haas EMBA 2026. Patent filed.
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
-            <Link href="/meet" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
+            <a href="https://exponentialos.io" target="_blank" rel="noopener noreferrer" className="h-14 px-10 rounded-xl bg-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all w-full md:w-auto">
+              See ExponentialOS <ChevronRight className="w-4 h-4" />
+            </a>
+            <Link href="/meet" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 hover:bg-white/10 transition-all w-full md:w-auto">
               Work With Me <ChevronRight className="w-4 h-4" />
             </Link>
-            <a href="#methodology" className="h-14 px-10 rounded-xl bg-white/5 border border-white/10 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center hover:bg-white/10 transition-all w-full md:w-auto">
-              The Methodology
-            </a>
           </div>
 
           <motion.div
@@ -229,7 +229,7 @@ export default function HeroPage() {
                 <Rocket className="text-emerald-400 w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 uppercase tracking-tighter text-emerald-400">INVENT</h3>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-10">The &apos;Why Guy&apos; origin. 10x Hackathon Champion. Compressing 6-month cycles to 6 seconds.</p>
+              <p className="text-zinc-400 text-sm leading-relaxed mb-10">Founder, ExponentialOS. Patent filed (exponential OS architecture). 10x Hackathon Champion. Compressing 6-month cycles to 6 seconds.</p>
               <Link href="/invent-details" className="text-xs font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2 hover:gap-4 transition-all group/link">
                 View Case Studies <ChevronRight className="w-4 h-4" />
               </Link>
@@ -240,7 +240,7 @@ export default function HeroPage() {
                 <Users className="text-indigo-400 w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 uppercase tracking-tighter text-indigo-400">LEAD</h3>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-10">Leading 50+ engineers at scale. Managing $40B Google portfolios. Teaching AI to 1,500+ executives.</p>
+              <p className="text-zinc-400 text-sm leading-relaxed mb-10">Berkeley Haas EMBA 2026. UC Berkeley Faculty — 1,500+ Fortune 500 executives taught AI systems. Leading 50+ engineers at scale. $40B Google portfolio.</p>
               <Link href="/lead-details" className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2 hover:gap-4 transition-all group/link">
                 View Case Studies <ChevronRight className="w-4 h-4" />
               </Link>
