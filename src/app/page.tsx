@@ -128,7 +128,7 @@ export default function HeroPage() {
             className="max-w-2xl text-xl text-zinc-400 mb-12 leading-relaxed"
           >
             Founder, ExponentialOS — building the Distribution OS for CMOs and professionals.
-            22 years at Google ($40B infrastructure portfolio). Berkeley Haas EMBA 2026. Patent filed.
+            26-year engineering career. 6 years at Google, $40B infrastructure portfolio. Berkeley Haas EMBA 2026.
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
@@ -319,7 +319,7 @@ export default function HeroPage() {
             className="px-10 py-5 rounded-full bg-white text-black font-black flex items-center gap-4 shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:bg-teal-400 transition-all text-sm uppercase tracking-widest"
           >
             <MessageSquare className="w-5 h-5" />
-            Engage the Why Man Concierge
+            Engage The Why Man Concierge
           </motion.button>
           
           <div className="mt-8 flex items-center gap-6 text-zinc-400 group cursor-default">

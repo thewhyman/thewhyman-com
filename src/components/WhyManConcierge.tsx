@@ -17,12 +17,14 @@ export default function WhyManConcierge() {
     { 
       id: 1, 
       role: 'bot', 
-      content: "Welcome. I am the Why Man Concierge. I can speak to Anand's 26-year engineering history across three specific dimensions. Which would you like to explore?" 
+      content: "Welcome — I'm The Why Man Concierge. This is a virtual interview: ask me anything about Anand right here, no scheduling, no waiting. What he's built, how he leads, where he's failed and what he did about it. Start with one of these, or ask your own."
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLive, setIsLive] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteDismissed, setInviteDismissed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -40,11 +42,33 @@ export default function WhyManConcierge() {
   }, []);
 
   const suggestions = [
-    { label: "Why the name?", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
-    { label: "AI Architecture (Build)", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
-    { label: "Moonshot Wins (Invent)", dimension: 'INVENT', icon: <Rocket className="w-3 h-3" /> },
-    { label: "Org Scale (Lead)", dimension: 'LEAD', icon: <Users className="w-3 h-3" /> },
+    { label: "Why build your own harness?", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
+    { label: "What is Exponential OS?", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
+    { label: "Tell me about a failure", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
+    { label: "Hands-on or manager?", dimension: 'LEAD', icon: <Users className="w-3 h-3" /> },
+    { label: "Biggest 0→1 win", dimension: 'INVENT', icon: <Rocket className="w-3 h-3" /> },
+    { label: "What's the story behind 'The Why Man'?", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
   ];
+
+  // Invite bubble: appears once after 4s, auto-hides after 8s, never nags again.
+  useEffect(() => {
+    if (inviteDismissed) return;
+    if (typeof window !== 'undefined' && sessionStorage.getItem('wm-invite-seen')) return;
+    const show = setTimeout(() => setShowInvite(true), 4000);
+    const hide = setTimeout(() => {
+      setShowInvite(false);
+      try { sessionStorage.setItem('wm-invite-seen', '1'); } catch {}
+    }, 12000);
+    return () => { clearTimeout(show); clearTimeout(hide); };
+  }, [inviteDismissed]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShowInvite(false);
+      setInviteDismissed(true);
+      try { sessionStorage.setItem('wm-invite-seen', '1'); } catch {}
+    }
+  }, [isOpen]);
 
   const handleSend = async (text: string, dimension?: 'BUILD' | 'INVENT' | 'LEAD') => {
     if (!text.trim() || isLoading) return;
@@ -91,12 +115,46 @@ export default function WhyManConcierge() {
 
   return (
     <>
+      {/* Invite bubble — nudges toward the bot, then gets out of the way */}
+      <AnimatePresence>
+        {!isOpen && showInvite && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="fixed bottom-24 right-6 md:bottom-32 z-50 max-w-[264px]"
+          >
+            <button
+              onClick={() => setIsOpen(true)}
+              className="relative block text-left bg-[#0a0a0a] border border-teal-500/40 rounded-2xl rounded-br-sm px-4 py-3 shadow-[0_0_30px_rgba(20,184,166,0.18)] hover:border-teal-400/70 transition-all"
+            >
+              <span className="block text-[11px] uppercase tracking-widest text-teal-400 mb-1">
+                Virtual interview
+              </span>
+              <span className="block text-sm text-white/90 leading-snug">
+                Want to interview The Why Man? Ask my AI anything — right here, no scheduling.
+              </span>
+              <span className="block text-xs text-teal-400/80 mt-1.5">Click the bot →</span>
+            </button>
+            <button
+              onClick={() => { setShowInvite(false); setInviteDismissed(true); }}
+              aria-label="Dismiss"
+              className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-[#0a0a0a] border border-white/20 text-white/50 hover:text-white flex items-center justify-center text-xs"
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Trigger Button */}
       {!isOpen && (
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           onClick={() => setIsOpen(true)}
+          aria-label="Virtually interview The Why Man"
           className="fixed bottom-6 right-6 w-14 h-14 md:w-20 md:h-20 rounded-full bg-teal-500 text-black flex items-center justify-center shadow-[0_0_40px_rgba(20,184,166,0.3)] hover:bg-teal-400 transition-all z-50 group border-4 border-[#050505]"
         >
           <div className="absolute inset-0 rounded-full bg-teal-500 animate-ping opacity-20 group-hover:opacity-0" />
