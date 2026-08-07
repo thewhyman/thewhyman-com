@@ -52,3 +52,7 @@
   z-index: 0;
   pointer-events: none;
 }
+
+/* horizontal chip rail — scrolls without a visible bar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -41,14 +41,76 @@ export default function WhyManConcierge() {
     return () => window.removeEventListener('open-concierge', handleOpen);
   }, []);
 
-  const suggestions = [
-    { label: "Why build your own harness?", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
-    { label: "What is Exponential OS?", dimension: 'BUILD', icon: <Cpu className="w-3 h-3" /> },
-    { label: "Tell me about a failure", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
-    { label: "Hands-on or manager?", dimension: 'LEAD', icon: <Users className="w-3 h-3" /> },
-    { label: "Biggest 0→1 win", dimension: 'INVENT', icon: <Rocket className="w-3 h-3" /> },
-    { label: "What's the story behind 'The Why Man'?", dimension: undefined, icon: <HelpCircle className="w-3 h-3" /> },
+  // Question bank. `chip` is the short label shown in the UI; `ask` is the full
+  // question sent to the model. `tags` drive contextual surfacing.
+  type Q = { chip: string; ask: string; dim?: 'BUILD' | 'INVENT' | 'LEAD'; tags: string[]; opener?: boolean };
+  const QUESTIONS: Q[] = [
+    // — the differentiator
+    { chip: "Why his own harness?", ask: "Why did Anand build his own multi-agent harness instead of using an existing framework?", dim: 'BUILD', tags: ['harness','agent','ai','build','architecture'], opener: true },
+    { chip: "What is Exponential OS?", ask: "What is Exponential OS and what are its layers?", dim: 'BUILD', tags: ['harness','exponential','os','platform','architecture'], opener: true },
+    { chip: "Memory layer", ask: "What does the agentic memory layer do that a normal chatbot does not?", dim: 'BUILD', tags: ['harness','memory','context','architecture'] },
+    { chip: "Constitution?", ask: "How does the constitution in his harness actually enforce anything?", dim: 'BUILD', tags: ['harness','constitution','governance','architecture'] },
+    { chip: "Model routing", ask: "How does he think about model selection and cost in AI systems?", dim: 'BUILD', tags: ['harness','cost','routing','model','architecture'] },
+    { chip: "MCP + skills", ask: "What MCP integrations and composable skills does his harness use?", dim: 'BUILD', tags: ['harness','mcp','skills','tools'] },
+    { chip: "Cross-LLM jury", ask: "Why does his review process require a different model family?", dim: 'BUILD', tags: ['harness','review','quality','jury','eval'] },
+
+    // — applied AI depth
+    { chip: "Evals approach", ask: "How does Anand approach AI quality and evaluation?", dim: 'BUILD', tags: ['eval','quality','ai','reliability'], opener: true },
+    { chip: "RAG vs fine-tuning", ask: "When does he choose retrieval over fine-tuning, and what evidence does he have?", dim: 'BUILD', tags: ['rag','lora','fine-tune','model','ai'] },
+    { chip: "Does he do ML research?", ask: "Does Anand do machine learning research or applied AI?", dim: 'BUILD', tags: ['ml','research','ai','depth'] },
+    { chip: "AI slop", ask: "What did he build to reduce AI slop and improve voice fidelity?", dim: 'BUILD', tags: ['ai','slop','quality','aifund'] },
+    { chip: "Agentic SDLC", ask: "What is the exponential-developer plugin and how does its SDLC workflow work?", dim: 'BUILD', tags: ['sdlc','plugin','workflow','quality','build'] },
+
+    // — leadership & scale
+    { chip: "Hands-on or manager?", ask: "Is Anand hands-on or a manager?", dim: 'LEAD', tags: ['leadership','manager','ic','role'], opener: true },
+    { chip: "Scale operated at", ask: "What scale has Anand operated at?", dim: 'LEAD', tags: ['leadership','scale','google','roi','team'] },
+    { chip: "Team building", ask: "How does he hire, level and grow engineers?", dim: 'LEAD', tags: ['leadership','hiring','team','people','culture'] },
+    { chip: "Google impact", ask: "What did Anand deliver at Google?", dim: 'LEAD', tags: ['google','roi','platform','scale'] },
+    { chip: "Regulated systems", ask: "What is his experience with regulated and high-availability systems?", dim: 'LEAD', tags: ['schwab','reliability','compliance','hipaa','finance'] },
+
+    // — behavioral (the ones that decide outcomes)
+    { chip: "Tell me about a failure", ask: "Tell me about a time something Anand built failed, and what he did about it.", tags: ['behavioral','failure','judgment'], opener: true },
+    { chip: "Disagreed with leadership", ask: "Tell me about a time Anand disagreed with leadership.", tags: ['behavioral','conflict','conviction','judgment'] },
+    { chip: "Took initiative", ask: "Tell me about a time Anand took initiative without a mandate.", tags: ['behavioral','initiative','ownership'] },
+    { chip: "Killed his own project", ask: "Tell me about a time he stopped a project on evidence.", tags: ['behavioral','judgment','product','aifund'] },
+    { chip: "Validated an idea", ask: "How does Anand validate a product idea before building it?", dim: 'INVENT', tags: ['product','discovery','customer','validation','icp'] },
+
+    // — 0→1 / invention
+    { chip: "Biggest 0→1 win", ask: "What is Anand's biggest 0 to 1 win?", dim: 'INVENT', tags: ['0to1','invent','hackathon','product'], opener: true },
+    { chip: "Supply chain AI", ask: "Tell me about the supply chain risk AI work at Google.", dim: 'INVENT', tags: ['0to1','supplychain','google','ai','blockchain'] },
+    { chip: "Hackathon record", ask: "What is his hackathon track record?", dim: 'INVENT', tags: ['hackathon','invent','wins'] },
+    { chip: "Blockchain work", ask: "What blockchain and Web3 work has Anand done?", dim: 'INVENT', tags: ['blockchain','web3','nft','crypto'] },
+
+    // — AI Fund
+    { chip: "AI Fund role", ask: "What did Anand do at AI Fund and why did the role end?", tags: ['aifund','andrewng','eir','role'] },
+    { chip: "Andrew Ng studio", ask: "What was the Engineer in Residence experience at Andrew Ng's venture studio?", tags: ['aifund','andrewng','eir'] },
+
+    // — fit / logistics
+    { chip: "What roles is he after?", ask: "What kind of roles is Anand targeting?", tags: ['fit','role','targeting','hiring'] },
+    { chip: "Teaching + speaking", ask: "What is his teaching and public speaking experience?", tags: ['teaching','berkeley','speaking','executives'] },
+    { chip: "Story behind the name", ask: "What's the story behind the name 'The Why Man'?", tags: ['name','brand','story','why'], opener: true },
   ];
+
+  const iconFor = (q: Q) =>
+    q.dim === 'BUILD' ? <Cpu className="w-3 h-3" />
+    : q.dim === 'INVENT' ? <Rocket className="w-3 h-3" />
+    : q.dim === 'LEAD' ? <Users className="w-3 h-3" />
+    : <HelpCircle className="w-3 h-3" />;
+
+  const [asked, setAsked] = useState<string[]>([]);
+
+  // Surface follow-ups related to what they just asked; fall back to openers.
+  const suggestions = React.useMemo(() => {
+    const lastUser = [...messages].reverse().find(m => m.role === 'user')?.content.toLowerCase() ?? '';
+    const pool = QUESTIONS.filter(q => !asked.includes(q.chip));
+    if (!lastUser) return pool.filter(q => q.opener).slice(0, 5);
+    const scored = pool
+      .map(q => ({ q, score: q.tags.reduce((n, t) => n + (lastUser.includes(t) ? 1 : 0), 0) }))
+      .sort((a, b) => b.score - a.score);
+    const related = scored.filter(s => s.score > 0).slice(0, 4).map(s => s.q);
+    const filler = pool.filter(q => q.opener && !related.includes(q)).slice(0, 5 - related.length);
+    return [...related, ...filler].slice(0, 5);
+  }, [messages, asked]);
 
   // Invite bubble: appears once after 4s, auto-hides after 8s, never nags again.
   useEffect(() => {
@@ -234,15 +296,16 @@ export default function WhyManConcierge() {
 
             {/* Suggestions & Input */}
             <div className="p-6 border-t border-white/5 bg-white/[0.02] space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {suggestions.map((s, i) => (
-                  <button 
-                    key={i}
-                    onClick={() => handleSend(s.label, s.dimension as any)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-[10px] font-bold text-zinc-400 hover:border-teal-500/30 hover:text-teal-400 transition-all uppercase tracking-wider"
+              <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-0.5">
+                {suggestions.map((q) => (
+                  <button
+                    key={q.chip}
+                    title={q.ask}
+                    onClick={() => { setAsked(a => [...a, q.chip]); handleSend(q.ask, q.dim as any); }}
+                    className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-medium text-zinc-300 hover:border-teal-500/40 hover:text-teal-300 hover:bg-teal-500/5 transition-all whitespace-nowrap"
                   >
-                    {s.icon}
-                    {s.label}
+                    {iconFor(q)}
+                    {q.chip}
                   </button>
                 ))}
               </div>
