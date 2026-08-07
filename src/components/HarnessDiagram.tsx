@@ -29,7 +29,7 @@ const LAYERS = [
     n: '03',
     name: 'Agentic Memory',
     tag: 'context management',
-    items: ['Lifecycle hooks across the turn', 'Just-in-time context hydration', 'Long-term cross-session index'],
+    items: ['Context carried across sessions', 'Just-in-time context hydration', 'Long-term cross-session index'],
   },
   {
     n: '04',
