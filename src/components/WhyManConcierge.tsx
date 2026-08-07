@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Sparkles, Cpu, Rocket, Users, ChevronRight, HelpCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Cpu, Rocket, Users, ChevronRight, HelpCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -99,6 +99,70 @@ export default function WhyManConcierge() {
 
   const [asked, setAsked] = useState<string[]>([]);
 
+  // ── Voice ────────────────────────────────────────────────────────────────
+  // Deliberately a NEUTRAL synthetic voice, never a clone of Anand. This is his
+  // concierge speaking ABOUT him in third person; sounding like him would be
+  // misleading. Browser-native APIs: no key, no cost, no vendor.
+  const [voiceOut, setVoiceOut] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState({ in: false, out: false });
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    setVoiceSupported({ in: !!SR, out: 'speechSynthesis' in window });
+    if (!SR) return;
+    const r = new SR();
+    r.continuous = false;
+    r.interimResults = false;
+    r.lang = 'en-US';
+    r.onresult = (e: any) => {
+      const t = e.results[0][0].transcript;
+      setInputValue(t);
+      setListening(false);
+      handleSend(t);
+    };
+    r.onerror = () => setListening(false);
+    r.onend = () => setListening(false);
+    recognitionRef.current = r;
+    return () => { try { r.abort(); } catch {} };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pickVoice = () => {
+    const vs = window.speechSynthesis.getVoices();
+    // Prefer a clear neutral en-US voice; explicitly not a personal clone.
+    const preferred = ['Google US English', 'Samantha', 'Microsoft Aria Online (Natural) - English (United States)'];
+    for (const name of preferred) {
+      const v = vs.find(x => x.name === name);
+      if (v) return v;
+    }
+    return vs.find(v => v.lang?.startsWith('en')) ?? null;
+  };
+
+  const speak = (text: string) => {
+    if (!voiceOut || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickVoice();
+    if (v) u.voice = v;
+    u.rate = 1.03;
+    u.pitch = 1;
+    window.speechSynthesis.speak(u);
+  };
+
+  const toggleListen = () => {
+    const r = recognitionRef.current;
+    if (!r) return;
+    if (listening) { try { r.stop(); } catch {} setListening(false); return; }
+    try { window.speechSynthesis?.cancel(); r.start(); setListening(true); } catch { setListening(false); }
+  };
+
+  useEffect(() => {
+    if (!voiceOut && typeof window !== 'undefined') window.speechSynthesis?.cancel();
+  }, [voiceOut]);
+
   // Surface follow-ups related to what they just asked; fall back to openers.
   const suggestions = React.useMemo(() => {
     const lastUser = [...messages].reverse().find(m => m.role === 'user')?.content.toLowerCase() ?? '';
@@ -161,6 +225,7 @@ export default function WhyManConcierge() {
           content: data.content 
         }]);
         setIsLive(true);
+        speak(data.content);
       }
     } catch (error) {
       console.error('Concierge Error:', error);
@@ -311,22 +376,56 @@ export default function WhyManConcierge() {
               </div>
 
               <div className="relative">
-                <input 
+                <input
                   type="text"
-                  placeholder={isLoading ? "Architect is thinking..." : "Ask a technical or leadership question..."}
+                  placeholder={listening ? "Listening…" : isLoading ? "Thinking…" : "Ask anything — or tap the mic"}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend(inputValue)}
                   disabled={isLoading}
-                  className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 pr-12 text-sm focus:outline-none focus:border-teal-500/50 transition-all text-white placeholder:text-zinc-600 disabled:opacity-50"
+                  className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 pr-[5.5rem] text-sm focus:outline-none focus:border-teal-500/50 transition-all text-white placeholder:text-zinc-600 disabled:opacity-50"
                 />
-                <button 
-                  onClick={() => handleSend(inputValue)}
-                  className="absolute right-2 top-2 w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 hover:bg-teal-500/20 transition-all"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                <div className="absolute right-2 top-2 flex items-center gap-1">
+                  {voiceSupported.in && (
+                    <button
+                      onClick={toggleListen}
+                      aria-label={listening ? "Stop listening" : "Ask by voice"}
+                      title={listening ? "Stop listening" : "Ask by voice"}
+                      className={`relative w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                        listening ? 'bg-teal-500 text-black' : 'bg-white/5 text-zinc-400 hover:text-teal-400 hover:bg-teal-500/10'
+                      }`}
+                    >
+                      {listening && <span className="absolute inset-0 rounded-lg bg-teal-400 animate-ping opacity-40" />}
+                      {listening ? <MicOff className="w-4 h-4 relative" /> : <Mic className="w-4 h-4" />}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleSend(inputValue)}
+                    aria-label="Send"
+                    className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 hover:bg-teal-500/20 transition-all"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
+
+              {(voiceSupported.in || voiceSupported.out) && (
+                <div className="flex items-center justify-between text-[10px] text-zinc-600">
+                  <span>{listening ? "Listening — speak now" : "Voice optional"}</span>
+                  {voiceSupported.out && (
+                    <button
+                      onClick={() => setVoiceOut(v => !v)}
+                      title={voiceOut ? "Mute spoken replies" : "Hear replies read aloud"}
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all ${
+                        voiceOut ? 'text-teal-400 bg-teal-500/10' : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      {voiceOut ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                      {voiceOut ? "Speaking replies" : "Read replies aloud"}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
