@@ -208,7 +208,8 @@
       "co-dialectic": "Open source. Prompt improvement, context management, token efficiency and hallucination reduction. github.com/thewhyman",
       "jury": "A cross-family review panel used as the independent-verification gate. Cheap models judge first; it escalates to a premium model only when the panel conflicts. The principle: an author's blind spots survive their own review by construction, so a reviewer from a DIFFERENT model family is required \u2014 two instances of the same model share the same training and therefore the same blind spots."
     },
-    "whyItMatters": "Anand did not just build it and leave it on a shelf. He used it to deliver the AI Fund products across two pivots, hardening it against real delivery friction. The shipped work is the evidence the harness holds up in production."
+    "whyItMatters": "Anand did not just build it and leave it on a shelf. He used it to deliver the AI Fund products across two pivots, hardening it against real delivery friction. The shipped work is the evidence the harness holds up in production.",
+    "substrate": "The harness operates on the-why-cyborg \u2014 the workspace and repository layer holding the domain data and codebases it acts on. The harness is the runtime; the-why-cyborg is what it runs against."
   },
   "interviewQA": [
     {

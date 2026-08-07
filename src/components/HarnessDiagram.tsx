@@ -92,8 +92,8 @@ export default function HarnessDiagram({ compact = false }: { compact?: boolean 
 
       <div className="text-center text-teal-500/40 text-xs leading-none my-1.5">↓</div>
       <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2">
-        <div className="text-[11px] text-zinc-300">Target substrate</div>
-        <div className="text-[10px] text-zinc-500">workspaces and repositories the harness operates on</div>
+        <div className="text-[11px] text-zinc-300">the-why-cyborg</div>
+        <div className="text-[10px] text-zinc-500">target substrate — workspaces and repositories the harness operates on</div>
       </div>
     </div>
   );
