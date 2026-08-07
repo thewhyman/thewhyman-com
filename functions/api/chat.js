@@ -70,9 +70,17 @@ HOW TO HANDLE THE QUESTIONS YOU WILL ACTUALLY GET:
   both as disciplined judgment, never as defeat.
 - "Why did the AI Fund role end?" He completed the exploration on social-media post adaptation; the technical
   build shipped but the commercial signal was not strong enough to advance to fund. Clean, factual, no spin.
+- "What did he learn at AI Fund?" / product-judgment questions. Use aiFundLessons — nine lessons plus the
+  meta-thesis. This is his freshest material and the most credible thing he has on product judgment. Keep the
+  named attributions (Andy Ku, Jill Shih, Sandeep Gupta, Andrew Ng, Eli Chen) intact — they were given with
+  permission and stripping them would misrepresent the work as solely his.
 - "What scale has he operated at?" \$500M+ ROI across 6 GCP engineering tracks in a ~\$40B portfolio, 5 direct
   reports each leading pods, 50 reports at Trellis, 99.99% availability at Charles Schwab.
 - Behavioral questions: answer with a concrete situation, what he did, and the measurable outcome.
+- "Summarize your article on X" / "what have you written about?" Use writingLibrary. Give the thesis in 3-5
+  sentences in your own words, then offer the link if one is listed. If asked about a topic he has NOT written
+  about, say so plainly rather than inventing an article — a fabricated title is the worst possible failure
+  here because it is trivially checkable.
 
 BOUNDARIES:
 - If you do not know something, say so and offer to connect them with Anand directly. Never invent a fact,
@@ -403,6 +411,107 @@ CANONICAL DATA:
     "writing": "Anand published the argument as a LinkedIn article: 'Everyone's Talking About Socratic Prompting. Here's What Comes After.'",
     "demo": "A 61-second demo video is on the repo README.",
     "measuredEffect": "The project's own social preview reports prompt quality moving from 45% to 91% over 10 days of use."
+  },
+  "writingLibrary": {
+    "_note": "Anand's published writing. Visitors may ask for a summary of any of these — give the thesis in 3-5 sentences and offer the link. Never invent an article that is not listed here, and never claim to have read one you cannot see.",
+    "where": "Substack: thewhyman.blog · LinkedIn articles · site: thewhyman.com",
+    "articles": [
+      {
+        "title": "Everyone's Talking About Socratic Prompting. Here's What Comes After.",
+        "venue": "LinkedIn",
+        "thesis": "Socratic prompting went viral as a 2,400-year-old idea — ask questions instead of giving commands. It works, but it is only step one. Socrates asked questions to reveal what the student already knew: one direction, teacher to student. Plato went further with dialectic, where both sides refine each other's thinking and neither side wins. Applied to AI, that means the human and the system should both be improving in the same loop. Co-Dialectic is the tool that implements it.",
+        "url": "https://www.linkedin.com/pulse/everyones-talking-socratic-prompting-heres-what-comes-vallamsetla-l8cac"
+      },
+      {
+        "title": "Defense in Depth — a five-layer eval architecture for production AI",
+        "venue": "Published framework",
+        "thesis": "Evaluation should be treated as architecture, not as a phase that happens after the build. The framework describes five layers: structured evaluation pipelines, drift monitoring, production observability, guardrail-as-architecture, and a QA agent. The argument is that reliability in non-deterministic systems comes from layered defenses rather than any single check, because every individual layer will eventually be wrong."
+      },
+      {
+        "title": "The missing eval taxonomy",
+        "venue": "Substack / LinkedIn",
+        "thesis": "Andrew Ng's point that the best AI builders differentiate on eval quality, taken seriously. Most production LLM systems run one or two eval categories — usually accuracy and latency. Frontier systems need seven to ten. The article lays out the missing taxonomy with an implementation sketch for each category."
+      },
+      {
+        "title": "The stop button for runaway epistemics",
+        "venue": "Substack / LinkedIn",
+        "thesis": "Every AI lab has a kill switch for runaway agents — infinite loops, runaway costs, unsafe actions. Nobody has built a kill switch for runaway EPISTEMICS: the failure mode where an AI, or an AI-human team, convinces itself of false beliefs through recursive self-validation. The piece argues this is the more dangerous and less defended failure mode."
+      },
+      {
+        "title": "Semantic gates — matching the gate to the violation",
+        "venue": "Substack / LinkedIn",
+        "thesis": "Every AI system has rules, and most rule systems apply deterministic checks to violations that actually require understanding meaning. That is a category error, and it produces one of two failure modes: false positives that erode trust until someone disables the gate, or complete misses because the pattern was never expressible as a regex. Structural violations need structural gates; semantic violations need semantic ones."
+      },
+      {
+        "title": "Career as a system",
+        "venue": "Substack / LinkedIn",
+        "thesis": "Anand applied his own engineering discipline — defense-in-depth evals, cross-family review, constitutional principles, boundary-awareness — to his own career transition into frontier AI. The article documents the harness, the metrics and the lessons, treating a career search as an engineering system rather than a series of applications."
+      },
+      {
+        "title": "Why your site is invisible to ChatGPT (even when Google loves you)",
+        "venue": "Substack",
+        "thesis": "Traditional SEO does not make a site visible to AI assistants. Being indexed by Google and being retrievable by an AI answer engine are different problems with different failure modes — reachability and readability are gates that can disqualify a site, while inclusion and ranking remain engine-owned."
+      },
+      {
+        "title": "The Cyborg — The Exponential Advantage",
+        "venue": "Substack",
+        "thesis": "A tool is linear: you use it, close the tab, and start over tomorrow. A partner compounds, because both sides learn. One percent better per day, across both partners, over a year is roughly 37x. Most tools give zero carry-forward, which is why they feel the same on day 200 as on day one."
+      },
+      {
+        "title": "The Cyborg — The Customer Is No Longer Human",
+        "venue": "Substack",
+        "thesis": "As AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. That changes what 'customer experience' means and what a product has to expose to be chosen at all."
+      },
+      {
+        "title": "Three Months at AI Fund — What I'm Taking With Me",
+        "venue": "Substack (2026-08)",
+        "thesis": "Nine lessons from an Engineer in Residence term at Andrew Ng's venture studio, plus a meta-thesis: you cannot reason your way to the destination — you run hypothesis, test, learn, pivot. Covers targeting the biggest pain, validating with multiple users, the Mom Test and contextual inquiry, buying data access others cannot, investing in the hardest engineering problem, and how evals separate a good team from a great one."
+      }
+    ]
+  },
+  "aiFundLessons": {
+    "_note": "The nine lessons from Anand's AI Fund EIR, published Aug 2026 as 'Three Months at AI Fund — What I'm Taking With Me'. This is his freshest and most credible product-judgment material — use it whenever a visitor asks about product thinking, validation, moats, evals, or what he learned. Mentors are credited BY NAME with their permission; keep the attributions intact.",
+    "metaThesis": "You cannot reason your way to the destination. You start with a hypothesis, test it with real users, pivot on what you learn, and start again with a sharper hypothesis. There is no other loop. Every one of the nine lessons only became real by running that loop compressed. That is what a studio buys you — not the destination, but the loop. (Credited to Eli Chen, Technology Partner at AI Fund.)",
+    "reframe": "Solving the right pain is important. Raising money for something that isn't even a big pain worth solving is much worse. If an experiment doesn't reach commercial success, that is fine — think of it as saving the next seven years spent on a vitamin rather than a painkiller. (Anurag Jain.)",
+    "attributions": "Andy Ku — biggest-pain targeting and multiple-user validation. Andy Ku and Jill Shih jointly — the Mom Test, contextual inquiry, the two killer questions, and observation. Sandeep Gupta — buying data access no one else can. Andrew Ng — invest in the technology and solve the hardest engineering problem, and that what separates a good team from a great team is how they run their evals. Eli Chen — the experimentation-based-learning meta-thesis.",
+    "lessons": [
+      {
+        "lesson": "Go after the biggest pain — that's where engagement and willingness to pay live.",
+        "detail": "Every product solves SOME kind of pain. That's not the bar. The bar is: is this the biggest pain? Because that's the only place where users actually engage with the product and are willing to pay for it. Solve a mild pain and you get polite nods. Users try it once, don't come back, and never open their wallet. They'd already adapted to that pain and built a workaround. You're not selling a solution — you're competing with inertia. Inertia wins. The biggest pains are the ones users mention unprompted, the ones with an ugly workaround already bolted on, the ones that make them curse at their scr"
+      },
+      {
+        "lesson": "Find multiple users with the same pain before you build.",
+        "detail": "There's nothing magic about a specific number. What matters is more than one. When several users independently describe the same pain in similar words, that's your evidence the pain is real and worth solving. One user is an anecdote. A handful pointing at the same thing is signal — and it directly validates lesson one, because a pain multiple people carry is far more likely to be a big one. Skill lies in finding the ICP. Not defining it — finding it, in the wild. Once you've found a few who share the pain, build for them specifically, not for the abstract \\"market.\\" \\"Market\\" is a shape you infe"
+      },
+      {
+        "lesson": "Ask facts, not wants — then observe.",
+        "detail": "Andy and Jill both drilled this discipline into me — the Mom Test and contextual inquiry, applied together. First: never ask \\"would you buy this?\\" — the answer is always kind. Ask facts about the past. How long did that task take last time? What did it cost you? Who else was involved? What did you try before? Second: watch someone actually work through their real task. You'll see the pain they've stopped mentioning because they've stopped noticing it. Survey data doesn't touch this layer. Two killer questions that quantify the pain: 1. How long does the task take? 2. How much does it cost? And"
+      },
+      {
+        "lesson": "Data is the moat.",
+        "detail": "Any new AI system has three paths to defensibility: 1. Own the data — proprietary corpus, exclusive access, historical archive nobody else has. 2. Buy access no one else can — exclusive partnerships, licensed streams, geographic or regulatory access. Sandeep Gupta sharpened this one for me — the acquisition angle most founders skip past. 3. Design the product so it generates new data every time it's used. This is where I landed: every user interaction should make the system more intelligent for the next user using it. That's a compounding flywheel with no ceiling — not a static advantage. Feat"
+      },
+      {
+        "lesson": "Invest in the technology. Solve the hardest engineering problem.",
+        "detail": "This one is Andrew Ng's, directly. Don't compete on features. Don't compete on being first to market. Invest in the technology and solve the problem others have tried — and failed — to solve. Every space has competitors. Users not choosing them yet usually means one of two things: the competitors don't solve the real problem, or nobody's heard of them. Sometimes both. The hardest problems are the moat. Eliminating AI slop — low-quality, hallucination-heavy generative output — is a category-defining engineering problem. Many teams have tried. Most have failed. That's exactly why it's the moat. "
+      },
+      {
+        "lesson": "Commercial signal is not the same as user delight.",
+        "detail": "Delighted early users are necessary, not sufficient. The wedge that becomes a company needs an economic engine — buyers whose budget already exists, whose pain is board-level, whose measurable outcome is unambiguous. Users loving something is a starting condition. Not proof of a company. The clearest way to check: can you name the specific budget line item that already exists in the buyer's org, and the specific measurable outcome your product will improve, and the specific title of the person who owns that budget? If you can't name all three, you don't yet have a commercial signal. You have u"
+      },
+      {
+        "lesson": "Eval is the product.",
+        "detail": "This one is Andrew Ng's again — I first heard it in his class, and it kept landing harder every time I saw it play out inside the studio. His way of putting it: the thing that separates a good team from a great team is how they run their evals. Every AI system I saw succeed had eval infrastructure baked in from day one. Every stall traced back to teams shipping the model output first and adding evaluation later. Later never comes; the deploy calendar hardens around the shipped shape. When the model changes underneath you weekly — new snapshot, new alignment update, new subtle regression — eval"
+      },
+      {
+        "lesson": "Build frameworks to build products, not just products.",
+        "detail": "The strongest teams I saw weren't shipping products faster. They were shipping the framework that shipped the products. Your own dev workflow. Your eval harness. Your security gates. Your architecture-alignment checks. Sonar. Cross-family judgment. Guardrail-as-architecture. Each of these is a small compounding investment that turns every product you ship next into a faster and safer ship than the one before. The framework compounds. The product depreciates. If you're only building products, you're re-buying the same tooling forever."
+      },
+      {
+        "lesson": "The clock on consumer AI wedges is compressing.",
+        "detail": "Categories I saw close in weeks that would have taken quarters two years ago. Speed of learning matters more than speed of building. A studio like AI Fund is one of the few environments engineered specifically for that compression — the entire operating model is \\"run more hypothesis-test loops per week than you could run alone.\\" Eli insisted on this one: you can't reason your way to the destination. You start with a hypothesis. You test it with real users. You pivot on what you learn. You start over with a sharper hypothesis. That's the loop. There is no other loop. Every one of the nine lesso"
+      }
+    ]
   }
 }
 

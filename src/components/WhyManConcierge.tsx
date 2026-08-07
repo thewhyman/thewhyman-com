@@ -93,6 +93,14 @@ export default function WhyManConcierge() {
     { chip: "Is it really open source?", ask: "Is Co-Dialectic really open source, and how do I install it?", dim: 'BUILD', tags: ['codi','co-dialectic','open source','license','install','agpl'] },
     { chip: "Does it actually work?", ask: "Does Co-Dialectic measurably improve prompt quality?", dim: 'BUILD', tags: ['codi','co-dialectic','results','quality','proof'] },
 
+    // — writing + AI Fund lessons
+    { chip: "AI Fund lessons", ask: "What are the nine lessons Anand took from AI Fund?", tags: ['aifund','lessons','product','learning'], opener: true },
+    { chip: "How to find real pain", ask: "How does Anand find the biggest pain worth solving?", tags: ['pain','product','discovery','icp','lessons'] },
+    { chip: "What makes AI defensible?", ask: "What makes an AI product defensible — what is the moat?", tags: ['moat','data','defensible','lessons','product'] },
+    { chip: "Why evals matter", ask: "Why does he say eval is the product?", tags: ['eval','quality','lessons','product'] },
+    { chip: "What has he written?", ask: "What has Anand written about?", tags: ['writing','article','substack','blog','published'] },
+    { chip: "Summarize an article", ask: "Summarize your article on the missing eval taxonomy.", tags: ['writing','article','summary','eval','taxonomy'] },
+
     // — fit / logistics
     { chip: "What roles is he after?", ask: "What kind of roles is Anand targeting?", tags: ['fit','role','targeting','hiring'] },
     { chip: "Teaching + speaking", ask: "What is his teaching and public speaking experience?", tags: ['teaching','berkeley','speaking','executives'] },
