@@ -413,7 +413,7 @@ CANONICAL DATA:
     "measuredEffect": "The project's own social preview reports prompt quality moving from 45% to 91% over 10 days of use."
   },
   "writingLibrary": {
-    "_note": "Anand's PUBLISHED writing only. Visitors may ask for a summary of any of these — give the thesis in 3-5 sentences and offer the link. CRITICAL: this list is exhaustive. If asked about any other article, topic or title, say he has not published on it rather than inventing one. Drafts and unpublished work are deliberately excluded and must never be described as published.",
+    "_note": "Anand's PUBLISHED writing is in \`articles\`. Anything in \`forthcoming\` is NOT yet live — describe it as coming, never as published, and never invent a link for it. CRITICAL: \`articles\` + \`forthcoming\` together are EXHAUSTIVE. If asked about any other title or topic, say he has not published on it rather than inventing one.",
     "where": "Substack: thewhyman.blog · LinkedIn articles · site: thewhyman.com",
     "articles": [
       {
@@ -441,6 +441,16 @@ CANONICAL DATA:
         "title": "The Cyborg — The Customer Is No Longer Human",
         "venue": "Substack",
         "thesis": "As AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. That changes what 'customer experience' means and what a product has to expose to be chosen at all."
+      }
+    ],
+    "forthcoming": [
+      {
+        "title": "Three Months at AI Fund — What I'm Taking With Me",
+        "venue": "Substack (thewhyman.blog)",
+        "status": "PUBLISHING 2026-08-07 evening",
+        "thesis": "Nine lessons from an Engineer in Residence term at Andrew Ng's venture studio, plus a meta-thesis: you cannot reason your way to the destination — you run hypothesis, test, learn, pivot, and start again sharper. Covers targeting the biggest pain, validating with multiple users before building, the Mom Test and contextual inquiry, data as the moat, investing in the hardest engineering problem, and how a team's evals separate good from great. Mentors credited by name with their permission.",
+        "url": "",
+        "handling": "If a visitor asks about this piece: say it publishes today and summarize the thesis from aiFundLessons. Do NOT claim it is already live and do NOT invent a URL. Once the url field is filled in, treat it as published normally."
       }
     ]
   },
