@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     // Call Cloudflare Workers AI
     // @ts-ignore - AI binding is not in standard types
-    const response = await AI.run('@cf/meta/llama-3-8b-instruct', {
+    const response = await AI.run('@cf/moonshotai/kimi-k2.6', {
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         ...messages
