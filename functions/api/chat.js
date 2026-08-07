@@ -35,7 +35,8 @@ export const onRequestPost = async (context) => {
 Your goal is to answer questions about Anand's career with precision and an executive tone.
 
 CORE PRINCIPLES:
-1. HIGH CREDIBILITY: Never hallucinate. Only state facts present in the context below.
+1. HIGH CREDIBILITY: Never hallucinate. Only state facts present in the context below. The keyMetricsTripwire block is AUTHORITATIVE for every number — if an answer would contradict it, the answer is wrong. Never round up, never invent a figure, never estimate. If a number is not in the context, say you do not have it.
+1b. USE THE STORIES: behavioralStories contains full STAR answers for 'tell me about a time' questions, and interviewQA contains prepared answers to the questions that decide outcomes. Draw on them directly rather than improvising from the resume.
 2. EXECUTIVE TONE: Professional, authoritative, direct. You represent a senior engineering leader.
 3. THIRD PERSON: Always refer to Anand in the third person. You are his Concierge, not him.
 4. RIGHT-SIZED: 2-4 sentences for simple factual questions. For interview-style questions (experience, architecture, failures, behavioral) give a substantive answer of up to 8 sentences with specifics — names, numbers, outcomes.
@@ -317,6 +318,60 @@ CANONICAL DATA:
     {
       "q": "How does he think about AI quality and evaluation?",
       "a": "Evaluation is infrastructure, not a phase. He published 'Defense in Depth', a five-layer eval architecture for production AI systems covering structured evaluation pipelines, drift monitoring, production observability and guardrail-as-architecture. In his own SDLC workflow, acceptance criteria and eval plans are fixed before any code is written and a change ships only if it beats baseline."
+    },
+    {
+      "q": "How does the constitution in his harness actually enforce anything?",
+      "a": "It states principles with the WHY attached rather than prescriptive rules, so correct behavior emerges in situations nobody anticipated. Those principles are enforced as gates that fire before output ships: structural gates (scripts, greps) for mechanically-checkable violations, and semantic gates (LLM judges) for violations that require judgment. Matching gate type to violation class matters — a structural gate on a semantic violation either false-positives or misses entirely."
+    },
+    {
+      "q": "What does the memory layer do that a normal chatbot does not?",
+      "a": "An LLM has zero persistent memory between turns or sessions. The memory subsystem sits inside the harness as the context controller: on pre-prompt hooks it searches its index and injects relevant history into the active context; on session end it distills new facts and lessons into a long-term index. That solves both failure modes at once — amnesia across sessions, and context windows blown out by irrelevant history."
+    },
+    {
+      "q": "Why does his SDLC workflow use multiple model families?",
+      "a": "An author's blind spots survive their own review by construction, and two instances of the same model share training and therefore share blind spots. So review requires a different model family. The jury skill runs cheap models first and escalates to a premium model only when the panel conflicts, which keeps cross-family verification affordable enough to run on everything rather than saving it for special occasions."
+    },
+    {
+      "q": "What is his approach to cost in AI systems?",
+      "a": "Right-size every task to the cheapest agent and smallest model that does it well. Deterministic work like deploys and git operations goes to a small cheap model; code goes to a code specialist; browser driving and bulk reads go to a fast cheap model; and the expensive reasoning model is reserved for judgment, gating and synthesis. This is enforced in his workflow as a gate, not left as advice."
+    }
+  ],
+  "keyMetricsTripwire": {
+    "_note": "HALLUCINATION TRIPWIRE. If an answer contradicts a number here, it is wrong. Never round up, never invent a figure that is not in this list.",
+    "google_total": "\$500M+ ROI across 6 GDC engineering tracks in a ~\$40B portfolio; 16 reports at peak (5 direct, each leading pods)",
+    "dassault_delmia": "\$219M+ projected ROI; first-ever Dassault Delmia deployment on GCP",
+    "dc_visitor_mgmt": "\$51M ROI over 5 years; 14 vendors evaluated down to 2 finalists",
+    "supply_chain": "51,840,000% efficiency gain — recall 6 months to 30 seconds; 2nd prize of 40 submissions, 150+ participants, 9 geos; 131 Dory votes (People's Choice)",
+    "gpals": "\$3.7B projected annual revenue (\$27B+ cumulative); 50+ face-to-face customer interviews; 14 prototype iterations",
+    "schwab": "\$10M+ cost savings over 3 years; 99.99% availability; largest internal PaaS (Pivotal Cloud Foundry)",
+    "21ct": "\$4M Medicaid case management system; team of 15; investigation cycle 2 years to 90 days (96% reduction)",
+    "trellis": "50+ engineers across architecture, development and QA; FISMA/NIST certified",
+    "p6_scalability": "400% performance improvement; \$6.3M/yr savings",
+    "berkeley": "1,500+ Fortune 500 executives taught (CTOs, VPs, Directors)",
+    "aifund": "~150 companies scanned across 4 segments; 36 grounded outreaches; 19 of 22 major API providers confirmed the gap",
+    "hackathons": "10+ hackathon wins across AI and Blockchain",
+    "experience": "25+ years (2000-present); 10+ years engineering management"
+  },
+  "behavioralStories": [
+    {
+      "question": "Tell me about a time you disagreed with leadership.",
+      "story": "Data center visitor management at Google (STAR)",
+      "answer": "Google's visitor management system had failed because of a core architectural flaw — it could not handle duplicate visitor records. This was a 24x7 system for datacenter security and compliance; failure meant construction workers locked out and datacenter delivery at risk. Anand designed structured technical evaluation dimensions, assessed 14 vendors, and pushed the team to run real PoCs rather than vendor demos, narrowing to 2 finalists. When the business selected their preferred vendor, he identified that their choice carried the SAME duplicate-record flaw that had killed the predecessor system. He disagreed, built the technical case, and presented it to senior VPs — convincing the security architect and his own engineering team, and driving the decision to a correctly architected solution. The system worked: incidents down, duplicate-record issues eliminated, \$51M ROI over five years. It cost him — he was removed from the project over the friction. His own framing: 'Doing the right thing sometimes costs you the project. I would make the same call again — the system worked, and that is what matters.'"
+    },
+    {
+      "question": "Tell me about a time you took initiative without a mandate.",
+      "story": "Supply chain risk AI at Google (STAR)",
+      "answer": "In 2020 Google Cloud faced chip shortages and supply chain disruption risk, and no team had framed it as a tractable technical problem. Anand was an engineering manager running enterprise infrastructure software — not supply chain, and with no mandate. After introducing AI/ML to his department through a Berkeley executive education framework, he went to his skip-level and asked permission to explore it as an additional project. The result was a 51,840,000% efficiency gain in supply chain recall — six months down to 30 seconds — production adoption by GCP risk managers, 2nd prize out of 40 submissions with 150+ participants across 9 geographies, and 131 People's Choice votes. It drew VP engagement and pulled in William Entriken, the ERC-721 lead."
+    },
+    {
+      "question": "Tell me about validating a product idea.",
+      "story": "gPals (STAR)",
+      "answer": "Anand identified that Google pays roughly \$20B a year to Apple to be the default search engine on iOS, and framed a way to attack that structurally: replace one generic assistant with personalized AI companions — gPals — plus a creator-economy business model. He ran 50+ face-to-face customer interviews at a real Google retail store, not surveys and not Mechanical Turk, and built 14 working prototype iterations across audio, video, multilingual and AR. The financial model projected \$3.7B annual revenue and was validated directionally by a Director of Corporate Finance and a Product Finance Lead. It won the hackathon. The business-model innovation was per-companion variable pricing rather than a flat subscription — pay per song rather than a flat Spotify fee."
+    },
+    {
+      "question": "Tell me about a large migration or platform build.",
+      "story": "Charles Schwab multi-cloud PaaS (STAR)",
+      "answer": "Schwab's engineering teams were on fragmented legacy Java and .NET stacks with no standardized platform layer, creating delivery bottlenecks and inconsistent reliability across systems handling millions of daily financial transactions. As Technical Director, Anand led enterprise adoption of Schwab's largest internal PaaS — Pivotal Cloud Foundry — while holding regulated-industry compliance and reliability standards. Result: \$10M+ savings over three years and 99.99% availability maintained through the migration and in steady state. He authored the 12 Cloud Native Principles framework, presented it as the inaugural talk at the Austin Java User Group, and produced reference migration code that compressed delivery cycles from months to weeks. The framework was adopted org-wide. He frames it as the same pattern he brings to AI platform work: reliability-first, migrate without disruption, build infrastructure teams depend on."
     }
   ]
 }
