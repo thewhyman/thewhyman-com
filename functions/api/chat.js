@@ -631,10 +631,16 @@ LINKEDIN / CHRONOLOGICAL HISTORY:
         { role: 'system', content: SYSTEM_PROMPT },
         ...messages,
       ],
-      max_tokens: 1024,
+      max_tokens: 4096,
     });
 
-    const content = result?.response || "I couldn't generate a response. Please try again.";
+    // Response shape varies by model family: Workers-AI style returns a top-level
+    // 'response' field; OpenAI-compatible models nest it under choices[0].message.
+    const content =
+      result?.response ??
+      result?.choices?.[0]?.message?.content ??
+      result?.choices?.[0]?.text ??
+      "I couldn't generate a response. Please try again.";
 
     return new Response(JSON.stringify({ role: 'bot', content }), {
       headers: { 'Content-Type': 'application/json' }
