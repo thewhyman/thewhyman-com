@@ -99,7 +99,7 @@ export default function WhyManConcierge() {
     { chip: "What makes AI defensible?", ask: "What makes an AI product defensible — what is the moat?", tags: ['moat','data','defensible','lessons','product'] },
     { chip: "Why evals matter", ask: "Why does he say eval is the product?", tags: ['eval','quality','lessons','product'] },
     { chip: "What has he written?", ask: "What has Anand written about?", tags: ['writing','article','substack','blog','published'] },
-    { chip: "Summarize an article", ask: "Summarize your article on the missing eval taxonomy.", tags: ['writing','article','summary','eval','taxonomy'] },
+    { chip: "Summarize an article", ask: "Summarize your article on Socratic prompting and what comes after.", tags: ['writing','article','summary','socratic','dialectic'] },
 
     // — fit / logistics
     { chip: "What roles is he after?", ask: "What kind of roles is Anand targeting?", tags: ['fit','role','targeting','hiring'] },

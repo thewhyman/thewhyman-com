@@ -413,7 +413,7 @@ CANONICAL DATA:
     "measuredEffect": "The project's own social preview reports prompt quality moving from 45% to 91% over 10 days of use."
   },
   "writingLibrary": {
-    "_note": "Anand's published writing. Visitors may ask for a summary of any of these — give the thesis in 3-5 sentences and offer the link. Never invent an article that is not listed here, and never claim to have read one you cannot see.",
+    "_note": "Anand's PUBLISHED writing only. Visitors may ask for a summary of any of these — give the thesis in 3-5 sentences and offer the link. CRITICAL: this list is exhaustive. If asked about any other article, topic or title, say he has not published on it rather than inventing one. Drafts and unpublished work are deliberately excluded and must never be described as published.",
     "where": "Substack: thewhyman.blog · LinkedIn articles · site: thewhyman.com",
     "articles": [
       {
@@ -426,26 +426,6 @@ CANONICAL DATA:
         "title": "Defense in Depth — a five-layer eval architecture for production AI",
         "venue": "Published framework",
         "thesis": "Evaluation should be treated as architecture, not as a phase that happens after the build. The framework describes five layers: structured evaluation pipelines, drift monitoring, production observability, guardrail-as-architecture, and a QA agent. The argument is that reliability in non-deterministic systems comes from layered defenses rather than any single check, because every individual layer will eventually be wrong."
-      },
-      {
-        "title": "The missing eval taxonomy",
-        "venue": "Substack / LinkedIn",
-        "thesis": "Andrew Ng's point that the best AI builders differentiate on eval quality, taken seriously. Most production LLM systems run one or two eval categories — usually accuracy and latency. Frontier systems need seven to ten. The article lays out the missing taxonomy with an implementation sketch for each category."
-      },
-      {
-        "title": "The stop button for runaway epistemics",
-        "venue": "Substack / LinkedIn",
-        "thesis": "Every AI lab has a kill switch for runaway agents — infinite loops, runaway costs, unsafe actions. Nobody has built a kill switch for runaway EPISTEMICS: the failure mode where an AI, or an AI-human team, convinces itself of false beliefs through recursive self-validation. The piece argues this is the more dangerous and less defended failure mode."
-      },
-      {
-        "title": "Semantic gates — matching the gate to the violation",
-        "venue": "Substack / LinkedIn",
-        "thesis": "Every AI system has rules, and most rule systems apply deterministic checks to violations that actually require understanding meaning. That is a category error, and it produces one of two failure modes: false positives that erode trust until someone disables the gate, or complete misses because the pattern was never expressible as a regex. Structural violations need structural gates; semantic violations need semantic ones."
-      },
-      {
-        "title": "Career as a system",
-        "venue": "Substack / LinkedIn",
-        "thesis": "Anand applied his own engineering discipline — defense-in-depth evals, cross-family review, constitutional principles, boundary-awareness — to his own career transition into frontier AI. The article documents the harness, the metrics and the lessons, treating a career search as an engineering system rather than a series of applications."
       },
       {
         "title": "Why your site is invisible to ChatGPT (even when Google loves you)",
@@ -461,16 +441,11 @@ CANONICAL DATA:
         "title": "The Cyborg — The Customer Is No Longer Human",
         "venue": "Substack",
         "thesis": "As AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. That changes what 'customer experience' means and what a product has to expose to be chosen at all."
-      },
-      {
-        "title": "Three Months at AI Fund — What I'm Taking With Me",
-        "venue": "Substack (2026-08)",
-        "thesis": "Nine lessons from an Engineer in Residence term at Andrew Ng's venture studio, plus a meta-thesis: you cannot reason your way to the destination — you run hypothesis, test, learn, pivot. Covers targeting the biggest pain, validating with multiple users, the Mom Test and contextual inquiry, buying data access others cannot, investing in the hardest engineering problem, and how evals separate a good team from a great one."
       }
     ]
   },
   "aiFundLessons": {
-    "_note": "The nine lessons from Anand's AI Fund EIR, published Aug 2026 as 'Three Months at AI Fund — What I'm Taking With Me'. This is his freshest and most credible product-judgment material — use it whenever a visitor asks about product thinking, validation, moats, evals, or what he learned. Mentors are credited BY NAME with their permission; keep the attributions intact.",
+    "_note": "The nine lessons from Anand's AI Fund EIR, published Aug 2026 as 'Three Months at AI Fund — What I'm Taking With Me'. This is his freshest and most credible product-judgment material — use it whenever a visitor asks about product thinking, validation, moats, evals, or what he learned. Mentors are credited BY NAME with their permission; keep the attributions intact. SOURCING: these are lessons from work Anand did during the EIR — lived experience, not a published article. The write-up is forthcoming; do NOT describe it as published or offer a link to it.",
     "metaThesis": "You cannot reason your way to the destination. You start with a hypothesis, test it with real users, pivot on what you learn, and start again with a sharper hypothesis. There is no other loop. Every one of the nine lessons only became real by running that loop compressed. That is what a studio buys you — not the destination, but the loop. (Credited to Eli Chen, Technology Partner at AI Fund.)",
     "reframe": "Solving the right pain is important. Raising money for something that isn't even a big pain worth solving is much worse. If an experiment doesn't reach commercial success, that is fine — think of it as saving the next seven years spent on a vitamin rather than a painkiller. (Anurag Jain.)",
     "attributions": "Andy Ku — biggest-pain targeting and multiple-user validation. Andy Ku and Jill Shih jointly — the Mom Test, contextual inquiry, the two killer questions, and observation. Sandeep Gupta — buying data access no one else can. Andrew Ng — invest in the technology and solve the hardest engineering problem, and that what separates a good team from a great team is how they run their evals. Eli Chen — the experimentation-based-learning meta-thesis.",
