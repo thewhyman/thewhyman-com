@@ -117,8 +117,8 @@ export default function HeroPage() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-12 leading-[0.9]"
           >
-            I DON&apos;T JUST BUILD AI. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 drop-shadow-[0_0_40px_rgba(52,211,153,0.3)]">I ASK A CURIOUS WHY.</span>
+            I DON&apos;T JUST BUILD AI PRODUCTS. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 drop-shadow-[0_0_40px_rgba(52,211,153,0.3)]">I BUILD THE SYSTEMS THAT BUILD THEM.</span>
           </motion.h1>
 
           <motion.p 
@@ -127,8 +127,9 @@ export default function HeroPage() {
             transition={{ delay: 0.2 }}
             className="max-w-2xl text-xl text-zinc-400 mb-12 leading-relaxed"
           >
-            Founder, ExponentialOS — building the Distribution OS for CMOs and professionals.
-            26-year engineering career. 6 years at Google, $40B infrastructure portfolio. Berkeley Haas EMBA 2026.
+            Founder, Exponential OS — a multi-agent harness with a constitution, agentic memory, model routing and composable skills.
+            25+ years in engineering. 6 years at Google across a ~$40B portfolio, $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng&apos;s venture studio.
+            My &ldquo;why&rdquo; is curiosity, never challenge &mdash; it&apos;s how I get to root cause.
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">
@@ -183,7 +184,7 @@ export default function HeroPage() {
                   <span className="text-teal-400/80 italic">To be clear: this is a strictly curious &ldquo;Why&rdquo;. It is never about challenging authority or arrogance. It is a relentless drive to drill down to the fundamental root cause and fix the broken system.</span>
                 </p>
                 <p>
-                  My methodology focuses on **Evaluation-First Architecture**: building the infrastructure that proves a system works before building the system itself. This ensures I don&apos;t just ship features, I ship outcomes.
+                  The method is to build the harness before the product: governance that enforces engineering invariants as gates, memory that carries context across sessions, and evals fixed before any code is written. A change ships only if it beats baseline. That is how I ship outcomes rather than features.
                 </p>
               </div>
             </motion.div>

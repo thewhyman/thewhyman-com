@@ -1,30 +1,30 @@
 [
   {
-    "title": "Co-Dialectic v4 is live — your AI is only as good as the conversation",
-    "date": "Apr 2026",
-    "description": "Elevate your communication with AI in 10 days",
-    "url": "https://www.thewhyman.blog/p/co-dialectic-v4-is-live-your-ai-is",
-    "image": "https://substackcdn.com/image/fetch/$s_!t6mw!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7d040c8c-3de0-4924-a407-b17a95f0be73_1280x640.png"
-  },
-  {
-    "title": "Defense in Depth, Part 2: Five Things I Got Wrong About LLM Reviewers",
-    "date": "Apr 2026",
-    "description": "Why same-family review can become a closed loop — and how one cheap Gemini-Flash pass caught what three same-family reviewers approved.",
-    "url": "https://www.thewhyman.blog/p/defense-in-depth-part-2-five-things",
-    "image": "https://substack-post-media.s3.amazonaws.com/public/images/d027535e-1978-4c40-8a3e-2e7bf07f0186_1456x816.png"
-  },
-  {
-    "title": "TEP just got sections. Pick what you want.",
-    "date": "Apr 2026",
-    "description": "Technology, Education and Policy Substack",
-    "url": "https://www.thewhyman.blog/p/tep-just-got-sections-pick-what-you",
+    "title": "Why your site is invisible to ChatGPT (even when Google loves you)",
+    "date": "Jul 2026",
+    "description": "Ranking on Google and being citable by AI are not the same problem — and I asked four engines the same question to prove it.",
+    "url": "https://www.thewhyman.blog/p/why-your-site-is-invisible-to-chatgpt",
     "image": "https://substackcdn.com/image/fetch/$s_!Z0Ez!,w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb866b3c9-2a56-41b2-8864-3239eb0ef170_1280x1280.png"
   },
   {
-    "title": "The Language Bridge: Why Learning to Talk to Machines Is the Most Human Thing You Can Do",
-    "date": "Mar 2026",
-    "description": "I spent 6,000 hours trying to answer two questions about AI. The answers changed how I think about being human.",
-    "url": "https://www.thewhyman.blog/p/the-language-bridge-why-learning",
-    "image": "https://substack-post-media.s3.amazonaws.com/public/images/4c5f8bab-e92b-4d0b-91bb-642b81a1f382_1200x627.png"
+    "title": "The Cyborg — The Exponential Advantage",
+    "date": "May 2026",
+    "description": "What the ClawCamp talk was really about, and the patent-night story I didn't tell on stage.",
+    "url": "https://www.thewhyman.blog/p/the-cyborg-the-exponential-advantage",
+    "image": "https://substack-post-media.s3.amazonaws.com/public/images/d514b391-aa0d-46dd-833a-81a249004072_1456x816.png"
+  },
+  {
+    "title": "The Cyborg — The Customer Is No Longer Human",
+    "date": "May 2026",
+    "description": "Notes from Health+Tech 2026 conference session on agents, attention, and what survives the transition",
+    "url": "https://www.thewhyman.blog/p/the-customer-is-no-longer-human",
+    "image": "https://substackcdn.com/image/youtube/w_728,c_limit/A8-ojnb9ygk"
+  },
+  {
+    "title": "Invite your friends to read TEP: Technology, Education and Policy",
+    "date": "May 2026",
+    "description": "Thank you for reading TEP: Technology, Education and Policy — your support allows me to keep doing this work.",
+    "url": "https://www.thewhyman.blog/p/invite-your-friends-to-read-tep-technology",
+    "image": "https://substackcdn.com/image/fetch/$s_!Z0Ez!,w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb866b3c9-2a56-41b2-8864-3239eb0ef170_1280x1280.png"
   }
 ]
