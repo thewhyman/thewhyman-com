@@ -115,13 +115,25 @@ export default function HeroPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-12 leading-[0.9]"
+            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-7 leading-[0.9]"
           >
             I DON&apos;T JUST BUILD AI PRODUCTS. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 drop-shadow-[0_0_40px_rgba(52,211,153,0.3)]">I BUILD THE SYSTEMS THAT BUILD THEM.</span>
           </motion.h1>
 
-          <motion.p 
+          {/* The name carries a connotation problem — "Why" reads as challenging authority.
+              This resolves it in the same beat the visitor reads the name in the badge above,
+              rather than two screens down in the methodology section. */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="max-w-3xl text-xl md:text-2xl text-teal-300/90 mb-8 leading-snug font-medium"
+          >
+            The &ldquo;why&rdquo; is curiosity &mdash; never challenge. It&apos;s how I get to root cause.
+          </motion.p>
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -129,7 +141,6 @@ export default function HeroPage() {
           >
             Founder, Exponential OS — a multi-agent harness with a constitution, agentic memory, model routing and composable skills.
             25+ years in engineering. 6 years at Google across a ~$40B portfolio, $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng&apos;s venture studio.
-            My &ldquo;why&rdquo; is curiosity, never challenge &mdash; it&apos;s how I get to root cause.
           </motion.p>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto mt-4 px-6 md:px-0">

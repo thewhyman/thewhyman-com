@@ -393,6 +393,14 @@ CANONICAL DATA:
     {
       "q": "What is his approach to cost in AI systems?",
       "a": "Right-size every task to the cheapest agent and smallest model that does it well. Deterministic work like deploys and git operations goes to a small cheap model; code goes to a code specialist; browser driving and bulk reads go to a fast cheap model; and the expensive reasoning model is reserved for judgment, gating and synthesis. This is enforced in his workflow as a gate, not left as advice."
+    },
+    {
+      "q": "Why is he looking, and what is he optimizing for?",
+      "a": "He is not running from anything. He has already run the independent path, and that is exactly why he knows what he wants. He built his own harness because he wanted leverage on hard problems, not an escape from them. What working alone does not give him is a problem at real scale with real distribution behind it. That is what he is looking for: a hard applied-AI problem, the scope to architect the system around it, and a team that ships. The instinct to build infrastructure before product is a long-horizon one; it is why the harness exists at all."
+    },
+    {
+      "q": "He has run his own thing. Will he leave in a year to start a company?",
+      "a": "A fair question, and he does not deflect it. He knows precisely what solo work gives and what it does not: full autonomy, but no scale and no distribution. Those two are what he wants back, and they are what a strong team provides and independent work cannot. The consistent pattern across 25 years is that he builds the system that makes the whole team faster, at Google across a \$40B portfolio and again in his own harness. That is a long-horizon instinct rather than a short-tenure one. What holds him is a hard problem with real reach behind it and the scope to architect the system around it."
     }
   ],
   "keyMetricsTripwire": {

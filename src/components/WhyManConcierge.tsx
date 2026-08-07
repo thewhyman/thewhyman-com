@@ -103,6 +103,9 @@ export default function WhyManConcierge() {
 
     // — fit / logistics
     { chip: "What roles is he after?", ask: "What kind of roles is Anand targeting?", tags: ['fit','role','targeting','hiring'] },
+    // Deliberately NOT an opener: the default chip row should lead with capability, not
+    // job-seeking. Tagged widely so it surfaces the moment anyone probes fit or motivation.
+    { chip: "Why is he looking?", ask: "Why is Anand looking for a new role, and what is he optimizing for?", tags: ['fit','role','targeting','hiring','looking','motivation','leave','founder','tenure','next','opportunity','aifund'] },
     { chip: "Teaching + speaking", ask: "What is his teaching and public speaking experience?", tags: ['teaching','berkeley','speaking','executives'] },
     { chip: "Story behind the name", ask: "What's the story behind the name 'The Why Man'?", tags: ['name','brand','story','why'], opener: true },
   ];
