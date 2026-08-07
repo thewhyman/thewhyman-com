@@ -10,7 +10,7 @@ interface Message {
   role: 'bot' | 'user';
   content: string;
   dimension?: 'BUILD' | 'INVENT' | 'LEAD';
-  visual?: 'harness';
+  visual?: 'harness' | 'codi';
 }
 
 export default function WhyManConcierge() {
@@ -86,6 +86,12 @@ export default function WhyManConcierge() {
     // — AI Fund
     { chip: "AI Fund role", ask: "What did Anand do at AI Fund and why did the role end?", tags: ['aifund','andrewng','eir','role'] },
     { chip: "Andrew Ng studio", ask: "What was the Engineer in Residence experience at Andrew Ng's venture studio?", tags: ['aifund','andrewng','eir'] },
+
+    // — open source / Co-Dialectic
+    { chip: "What is Co-Dialectic?", ask: "What is Co-Dialectic and what does it do?", dim: 'BUILD', tags: ['codi','co-dialectic','open source','prompt','tool'], opener: true },
+    { chip: "Socratic → dialectic", ask: "What is the theory behind Co-Dialectic — the move from Socratic prompting to dialectic?", dim: 'BUILD', tags: ['codi','co-dialectic','socratic','dialectic','plato','theory'] },
+    { chip: "Is it really open source?", ask: "Is Co-Dialectic really open source, and how do I install it?", dim: 'BUILD', tags: ['codi','co-dialectic','open source','license','install','agpl'] },
+    { chip: "Does it actually work?", ask: "Does Co-Dialectic measurably improve prompt quality?", dim: 'BUILD', tags: ['codi','co-dialectic','results','quality','proof'] },
 
     // — fit / logistics
     { chip: "What roles is he after?", ask: "What kind of roles is Anand targeting?", tags: ['fit','role','targeting','hiring'] },
@@ -224,11 +230,13 @@ export default function WhyManConcierge() {
         const q = (userContent + ' ' + data.content).toLowerCase();
         const wantsHarness = ['harness','exponential os','architecture','layers','memory layer','control plane','constitution']
           .some(k => q.includes(k));
+        const wantsCodi = !wantsHarness && ['co-dialectic','codi','open source','socratic','dialectic','plato','prompt improve']
+          .some(k => q.includes(k));
         setMessages(prev => [...prev, { 
           id: Date.now() + 1, 
           role: 'bot', 
           content: data.content,
-          visual: wantsHarness ? 'harness' : undefined
+          visual: wantsHarness ? 'harness' : wantsCodi ? 'codi' : undefined
         }]);
         setIsLive(true);
         speak(data.content);
@@ -341,6 +349,23 @@ export default function WhyManConcierge() {
                       : 'bg-teal-900/40 border border-teal-500/30 text-teal-50'
                   }`}>
                     {msg.content}
+                    {msg.visual === 'codi' && (
+                      <a
+                        href="https://github.com/Exponential-OS/prompt-engineering-in-action"
+                        target="_blank" rel="noopener noreferrer"
+                        className="mt-3 pt-3 border-t border-white/5 block group"
+                      >
+                        <img
+                          src="/codi/co-dialectic-preview.png"
+                          alt="Co-Dialectic — prompt quality from 45% to 91% in 10 days"
+                          className="w-full rounded-lg border border-white/10 group-hover:border-teal-500/40 transition-colors"
+                          loading="lazy"
+                        />
+                        <span className="block mt-1.5 text-[10px] text-teal-400/80">
+                          Open source · AGPL-3.0 · 61-second demo on the repo →
+                        </span>
+                      </a>
+                    )}
                     {msg.visual === 'harness' && (
                       <div className="mt-3 pt-3 border-t border-white/5">
                         <HarnessDiagram compact />

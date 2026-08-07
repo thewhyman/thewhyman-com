@@ -305,5 +305,17 @@
     "notAPkm": "A personal knowledge manager stores what you know. This grows what you can do. A PKM captures notes; the harness captures patterns. Notes are static, patterns are generative \u2014 the system reasons with accumulated context rather than just retrieving it.",
     "notASystemPrompt": "A system prompt is static and does not grow. This learns from what happens in sessions, writes new lessons, and updates the shared constitution. And the compounding is bidirectional \u2014 the operator is not just training the system, the process trains the operator to think better.",
     "boundary": "Anand discusses the architecture and the reasoning openly. Implementation specifics \u2014 how enforcement is wired, how coordination works across agents, how the carry-forward mechanism is built \u2014 are not public."
+  },
+  "coDialecticDepth": {
+    "_note": "Co-Dialectic is fully public and open source (AGPL-3.0). Everything here is on the public README.",
+    "whatItIs": "Co-Dialectic is a free, open-source LLM prompt and context optimizer. It sharpens your prompts before the model answers, saves tokens, and recovers gracefully from chat crashes. It works with Claude, ChatGPT and Gemini \u2014 any AI. Tagline: your AI sharpens your prompts, you sharpen its answers, both get smarter in days.",
+    "theory": "The theory is the Socratic-to-dialectic evolution. Socratic prompting went viral in 2026 \u2014 the 2,400-year-old idea of asking questions instead of giving commands. It works, but it is only step one. SOCRATES asked questions to reveal what the student already knew: one direction, teacher to student. His student PLATO took it further \u2014 dialectic, where both sides refine each other's thinking through structured back-and-forth. Neither side wins; both sides learn. Co-Dialectic is that second step applied to human-AI interaction: not the AI interrogating you, but both partners improving each other in the same loop.",
+    "whyItMatters": "Most prompt tools optimize one direction \u2014 they make your prompt better for the model. Co-Dialectic is bidirectional by design: the human gets better at prompting while the system gets better at understanding. That is the same compounding thesis that underpins Exponential OS, packaged as a free entry point anyone can install.",
+    "license": "AGPL-3.0 \u2014 genuinely open source, not source-available.",
+    "install": "Plugin install for Claude Code; a gift-prompt path for browser chat at claude.ai. Repo: github.com/Exponential-OS/prompt-engineering-in-action",
+    "intellectualLineage": "Inspired by Ethan Mollick's Co-Intelligence and built on Dr. Jules White's Prompt Engineering specialization. The language-bridge thesis draws on Yuval Noah Harari's Sapiens.",
+    "writing": "Anand published the argument as a LinkedIn article: 'Everyone's Talking About Socratic Prompting. Here's What Comes After.'",
+    "demo": "A 61-second demo video is on the repo README.",
+    "measuredEffect": "The project's own social preview reports prompt quality moving from 45% to 91% over 10 days of use."
   }
 }
