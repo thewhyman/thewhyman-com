@@ -99,6 +99,28 @@
     "invent": {
       "wins": [
         {
+          "title": "Exponential OS \u2014 a multi-agent harness built from zero",
+          "period": "2026 - Present",
+          "role": "Architect and builder",
+          "achievements": [
+            "Built his own agentic runtime rather than adopting a framework: constitution-enforced engineering principles, an agentic memory layer for context management, a control plane for routing and model selection, composable skills and MCP integrations.",
+            "Shipped two installable plugins on it \u2014 exponential-developer, a cross-LLM agentic SDLC workflow with nine stages and five hard gates, and Co-Dialectic, open source under AGPL-3.0.",
+            "The thesis: platform-based agents are loyal to the platform, not the operator. Owning the harness means the constitution, the memory and the agents belong to you.",
+            "In daily production use \u2014 and used to deliver the AI Fund work, which is the evidence it holds up outside a demo."
+          ]
+        },
+        {
+          "title": "AI Fund \u2014 two product bets, built and tested from zero",
+          "period": "May 2026 - Jul 2026",
+          "role": "Engineer in Residence, Andrew Ng's venture studio",
+          "achievements": [
+            "Built and shipped two product bets in three months, each demand-tested before scaling the build.",
+            "Validated against ~150 companies across four segments with 36 grounded outreaches; 19 of 22 major API providers confirmed the technical gap but not commercial urgency, so he killed the wedge on evidence with minimal sunk cost.",
+            "Brand-voice personas on embeddings, style-RAG and prompt tuning; a four-stage LLM workflow with layered deterministic and semantic auditors targeting AI slop and voice fidelity.",
+            "Ran controlled fine-tuning experiments on Oumi against Qwen bases. Full fine-tuning regressed on catastrophic forgetting; he diagnosed it, moved to LoRA, and set the decision ladder: prompt, then RAG, then fine-tune last."
+          ]
+        },
+        {
           "title": "Tree of Souls & gPals (Google Innovation)",
           "period": "2024",
           "role": "Lead Architect / Creator",
@@ -152,6 +174,28 @@
     },
     "lead": {
       "projects": [
+        {
+          "title": "AI Fund \u2014 product discovery to delivery",
+          "period": "May 2026 - Jul 2026",
+          "role": "Engineer in Residence, Andrew Ng's venture studio",
+          "achievements": [
+            "Owned the full loop across two major pivots: customer discovery, ICP selection, contextual inquiry and Mom Test interviews, with demand validated before any build was scaled.",
+            "PostHog KPI instrumentation to verify shipped features actually moved behavior, rather than assuming they did.",
+            "Made the stop call on evidence when the technical signal was strong but commercial urgency was absent \u2014 a disciplined kill with minimal sunk cost.",
+            "Nine lessons carried forward on finding real pain, defensibility, and why a team's evals separate good from great \u2014 mentored by Andrew Ng, Eli Chen, Andy Ku, Jill Shih and Sandeep Gupta."
+          ]
+        },
+        {
+          "title": "Engineering governance at scale \u2014 the constitution layer",
+          "period": "2026 - Present",
+          "role": "Architect",
+          "achievements": [
+            "Codified engineering principles as an enforceable governance layer shared across every agent in the system, rather than as documentation nobody reads.",
+            "Structural gates for mechanically-checkable violations, semantic gates for those needing judgment \u2014 matching the gate type to the violation class.",
+            "Cross-family review as an independent-verification gate: an author's blind spots survive their own review by construction, so review requires a different model family.",
+            "Cost governance through model right-sizing by task class, keeping the most expensive reasoning on judgment work only."
+          ]
+        },
         {
           "title": "Senior SWE Manager (Google)",
           "period": "2019 - 2025",

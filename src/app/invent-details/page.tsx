@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Rocket, Sparkles, Zap, ChevronLeft, ArrowUpRight, Trophy, Code } from 'lucide-react';
 import Link from 'next/link';
+import RouteCTA from '../../components/RouteCTA';
 import canonicalData from '../../../data/canonical.json';
 
 export default function InventDetails() {
@@ -114,7 +115,7 @@ export default function InventDetails() {
               <Sparkles className="w-48 h-48 text-teal-400" />
            </div>
            <h2 className="text-3xl font-bold mb-6">Have a moonshot in mind?</h2>
-           <p className="text-zinc-400 mb-10 max-w-lg mx-auto">I architect at the boundary of what exists and what is next. Let&apos;s build the future why.</p>
+           <p className="text-zinc-400 mb-10 max-w-lg mx-auto">I architect at the boundary of what exists and what is next — and I test it before I scale it. Two product bets built from zero at Andrew Ng&apos;s studio, validated against ~150 companies, one killed on evidence. Let&apos;s build the future why.</p>
            <a href="https://app.reclaim.ai/m/anand-career/intro" target="_blank" rel="noopener noreferrer" className="inline-flex h-14 px-10 rounded-xl bg-white text-black font-black text-sm uppercase tracking-widest items-center hover:bg-teal-400 transition-all">
               Initialize a Dialogue
            </a>
@@ -128,6 +129,8 @@ export default function InventDetails() {
               <Link href="/lead-details" className="hover:text-teal-400 transition-colors">Next Dimension: Lead</Link>
            </div>
         </div>
+
+        <RouteCTA />
       </div>
 
       {/* Grid Pattern */}

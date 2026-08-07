@@ -90,6 +90,38 @@ const ACCENT_STYLES: Record<string, { iconBg: string; iconBorder: string; iconTe
   },
 };
 
+const INTENT: Record<string, { eyebrow: string; line: string }> = {
+  recruiter: {
+    eyebrow: 'For hiring teams',
+    line: 'Senior engineering leadership, applied AI architecture and forward-deployed roles. Happy to talk scope and fit before anything formal — and my AI concierge can answer most screening questions right now.',
+  },
+  collaborator: {
+    eyebrow: 'For builders',
+    line: 'Agentic systems, harness architecture, evals and 0→1 product work. If you are building in this space, I would rather compare notes than pitch.',
+  },
+  consulting: {
+    eyebrow: 'For advisory work',
+    line: 'AI strategy, evaluation architecture and engineering governance — including how to put quality gates into a delivery pipeline without slowing it down.',
+  },
+};
+
+function IntentBanner() {
+  const [intent, setIntent] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const as = new URLSearchParams(window.location.search).get('as');
+    if (as && INTENT[as]) setIntent(as);
+  }, []);
+  if (!intent) return null;
+  const i = INTENT[intent];
+  return (
+    <div className="max-w-2xl mx-auto mb-10 rounded-xl border border-teal-500/25 bg-teal-500/[0.05] px-5 py-4 text-left">
+      <div className="text-[10px] font-black tracking-[0.2em] text-teal-400 uppercase mb-1.5">{i.eyebrow}</div>
+      <p className="text-sm text-zinc-300 leading-relaxed">{i.line}</p>
+    </div>
+  );
+}
+
 export default function ContactPage() {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -116,6 +148,7 @@ export default function ContactPage() {
 
       <section className="relative z-10 pt-24 pb-12 px-2 md:px-8">
         <div className="max-w-screen-xl mx-auto flex flex-col items-center text-center">
+          <IntentBanner />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

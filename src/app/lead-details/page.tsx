@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Users, Globe, TrendingUp, ChevronLeft, ArrowUpRight, BookOpen, ShieldCheck, BarChart } from 'lucide-react';
-import Link from 'next/link';import canonicalData from '../../../data/canonical.json';
+import Link from 'next/link';
+import RouteCTA from '../../components/RouteCTA';import canonicalData from '../../../data/canonical.json';
 
 export default function LeadDetails() {
   const containerVariants: Variants = {
@@ -148,6 +149,8 @@ export default function LeadDetails() {
               <Link href="/invent-details" className="hover:text-indigo-400 transition-colors">Next Dimension: Invent</Link>
            </div>
         </div>
+
+        <RouteCTA />
       </div>
 
       {/* Grid Pattern */}

@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Cpu, ShieldCheck, Globe, ChevronLeft, ArrowUpRight, Zap, Target } from 'lucide-react';
 import Link from 'next/link';
+import RouteCTA from '../../components/RouteCTA';
 import canonicalData from '../../../data/canonical.json';
 
 export default function BuildDetails() {
@@ -52,7 +53,7 @@ export default function BuildDetails() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-500">AI Architectures.</span>
           </h1>
           <p className="max-w-2xl text-xl text-zinc-400 leading-relaxed">
-            I don&apos;t build models; I build the systems that prove models work. My focus is engineering the infrastructure that makes AI dependable at scale.
+            I don&apos;t build models; I build the systems that prove models work. I built my own multi-agent harness — Exponential OS — with a constitution enforcing engineering invariants, an agentic memory layer for context management, model routing, and composable skills. Then I used it to ship real product.
           </p>
         </div>
 
@@ -122,6 +123,8 @@ export default function BuildDetails() {
               <Link href="/lead-details" className="hover:text-teal-400 transition-colors">Next Dimension: Lead</Link>
            </div>
         </div>
+
+        <RouteCTA />
       </div>
 
       {/* Grid Pattern */}
