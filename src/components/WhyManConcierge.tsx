@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import HarnessDiagram from './HarnessDiagram';
 import { MessageSquare, X, Send, Sparkles, Cpu, Rocket, Users, ChevronRight, HelpCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 
 interface Message {
@@ -9,6 +10,7 @@ interface Message {
   role: 'bot' | 'user';
   content: string;
   dimension?: 'BUILD' | 'INVENT' | 'LEAD';
+  visual?: 'harness';
 }
 
 export default function WhyManConcierge() {
@@ -219,10 +221,14 @@ export default function WhyManConcierge() {
       const data = await response.json();
       
       if (data.content) {
+        const q = (userContent + ' ' + data.content).toLowerCase();
+        const wantsHarness = ['harness','exponential os','architecture','layers','memory layer','control plane','constitution']
+          .some(k => q.includes(k));
         setMessages(prev => [...prev, { 
           id: Date.now() + 1, 
           role: 'bot', 
-          content: data.content 
+          content: data.content,
+          visual: wantsHarness ? 'harness' : undefined
         }]);
         setIsLive(true);
         speak(data.content);
@@ -335,6 +341,11 @@ export default function WhyManConcierge() {
                       : 'bg-teal-900/40 border border-teal-500/30 text-teal-50'
                   }`}>
                     {msg.content}
+                    {msg.visual === 'harness' && (
+                      <div className="mt-3 pt-3 border-t border-white/5">
+                        <HarnessDiagram compact />
+                      </div>
+                    )}
                     {msg.dimension && (
                       <div className="mt-2 text-[10px] font-black tracking-widest text-teal-400/50 uppercase">
                         Dimension: {msg.dimension}
