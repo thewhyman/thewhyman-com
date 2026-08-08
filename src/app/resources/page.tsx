@@ -2,8 +2,17 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Zap, ArrowUpRight, Pin } from 'lucide-react';
+import { ExternalLink, Zap, ArrowUpRight, Pin, PenLine, Code2 } from 'lucide-react';
 import linkedinData from '../../../data/linkedin_public.json';
+import substackPosts from '../../../data/substack_posts.json';
+import RouteCTA from '../../components/RouteCTA';
+
+// The Substack feed is refetched on every build. It also carries Substack's own
+// referral/housekeeping posts, which are not articles — drop them so the section
+// only ever shows real writing.
+const NON_ARTICLE = /^invite your friends|^coming soon|^thanks for reading/i;
+const articles = (substackPosts as { title: string; date: string; description: string; url: string; image?: string }[])
+  .filter((p) => !NON_ARTICLE.test(p.title));
 
 type FeaturedPost = (typeof linkedinData.featured_posts)[number];
 
@@ -113,7 +122,8 @@ export default function ResourcesPage() {
           transition={{ delay: 0.2 }}
           className="max-w-2xl text-xl text-zinc-400 mb-20 leading-relaxed"
         >
-          Articles, frameworks, and decks across AI, blockchain, and beyond.
+          Writing, open source, and decks — on agentic harnesses, evaluation architecture,
+          applied AI, and blockchain.
         </motion.p>
 
         {/* Pinned */}
@@ -129,7 +139,88 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Latest Articles */}
+        {/* Latest Writing — pulled live from the Substack feed at build time */}
+        {articles.length > 0 && (
+          <div className="mb-24">
+            <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <PenLine className="w-3 h-3 text-teal-400" />
+                <div className="text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase">Latest Writing</div>
+              </div>
+              <a
+                href="https://www.thewhyman.blog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[11px] font-black text-zinc-500 hover:text-teal-400 transition-colors uppercase tracking-widest"
+              >
+                All posts <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {articles.map((post, i) => (
+                <motion.a
+                  key={post.url}
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="glass-card p-6 group hover:border-teal-500/30 transition-all border-white/5 flex flex-col"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[10px] font-black text-teal-400 tracking-widest uppercase">{post.date}</div>
+                    <ArrowUpRight className="w-4 h-4 text-zinc-700 group-hover:text-teal-400 transition-colors" />
+                  </div>
+                  <h3 className="text-base font-bold text-white leading-snug mb-2 group-hover:text-teal-300 transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed line-clamp-4">{post.description}</p>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Open source */}
+        <div className="mb-24">
+          <div className="flex items-center gap-2 mb-8">
+            <Code2 className="w-3 h-3 text-teal-400" />
+            <div className="text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase">Open Source</div>
+          </div>
+          <motion.a
+            href="https://github.com/Exponential-OS/prompt-engineering-in-action"
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="glass-card p-8 border-white/5 hover:border-teal-500/30 transition-all flex flex-col md:flex-row md:items-center gap-6 group"
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <h3 className="text-2xl font-black text-white group-hover:text-teal-300 transition-colors">Co-Dialectic</h3>
+                <span className="text-[10px] font-black text-teal-400/70 tracking-widest uppercase border border-teal-500/20 rounded px-2 py-0.5">
+                  AGPL-3.0
+                </span>
+              </div>
+              <p className="text-zinc-400 leading-relaxed mb-3">
+                A free, open-source prompt and context optimizer. It sharpens your prompt before the model
+                answers, saves tokens, and recovers from chat crashes. Works with Claude, ChatGPT and Gemini.
+              </p>
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                Socratic prompting asks questions in one direction, teacher to student. Plato&apos;s dialectic
+                had both sides refine each other. Co-Dialectic applies that to AI: your prompts get sharper,
+                its answers get sharper, both improve in the same loop.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] font-black text-teal-400 uppercase tracking-widest shrink-0">
+              View on GitHub <ArrowUpRight className="w-3.5 h-3.5" />
+            </div>
+          </motion.a>
+        </div>
+
         {/* Decks */}
         <div className="space-y-16">
           {decks.map((deck, i) => (
@@ -163,6 +254,8 @@ export default function ResourcesPage() {
             </motion.div>
           ))}
         </div>
+
+        <RouteCTA />
       </section>
     </main>
   );

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight, Presentation, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { talks } from '@/data/talks';
+import RouteCTA from '../../components/RouteCTA';
 
 export default function TalksIndexPage() {
   return (
@@ -53,7 +54,8 @@ export default function TalksIndexPage() {
           transition={{ delay: 0.2 }}
           className="max-w-2xl text-xl text-zinc-400 mb-20 leading-relaxed"
         >
-          Presentations and keynotes on AI, sovereignty, and the future of work.
+          Presentations and keynotes on agentic systems, applied AI, sovereignty,
+          and the future of work.
         </motion.p>
 
         {/* Talks grid */}
@@ -88,6 +90,8 @@ export default function TalksIndexPage() {
             </motion.div>
           ))}
         </div>
+
+        <RouteCTA />
       </section>
     </main>
   );
