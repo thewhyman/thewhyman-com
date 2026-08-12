@@ -431,12 +431,18 @@ export default function WhyManConcierge() {
                 // proof the bot is alive, so use it to hold the thinking state.
                 if (choice?.delta?.reasoning_content) sawReasoning = true;
 
-                const delta =
+                // Workers AI emits single digits as JSON NUMBERS, not strings —
+                // a frame's content can be 0 rather than "0". A bare truthiness
+                // check drops the number zero, which silently corrupts exactly
+                // the figures this page exists to state: $500M, $40B, 99.99%,
+                // 1,500. Coerce to string first, then test for emptiness.
+                const rawDelta =
                   j.response ??
                   choice?.delta?.content ??
-                  choice?.text ??
-                  '';
-                if (delta) {
+                  choice?.text;
+                const delta =
+                  rawDelta === undefined || rawDelta === null ? '' : String(rawDelta);
+                if (delta !== '') {
                   full += delta;
                   if (!bubbleCreated) {
                     bubbleCreated = true;
