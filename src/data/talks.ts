@@ -173,7 +173,7 @@ export const talks: Talk[] = [
     themes: [
       {
         label: 'THE WALLED GARDEN PROBLEM',
-        text: 'Claude. Copilot. Cursor. Gemini. Separate memory. Separate context. Separate compute. No agent passport exists — the fragmentation is intentional.',
+        text: 'Claude. Copilot. Cursor. Gemini. Separate memory. Separate context. Separate compute. No portable identity layer exists across them — the fragmentation is intentional.',
         color: 'teal',
       },
       {
