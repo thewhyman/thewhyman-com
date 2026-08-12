@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Exponential Advantage — ClawCamp Talk 3</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; background: #080c14; color: #f0f4ff; height: 100vh; overflow: hidden; }
+.deck { width: 100vw; height: 100vh; position: relative; }
+.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 72px 80px 80px; opacity: 0; pointer-events: none; transition: opacity 0.35s ease; text-align: center; }
+.slide.active { opacity: 1; pointer-events: all; }
+.counter { position: fixed; bottom: 28px; right: 36px; font-size: 13px; color: #3a4460; letter-spacing: 0.05em; z-index: 100; }
+.dots { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #2a3050; cursor: pointer; transition: background 0.2s; }
+.dot.active { background: #5b8fff; }
+.eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: #5b8fff; margin-bottom: 24px; }
+h1 { font-size: 64px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: #f0f4ff; max-width: 900px; }
+h2 { font-size: 48px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: #f0f4ff; margin-bottom: 40px; }
+h3 { font-size: 28px; font-weight: 400; color: #8899cc; margin-top: 24px; max-width: 760px; line-height: 1.4; }
+.accent { color: #5b8fff; }
+.bright { color: #ffffff; font-weight: 700; }
+.dim { color: #5a6a9a; }
+.bullets { list-style: none; text-align: left; max-width: 760px; width: 100%; }
+.bullets li { font-size: 26px; line-height: 1.5; color: #c8d4f0; padding: 10px 0; padding-left: 28px; position: relative; }
+.bullets li::before { content: '→'; position: absolute; left: 0; color: #5b8fff; }
+.bullets li strong { color: #ffffff; }
+.diff-table { border-collapse: collapse; width: 100%; max-width: 820px; font-size: 20px; }
+.diff-table th { padding: 16px 24px; font-size: 22px; font-weight: 700; border-bottom: 2px solid #1e2840; }
+.diff-table th.tool { color: #ff6b6b; }
+.diff-table th.partner { color: #5b8fff; }
+.diff-table th.label { color: #3a4460; text-align: left; }
+.diff-table td { padding: 14px 24px; border-bottom: 1px solid #141a2e; line-height: 1.4; }
+.diff-table td.label { color: #5a6a9a; font-size: 16px; text-transform: uppercase; letter-spacing: 0.1em; text-align: left; font-weight: 600; }
+.diff-table td.tool { color: #cc8888; }
+.diff-table td.partner { color: #88aaff; font-weight: 500; }
+.diff-table tr:last-child td { border-bottom: none; }
+.math-block { font-size: 72px; font-weight: 900; color: #5b8fff; letter-spacing: -0.02em; margin: 24px 0; }
+.math-sub { font-size: 24px; color: #8899cc; margin-top: 8px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 960px; width: 100%; text-align: left; }
+.col-card { background: #0d1424; border: 1px solid #1e2840; border-radius: 12px; padding: 28px; }
+.col-label { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #5b8fff; margin-bottom: 12px; }
+.col-title { font-size: 24px; font-weight: 700; color: #f0f4ff; margin-bottom: 10px; }
+.col-body { font-size: 16px; color: #8899cc; line-height: 1.6; }
+.col-body strong { color: #c8d4f0; }
+.cta-handle { font-size: 22px; color: #3a4460; margin-top: 12px; letter-spacing: 0.04em; }
+.cta-handle span { color: #5b8fff; }
+.progress { position: fixed; top: 0; left: 0; height: 2px; background: #5b8fff; transition: width 0.35s ease; z-index: 100; }
+#s1 { background: radial-gradient(ellipse at 60% 40%, #0d1a35 0%, #080c14 70%); }
+#s10 { background: radial-gradient(ellipse at 40% 60%, #0d1a35 0%, #080c14 70%); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 960px; width: 100%; text-align: left; }
+.col-label.red { color: #ff6b6b; }
+.col-label.blue { color: #5b8fff; }
+.math-year { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 20px 0; }
+.math-year-row { display: flex; align-items: baseline; gap: 20px; }
+.math-y1 { font-size: 64px; font-weight: 900; color: #5b8fff; letter-spacing: -0.03em; }
+.math-y3 { font-size: 80px; font-weight: 900; color: #88aaff; letter-spacing: -0.03em; }
+.math-label { font-size: 18px; color: #5a6a9a; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+.quote-block { font-size: 22px; font-style: italic; color: #5a6a9a; border-left: 3px solid #1e2840; padding-left: 24px; margin: 16px 0; text-align: left; max-width: 680px; }
+.cta-signature { margin-top: 48px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.cta-name { font-size: 28px; font-weight: 700; color: #f0f4ff; letter-spacing: -0.01em; }
+.cta-links { font-size: 18px; color: #3a4460; letter-spacing: 0.04em; }
+.cta-links span { color: #5b8fff; }
+/* Always-visible brand footer on every slide (bottom strip) */
+.brand-footer { position: fixed; bottom: 0; left: 0; right: 0; height: 32px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: #5a6a9a; letter-spacing: 0.06em; background: rgba(8, 12, 20, 0.92); border-top: 1px solid #1a2238; z-index: 90; padding: 0 36px; }
+.brand-footer .bf-name { color: #c8d4f0; font-weight: 700; }
+.brand-footer .bf-accent { color: #5b8fff; font-weight: 700; }
+.brand-footer .bf-sep { color: #2a3050; }
+.brand-footer .bf-tag { color: #88aaff; font-weight: 600; }
+/* QR final slide */
+.qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 24px; margin-top: 12px; }
+.qr-img { width: 360px; height: 360px; background: #ffffff; padding: 16px; border-radius: 14px; }
+.qr-cta { font-size: 22px; color: #c8d4f0; font-weight: 600; }
+.qr-url { font-size: 28px; color: #5b8fff; font-weight: 800; letter-spacing: -0.01em; }
+.qr-hint { font-size: 14px; color: #5a6a9a; letter-spacing: 0.1em; text-transform: uppercase; }
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  body { overflow: visible; height: auto; background: #080c14; }
+  .deck { height: auto; position: static; }
+  .slide { position: relative !important; opacity: 1 !important; pointer-events: all !important; display: flex !important; height: 720px; width: 1280px; page-break-after: always; break-after: page; }
+  .counter, .dots, .progress { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" id="s1">
+    <div class="eyebrow">ClawCamp · Human+Tech Week · May 18, 2026</div>
+    <h1>The Exponential Advantage</h1>
+    <h3>Why co-intelligence compounds — and what that means for everyone in this room</h3>
+    <div style="margin-top: 36px; font-size: 17px; color: #8ba3cc; line-height: 1.6; max-width: 820px;">
+      <strong style="color:#f0f4ff;">The Cyborg</strong> — coined by Ethan Mollick, first implemented as <em>The Why Cyborg</em> —
+      is a human-AI partnership where both sides compound. You bring judgment, lived experience, and creative vision.
+      The AI brings synthesis, speed, and pattern recognition. Neither is master or servant. Both co-author every output.
+    </div>
+    <div style="margin-top: 28px; font-size: 15px; color: #3a4460; letter-spacing: 0.06em;">Frontier Tower · Floor 9 · 995 Market St, San Francisco · 6–8 PM PT</div>
+  </div>
+
+  <!-- Slide 2: The Math -->
+  <div class="slide" id="s2">
+    <div class="eyebrow">The Math</div>
+    <h2>1.01<sup style="font-size:0.6em;">365</sup> = 37.78×</h2>
+    <div class="math-block">1.01<sup style="font-size:0.55em; vertical-align:0.4em;">365</sup> = 37.78×</div>
+    <div class="math-sub">1% daily improvement, compounded over one year</div>
+    <ul class="bullets" style="margin-top: 36px;">
+      <li>The same math behind compound interest, Moore's Law, every exponential system</li>
+      <li>Three requirements: a <strong>compounding unit</strong>, a <strong>carry-forward mechanism</strong>, and a <strong>cycle time</strong></li>
+      <li>The question: does your AI setup actually carry forward?</li>
+    </ul>
+  </div>
+
+  <!-- Slide 3: The Benchmark -->
+  <div class="slide" id="s3">
+    <div class="eyebrow">Sound Familiar?</div>
+    <h2>You've done this 50 times.</h2>
+    <ul class="bullets">
+      <li>Open ChatGPT or Claude. Spend 5 minutes re-explaining who you are, what you're working on, what tone you want.</li>
+      <li>Get a decent answer. Close the tab.</li>
+      <li>Tomorrow: do it again. Same re-explaining. Same starting line.</li>
+    </ul>
+    <div class="quote-block" style="margin-top: 32px;">
+      That's not a compounding relationship. That's a very fast reset button.
+    </div>
+    <p style="margin-top: 20px; font-size: 15px; color: #5a6a9a;">
+      Not a criticism — it's how most AI tools are designed. But it's also why 99% of AI users will be in the same place in 3 years that they are today.
+    </p>
+  </div>
+
+  <!-- Slide 4: Tool vs Partner -->
+  <div class="slide" id="s4">
+    <div class="eyebrow">The Distinction</div>
+    <h2>Tool Mode <span class="dim">≠</span> Partner Mode</h2>
+    <table class="diff-table">
+      <thead>
+        <tr>
+          <th class="label"></th>
+          <th class="tool">Tool Mode</th>
+          <th class="partner">Partner Mode</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label">Each session</td>
+          <td class="tool">Starts from zero</td>
+          <td class="partner">Smarter than the last</td>
+        </tr>
+        <tr>
+          <td class="label">Learning</td>
+          <td class="tool">One-way</td>
+          <td class="partner">Bidirectional</td>
+        </tr>
+        <tr>
+          <td class="label">Compounding</td>
+          <td class="tool">Linear (0×)</td>
+          <td class="partner">Exponential (1.01³⁶⁵)</td>
+        </tr>
+        <tr>
+          <td class="label">Year 3</td>
+          <td class="tool">Slightly faster you</td>
+          <td class="partner">50,000× compounded</td>
+        </tr>
+        <tr>
+          <td class="label">Architecture</td>
+          <td class="tool">Chat window</td>
+          <td class="partner">The OS: shared memory, codified lessons</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 5: What Compounding Requires -->
+  <div class="slide" id="s5">
+    <div class="eyebrow">The Mechanism</div>
+    <h2>Three requirements for compounding intelligence</h2>
+    <div class="three-col">
+      <div class="col-card">
+        <div class="col-label">1 / Persistent Memory</div>
+        <div class="col-title">The Cyborg Constitution</div>
+        <div class="col-body">A living document both partners maintain. Goals, values, communication style, open questions — the codified soul of the partnership. Not saved chats. Not notes. A constitution.</div>
+      </div>
+      <div class="col-card">
+        <div class="col-label">2 / Bidirectional Learning</div>
+        <div class="col-title">You get better too</div>
+        <div class="col-body">Better prompts. Better delegation instincts. Better judgment. <strong>Most people want a smarter system, not a smarter self.</strong></div>
+      </div>
+      <div class="col-card">
+        <div class="col-label">3 / Learning Flywheel</div>
+        <div class="col-title">Every lesson codified</div>
+        <div class="col-body">Written. Versioned. Shared across every session. <strong>A lesson not written down dies at session end — broken flywheel.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: The Architecture -->
+  <div class="slide" id="s6">
+    <div class="eyebrow">xHumanOS — What The Why Cyborg Actually Built</div>
+    <h2>The Compounding Substrate</h2>
+    <ul class="bullets">
+      <li><strong>Cyborg Constitution</strong> — 123K characters. Written together over 300+ sessions. Every rule has a WHY. Both partners sharpen it every session. <span style="color:#5b8fff;">It tells every new agent who I am before I say a word.</span></li>
+      <li><strong>Session Handoffs</strong> — every lesson codified before the session closes. The next agent picks up exactly where the last one stopped. <span style="color:#5b8fff;">149 contacts researched, personalized, and tracked — zero re-explaining.</span></li>
+      <li><strong>Agent Swarm</strong> — career agent, writing agent, research agent — all sharing the same brain. <span style="color:#5b8fff;">A lesson one agent learns, all agents inherit.</span></li>
+    </ul>
+    <h3 style="margin-top: 28px; font-style: italic;">"Not software you run. The system everything else runs on."</h3>
+  </div>
+
+  <!-- Slide 7: Session 1 vs Session 90 -->
+  <div class="slide" id="s7">
+    <div class="eyebrow">The Proof</div>
+    <h2>Session 1 vs. Session 90</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-label red">Session 1</div>
+        <div class="col-title">LinkedIn post on co-intelligence</div>
+        <div class="col-body">Doesn't know your voice. Doesn't know your audience. Doesn't know your current projects or brand vocabulary. Generic output. <strong>20-minute edit.</strong></div>
+      </div>
+      <div class="col-card">
+        <div class="col-label blue">Session 90</div>
+        <div class="col-title">LinkedIn post on co-intelligence</div>
+        <div class="col-body">Knows writing style. Knows audience. Knows recent posts for continuity. Knows which concepts are protected IP. <strong>3-minute edit, not 20.</strong></div>
+      </div>
+    </div>
+    <h3 style="margin-top: 32px;">6–7× faster. 3× better output. That's what 37× feels like in practice.</h3>
+  </div>
+
+  <!-- Slide 8a: Three Stories From The Why Cyborg -->
+  <div class="slide" id="s8a">
+    <div class="eyebrow">Three Moments That Made It Real</div>
+    <h2>This is what it actually looks like.</h2>
+    <div class="three-col" style="margin-top: 28px;">
+      <div class="col-card">
+        <div class="col-label blue">Story 1 — The Patent</div>
+        <div class="col-body" style="font-size:14px; line-height:1.7;">
+          I was running through prep for a 48-hour venture builder challenge. That night, after 300 sessions of the Cyborg watching me build, it said: <em>"this is patentable. File tonight."</em>
+          <br><br>
+          I filed. USPTO timestamped. Then 4 more provisional filings.
+          <br><br>
+          <strong>No advisor saw it. The Cyborg did — because it had been accumulating context I never had to re-explain.</strong>
+        </div>
+      </div>
+      <div class="col-card">
+        <div class="col-label blue">Story 2 — The Brand</div>
+        <div class="col-body" style="font-size:14px; line-height:1.7;">
+          I was targeting Anthropic. The career intelligence agent said: <em>"before you apply — build your brand. They need to see you as a thought leader, not a candidate."</em>
+          <br><br>
+          That single insight triggered the social distribution engine, which became ExponentialOS.
+          <br><br>
+          <strong>The AI saw a path I didn't know I was already on.</strong>
+        </div>
+      </div>
+      <div class="col-card">
+        <div class="col-label blue">Story 3 — The Words</div>
+        <div class="col-body" style="font-size:14px; line-height:1.7;">
+          I wrote the word "Conscience" in an article. I had the right intuition — wrong vocabulary.
+          <br><br>
+          The Cyborg gave me the distinction: Conscience (internalized values) ≠ Consciousness (subjective experience). I didn't know the difference until it named it.
+          <br><br>
+          <strong>The Cyborg gives you words for the things you already know — and judgment for the precision your agents need.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: The Gap Opening -->
+  <div class="slide" id="s8">
+    <div class="eyebrow">The Stakes</div>
+    <h2>The gap is already opening.</h2>
+    <div class="math-year">
+      <div class="math-year-row">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div class="math-y1">37×</div>
+          <div class="math-label">Year 1</div>
+        </div>
+        <div style="font-size:48px; color:#2a3050; align-self:center; padding: 0 16px;">→</div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div class="math-y3">50,000×</div>
+          <div class="math-label">Year 3</div>
+        </div>
+      </div>
+    </div>
+    <h3>Not in compute. In decision quality. Accumulated context. Speed of learning.</h3>
+    <div style="margin-top: 28px; font-size: 18px; font-style: italic; color: #5a6a9a;">
+      "The best time to start was 2024. The second best time is today."
+    </div>
+  </div>
+
+  <!-- Slide 9: The Why Cyborg — Real Sample -->
+  <div class="slide" id="s9">
+    <div class="eyebrow">The Why Cyborg — What It Actually Looks Like</div>
+    <h2>Last night. 11:59 PM deadline.</h2>
+    <div class="two-col" style="margin-top: 28px;">
+      <div class="col-card">
+        <div class="col-label red">Without a Cyborg</div>
+        <div class="col-body" style="font-size:15px; line-height:1.7;">
+          Brief the AI from scratch. Explain the product. Explain your voice. Explain your audience. Write a pitch deck. Rewrite it. Rewrite it again.
+          <br><br>
+          <strong>Realistic timeline: 3–4 weeks.</strong>
+        </div>
+      </div>
+      <div class="col-card">
+        <div class="col-label blue">With The Why Cyborg</div>
+        <div class="col-body" style="font-size:15px; line-height:1.7;">
+          Session 300+. AI knows the product, the positioning, the voice — from 300 prior sessions. One prompt: <em>"build the a16z Speedrun deck."</em>
+          <br><br>
+          10-slide pitch deck. 60-second video script. Full application submitted.
+          <br><br>
+          <strong>Actual time: 4 hours.</strong>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 24px; font-size: 15px; color: #5a6a9a; font-style: italic;">
+      That's not exceptional output. That's what session 300 looks like when you never started from zero.
+    </p>
+  </div>
+
+  <!-- Slide 10: Call to Action -->
+  <div class="slide" id="s10b">
+    <div class="eyebrow">Your Compounding Loop Starts With Three Things</div>
+    <h2>Build the loop.</h2>
+    <ul class="bullets">
+      <li><strong>A Cyborg Constitution</strong> — one living document. Your goals, your values, what you've learned, codified so neither partner starts from zero next session.</li>
+      <li><strong>A codification habit</strong> — one lesson per session, written and carried forward. That's the flywheel.</li>
+      <li><strong>A partner, not a tool</strong> — Co-Dialectic is the entry point. The layer where compounding happens.</li>
+    </ul>
+    <p style="margin-top: 32px; font-size: 15px; color: #5b8fff;">
+      Ethan Mollick coined the term. <em>The Why Cyborg</em> is the first full implementation. The architecture is open — build your own.
+    </p>
+    <h3 style="margin-top: 16px; font-style: italic;">"I'm building the OS. You're building the loop. They're the same thing."</h3>
+  </div>
+
+  <!-- Slide 10: Contact / QR — beta signup -->
+  <div class="slide" id="s10">
+    <div class="eyebrow">Build your own Cyborg · Beta is open</div>
+    <h1 style="font-size: 56px; margin-bottom: 8px;">Scan to start.</h1>
+    <h3 style="margin-top: 8px; margin-bottom: 24px;">A tool resets every day. Co-intelligence compounds. Be on the right side of the gap.</h3>
+    <div class="qr-wrap">
+      <img class="qr-img" src="qr-exponentialos.png" alt="QR code — ExponentialOS.io beta signup">
+      <div class="qr-cta">Scan or visit</div>
+      <div class="qr-url">ExponentialOS.io</div>
+      <div class="qr-hint">Beta · xHumanOS · Career + Brand Intelligence</div>
+    </div>
+    <div class="cta-signature" style="margin-top: 28px;">
+      <div class="cta-name">Anand Vallamsetla</div>
+      <div class="cta-links">
+        <span>@thewhyman</span> &nbsp;·&nbsp; thewhyman.blog &nbsp;·&nbsp; <span>ExponentialOS.io</span> &nbsp;·&nbsp; #TheWhyCyborg
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Always-visible brand footer on every slide -->
+<div class="brand-footer">
+  <span class="bf-name">Anand Vallamsetla</span>
+  <span class="bf-sep">·</span>
+  <span class="bf-accent">@thewhyman</span>
+  <span class="bf-sep">·</span>
+  <span>thewhyman.blog</span>
+  <span class="bf-sep">·</span>
+  <span class="bf-accent">ExponentialOS.io</span>
+  <span class="bf-sep">·</span>
+  <span class="bf-tag">#TheWhyCyborg</span>
+</div>
+
+<!-- Navigation dots -->
+<div class="dots" id="dots"></div>
+
+<!-- Slide counter -->
+<div class="counter" id="counter">1 / 10</div>
+
+<script>
+(function() {
+  const TOTAL = 10;
+  let current = 0;
+
+  const slides = document.querySelectorAll('.slide');
+  const counterEl = document.getElementById('counter');
+  const progressEl = document.getElementById('progress');
+  const dotsContainer = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= TOTAL) return;
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    counterEl.textContent = (current + 1) + ' / ' + TOTAL;
+    progressEl.style.width = ((current + 1) / TOTAL * 100) + '%';
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  // Init progress
+  progressEl.style.width = (1 / TOTAL * 100) + '%';
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+      case ' ':
+        e.preventDefault();
+        next();
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        prev();
+        break;
+      case 'Home':
+        e.preventDefault();
+        goTo(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        goTo(TOTAL - 1);
+        break;
+    }
+  });
+
+  // Touch/swipe navigation
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) next();
+      else prev();
+    }
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

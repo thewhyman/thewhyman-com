@@ -56,6 +56,13 @@ export default function WhyManConcierge() {
     { chip: "How he executes", ask: "How does Anand execute and ship? Walk me through how he takes something from decision to delivered.", dim: 'BUILD', tags: ['execution','ship','delivery','build','process','how'], broad: true },
     { chip: "What he's invented", ask: "What has Anand invented or taken from zero to one?", dim: 'INVENT', tags: ['invent','0to1','innovation','product','new'], broad: true },
     { chip: "Story behind the name", ask: "What's the story behind the name 'The Why Man'?", tags: ['name','brand','story','why'], broad: true },
+    // — CREDENTIALS AND PROOF: what a recruiter screens on and an engineering
+    //   leader probes. Narrowing follow-ups, not openers.
+    { chip: "Certifications", ask: "What certifications and formal credentials does Anand hold, and what category is each one in?", tags: ['certification','certifications','certified','credential','credentials','qualified','training','degree','mba','education','nist','fisma'] },
+    { chip: "Industries + compliance", ask: "Which industries has Anand worked in, and which compliance or security standard did he personally own in each one?", tags: ['industry','industries','vertical','verticals','domain','sector','compliance','regulated','regulatory','security','fisma','pci','hipaa','healthcare','finance','financial','government','federal','defense'] },
+    { chip: "Published writing", ask: "What has Anand published, and what are the main ideas in it?", tags: ['writing','wrote','written','article','articles','publish','published','post','blog','substack','content','ideas'] },
+    { chip: "Talks & teaching", ask: "What talks has Anand given, and what has he taught?", tags: ['talk','talks','speak','speaker','speaking','keynote','conference','taught','teach','teaching','faculty','lecture','panel','sxsw','berkeley','thought leadership'] },
+
     // Scale is a NARROWING follow-up under leadership, not an opener — an
     // interviewer asks "how big?" after "tell me about your leadership".
     { chip: "Scale he's operated at", ask: "What scale has Anand operated at — teams, budget, systems, users?", dim: 'LEAD', tags: ['scale','google','roi','budget','portfolio','size','leadership','team'] },
