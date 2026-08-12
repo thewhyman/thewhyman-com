@@ -17,6 +17,20 @@ const path = require('path');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
 const BANNED_EXT = new Set(['.md', '.markdown', '.pptx', '.docx', '.key']);
+
+/**
+ * Generated agent contracts, exempt from the EXTENSION rule only.
+ *
+ * These two are .md by requirement, not by accident: the agent-readiness scanner
+ * fetches /AGENTS.md and /pricing.md at exactly those paths, and both are emitted
+ * by scripts/build-agent-surface.js from an allowlist projection of
+ * data/canonical.json — never hand-authored, never prep material.
+ *
+ * They remain subject to the MARKER scan below. The extension is what is
+ * exempted; the content check is not, because the failure this guard exists to
+ * prevent is leaked prose, not a file suffix.
+ */
+const GENERATED_AGENT_CONTRACTS = new Set(['AGENTS.md', 'pricing.md']);
 const MARKERS = [
   'SPEAKER NOTE', 'Speaker Intel', 'IP Firewall', 'NOT to Give Away',
   'Prepared Answers', 'over-shared', 'DO NOT add claims',
@@ -29,11 +43,12 @@ const walk = (dir) => {
     const full = path.join(dir, e.name);
     if (e.isDirectory()) { walk(full); continue; }
     const rel = path.relative(PUBLIC, full);
-    if (BANNED_EXT.has(path.extname(e.name).toLowerCase())) {
+    const isGeneratedContract = GENERATED_AGENT_CONTRACTS.has(rel);
+    if (!isGeneratedContract && BANNED_EXT.has(path.extname(e.name).toLowerCase())) {
       problems.push(`${rel} — ${path.extname(e.name)} files are prep material, not deck assets`);
       continue;
     }
-    if (/\.(html?|txt|json)$/i.test(e.name)) {
+    if (isGeneratedContract || /\.(html?|txt|json)$/i.test(e.name)) {
       let body = '';
       try { body = fs.readFileSync(full, 'utf8'); } catch { continue; }
       for (const m of MARKERS) {

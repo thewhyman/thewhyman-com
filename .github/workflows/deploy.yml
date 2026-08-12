@@ -22,6 +22,8 @@ jobs:
         env:
           NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
 
+      - run: npm test
+
       - name: Deploy to Cloudflare Pages
         run: npx wrangler pages deploy out --project-name=thewhyman-com
         env:

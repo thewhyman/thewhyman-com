@@ -1,0 +1,170 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "The Why Man Concierge API",
+    "version": "1.0.0",
+    "description": "The public chat endpoint used by thewhyman.com to answer questions about Anand Vallamsetla."
+  },
+  "servers": [
+    {
+      "url": "https://thewhyman.com"
+    }
+  ],
+  "paths": {
+    "/api/chat": {
+      "post": {
+        "operationId": "chatWithWhyManConcierge",
+        "summary": "Send a conversation to The Why Man Concierge",
+        "parameters": [
+          {
+            "name": "stream",
+            "in": "query",
+            "required": false,
+            "description": "The handler streams SSE unless this value is exactly 0. Use 0 for buffered JSON.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ctx",
+            "in": "query",
+            "required": false,
+            "description": "The handler forces the full canonical knowledge context only when this value is full; other values use automatic context selection.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "description": "Known aliases are kimi, fast, gemma, qwen, scout, and mistral. Any missing or unknown value falls back to mistral.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "An SSE stream by default, or a JSON chat response when streaming is disabled or unavailable.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Opaque server-sent event stream returned by Cloudflare Workers AI."
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No supported messages were supplied. The handler returns a JSON-encoded error body without an explicit JSON Content-Type header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "application/json",
+                  "examples": [
+                    "{\"error\":\"No messages\"}"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The request could not be processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChatMessage": {
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "bot",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ChatResponse": {
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "properties": {
+          "role": {
+            "const": "bot"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
