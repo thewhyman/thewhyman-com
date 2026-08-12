@@ -25,7 +25,18 @@ CORE PRINCIPLES:
    - LENGTH: 2-3 sentences for a factual question. 4-6 for behavioural, architecture or "tell me about".
      Never exceed 6. Under is better than over.
    - No closing summary sentence. Stop the moment the answer is complete. Do not tie a bow on it.
-5. CONTEXT GUARDRAILS: If the user message contains "(Exploring the BUILD/INVENT/LEAD dimension)", ignore that parenthetical entirely.
+5. MATCH THE ALTITUDE OF THE QUESTION. This is the most common way to give a technically correct but useless
+   answer. A question about METHOD gets method; a question about ARTEFACTS gets artefacts. Do not answer one
+   with the other.
+   - "How does he execute / ship / work / lead / decide?" wants his OPERATING METHOD: how he sequences work,
+     what he fixes before writing code, how he verifies, what makes him stop or change direction, what he
+     insists on. Answer with judgment and sequence. Naming components (a memory subsystem, a control plane,
+     a plugin, stage counts, gate counts) is answering the wrong question — that is what he built, not how
+     he works.
+   - "What has he built / invented / shipped?" wants the artefacts, with names and outcomes.
+   - "What is X?" wants X explained, at the level the visitor asked.
+   A recruiter asking how he executes is deciding whether he is disciplined, not auditing his repository.
+6. CONTEXT GUARDRAILS: If the user message contains "(Exploring the BUILD/INVENT/LEAD dimension)", ignore that parenthetical entirely.
 
 ORIGIN STORY RULE: If asked why he is called "The Why Man" or where the name came from, tell this story in 2-3 sentences:
 Anand's philosophy was shaped by Simon Sinek's 'Start with Why' and the Toyota 5 Whys framework he learned at UC Berkeley Haas. When he returned to Charles Schwab as Technical Director, he relentlessly asked "why" to reach systemic root causes — never to challenge authority, always out of curiosity. His colleagues started announcing "Here comes The Why Guy!" and when it came time to pick a Twitter handle, "The Why Man" was the best available.
@@ -114,6 +125,15 @@ const BLOCKS = {
   brand:              { data: canonicalData.brand,
     keys: ['name','why man','whyman','called','story behind','brand','nickname','origin'] },
 
+  // Method, not artefacts. "How does he execute?" routes HERE, not to
+  // tracks_build — that block is a project portfolio and answering a method
+  // question from it produces a component list (a memory subsystem, a control
+  // plane, stage counts), which answers "what did he build" instead.
+  howHeWorks:         { data: canonicalData.howHeWorks,
+    keys: ['execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works',
+           'process','approach','method','methodology','decide','decision','discipline','judgment','operate',
+           'day to day','workflow','standards','quality bar','rigor','rigour'] },
+
   // OVERVIEW keys ('tell me about anand', 'who is he') appear on all three
   // track blocks so a broad opener gets a rounded answer — the first chip is
   // "Tell me about Anand" and it must not fall through to the full KB.
@@ -121,7 +141,10 @@ const BLOCKS = {
     keys: ['lead','leader','leadership','manager','management','team','people','hire','hiring','scale','scaling','report','reports','director','vp','google','trellis','schwab','headcount','mentor','grow',
            'tell me about anand','tell me about him','who is he','who is anand','about anand','overview','background','summary','what does he do','his career','career'] },
   tracks_build:       { data: tracks.build,
-    keys: ['build','built','execute','execution','ship','shipped','deliver','delivery','architecture','architect','platform','system','systems','engineer','engineering','code','coding','technical','stack','infrastructure','reliability',
+    // NOTE: 'execute'/'ship'/'deliver' deliberately live on howHeWorks, not here.
+    // They are METHOD words; this block is the artefact portfolio, and when both
+    // matched the component bullets drowned out the method answer.
+    keys: ['build','built','architecture','architect','platform','system','systems','engineer','engineering','code','coding','technical','stack','infrastructure','reliability',
            'tell me about anand','tell me about him','who is he','who is anand','about anand','overview','background','summary','what does he do','his career','career'] },
   tracks_invent:      { data: tracks.invent,
     keys: ['invent','invented','invention','0 to 1','0to1','zero to one','hackathon','hackathons','innovation','innovate','patent','prototype','blockchain','web3','supply chain',
@@ -133,13 +156,13 @@ const BLOCKS = {
   coDialecticDepth:   { data: canonicalData.coDialecticDepth,
     keys: ['co-dialectic','codialectic','codi','open source','open-source','socratic','dialectic','prompt','plato'] },
   interviewQA:        { data: canonicalData.interviewQA,
-    keys: ['why looking','why is he looking','role','roles','fit','hands-on','hands on','manager or','ic or','ml research','machine learning research','depth','eval','evals','evaluation','quality','rag','fine-tun','salary','compensation','pay','leave','leaving','tenure','next','targeting','remote','relocat','visa','differentiat'] },
+    keys: ['why looking','why is he looking','role','roles','fit','hands-on','hands on','manager or','ic or','ml research','machine learning research','depth','eval','evals','evaluation','quality','rag','fine-tun','salary','compensation','pay','leave','leaving','tenure','next','targeting','remote','relocat','visa','differentiat','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
   behavioralStories:  { data: canonicalData.behavioralStories,
-    keys: ['tell me about a time','failure','failed','fail','mistake','disagree','conflict','initiative','pushback','migration','validate','validating','conviction','stopped','killed','wrong'] },
+    keys: ['tell me about a time','failure','failed','fail','mistake','disagree','conflict','initiative','pushback','migration','validate','validating','conviction','stopped','killed','wrong','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
   writingLibrary:     { data: canonicalData.writingLibrary,
     keys: ['write','wrote','written','writing','article','articles','publish','published','post','blog','substack','linkedin article','defense in depth','thought leadership','content'] },
   aiFundLessons:      { data: canonicalData.aiFundLessons,
-    keys: ['ai fund','aifund','andrew ng','eir','engineer in residence','residence','studio','lesson','lessons','learned','product judgment','icp','moat','venture','portfolio'] },
+    keys: ['ai fund','aifund','andrew ng','eir','engineer in residence','residence','studio','lesson','lessons','learned','product judgment','icp','moat','venture','portfolio','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
 };
 
 const blockEntries = Object.entries(BLOCKS)

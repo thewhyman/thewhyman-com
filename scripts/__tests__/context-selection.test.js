@@ -44,7 +44,13 @@ const check = (name, cond, detail) => {
 const cases = [
   ["Tell me about Anand — who he is and what he's known for.", null],
   ["Tell me about Anand's leadership — team sizes and scope.", 'tracks_lead'],
-  ["How does Anand execute and ship?",                         'tracks_build'],
+  // ALTITUDE: a METHOD question must route to howHeWorks, NOT to the artefact
+  // portfolio. Routing it to tracks_build is what made the bot answer "how do
+  // you execute?" with a component list (memory subsystem, control plane,
+  // stage counts) — technically true, and the wrong question answered.
+  ["How does Anand execute and ship?",                         'howHeWorks'],
+  ["How does he work day to day?",                             'howHeWorks'],
+  ["What has he built?",                                       'tracks_build'],
   ["What has Anand invented or taken from zero to one?",       'tracks_invent'],
   ["What's the story behind the name 'The Why Man'?",          'brand'],
   ["Tell me about a time something failed.",                   'behavioralStories'],
@@ -79,6 +85,14 @@ check('keyMetricsTripwire is always present',
   cases.every(([q]) => select(q).some(b => b.name === 'keyMetricsTripwire')), 'a question dropped it');
 check('basics is always present',
   cases.every(([q]) => select(q).some(b => b.name === 'basics')), 'a question dropped it');
+
+// Method and artefact questions must not collapse into each other.
+const methodSel = select("How does Anand execute and ship?").map(b => b.name);
+const artefactSel = select("What has he built?").map(b => b.name);
+check('method question does NOT pull the artefact portfolio',
+  !methodSel.includes('tracks_build'), 'method question selected tracks_build');
+check('artefact question does NOT pull the method block',
+  !artefactSel.includes('howHeWorks'), 'artefact question selected howHeWorks');
 
 const avg = Math.round(totalPct / measured);
 console.log(`\naverage prompt size: ${avg}% of full KB`);
