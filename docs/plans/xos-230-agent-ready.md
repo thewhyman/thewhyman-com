@@ -131,8 +131,59 @@ one-source-of-truth.
 - Agent Protocols beyond the `/api/chat` OpenAPI spec — follow-up ticket.
 - Any change to the concierge's answers, model, or latency.
 - Redesign of any page. The FAQ section is additive and must match existing visual language.
-- Cloudflare zone-level managed-robots.txt settings — tracked as a shared decision with the
-  exponentialos.io side of XOS-230.
+- Redesign of any existing page section.
+
+## DECIDED at Gate A (2026-08-12) — AI crawler policy: allow everything
+
+**Anand's decision: allow every AI crawler, including training crawlers, on both sites.**
+thewhyman.com is a hiring surface; being in a model's training data means it knows who he
+is months later, which is the point. Ship:
+
+```
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+```
+
+with every named agent explicitly allowed so the policy is consistent rather than implicit.
+An implicit default-allow is what caps checkpoint 1.2 at 13/20 today.
+
+**Load-bearing consequence:** Cloudflare's managed-robots.txt feature appends its block to
+the origin file. Today thewhyman.com has no origin file, so only Cloudflare's comment
+preamble is served. After shipping `public/robots.txt`, verify by `curl`ing the live file
+that our directives are present and that no `Disallow:` was injected for any AI agent; if
+one is, the zone-level managed setting must be turned off so the repo file is authoritative.
+
+## Change manifest (Gate A.5)
+
+```
++ added     public/robots.txt                    — GENERATED; allow-all AI policy + Content-Signal + Sitemap:
++ added     public/sitemap.xml                   — GENERATED from the App Router route list
++ added     public/llms.txt, public/llms-full.txt — GENERATED from data/canonical.json
++ added     public/AGENTS.md                     — GENERATED
++ added     public/pricing.md                    — GENERATED from the /meet engagement rates (required contract)
++ added     public/openapi.json                  — real spec for the existing /api/chat concierge endpoint
++ added     public/_headers                      — HSTS, CSP, frame protection, Link rel headers
++ added     scripts/build-agent-surface.js       — the single generator, chained into `prebuild`
++ added     src/components/JsonLd.tsx            — server component emitting the schema graph
++ added     src/components/FaqSection.tsx        — visible FAQ rendered from canonical.json interviewQA
++ added     src/app/meet/MeetPageContent.tsx     — the existing client UI, moved
++ added     functions/_middleware.js             — Accept: text/markdown content negotiation
++ added     scripts/__tests__/agent-surface.test.js — asserts generated files exist in out/ and parse
+~ modified  package.json                         — prebuild chain + test script
+~ modified  src/app/layout.tsx                   — inject Person/WebSite/ProfilePage JSON-LD; metadataBase
+~ modified  src/components/Navbar.tsx            — aria-label on the icon-only mobile menu button (line ~168)
+~ modified  src/components/WhyManConcierge.tsx   — aria-label on the icon-only chat close button (line ~583)
+~ modified  src/app/page.tsx and detail pages    — question-format H2s; semantic elements 3/5 → 5/5
+− removed   (none)                               — no existing surface is superseded; every change is additive
+⚙ migrated  src/app/meet/page.tsx: 'use client' route → server wrapper (metadata + FAQPage JSON-LD)
+              + MeetPageContent.tsx (client UI)  — the single-file client route is retired; this follows the
+                                                   server+client split talks/[slug] already uses
+```
+
+`− removed: (none)` is a stated claim, not an omission: the spec introduces no
+"replaces/supersedes" language about an existing surface. The one structural replacement —
+the `/meet` route's client-only form — is accounted for in `⚙ migrated`.
 
 ## Implementation approach
 
