@@ -16,11 +16,11 @@ Hands-on engineering leader and applied AI architect with 26 years of experience
 - [llms.txt](https://thewhyman.com/llms.txt) and [llms-full.txt](https://thewhyman.com/llms-full.txt): concise and expanded machine-readable profiles.
 - [pricing.md](https://thewhyman.com/pricing.md): machine-readable public engagement rates.
 
-## Canonical data sources
+## Public machine-readable sources
 
-- `data/canonical.json` is the primary source for identity, brand, operating method, work tracks, interview Q&A, and behavioral stories.
-- `data/linkedin_public.json` is the public chronology and profile source.
-- When values overlap, `data/canonical.json` takes precedence.
+- [Concise profile](https://thewhyman.com/llms.txt)
+- [Expanded public profile](https://thewhyman.com/llms-full.txt)
+- [Public engagement rates](https://thewhyman.com/pricing.md)
 
 ## Concierge API
 

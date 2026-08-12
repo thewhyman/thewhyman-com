@@ -41,6 +41,71 @@ const AI_AGENTS = [
   'Bytespider',
 ];
 
+const ALWAYS_PRIVATE_KEYS = new Set([
+  'note',
+  'boundary',
+  '_note',
+  'internal',
+  'instructions',
+]);
+
+const PUBLIC_CANONICAL_FIELDS = {
+  basics: {
+    name: true,
+    title: true,
+    summary: true,
+  },
+  brand: {
+    originStory: true,
+  },
+  howHeWorks: {
+    decideDoneFirst: true,
+    validateBeforeScaling: true,
+    beatBaselineOrItDoesNotShip: true,
+    reviewBySomeoneWhoDidNotWriteIt: true,
+    killOnEvidenceNotSunkCost: true,
+    measurementBeforeOpinion: true,
+    cultureHeRuns: true,
+  },
+  tracks: {
+    build: {
+      projects: [{ title: true, period: true, role: true, achievements: [true], link: true }],
+      publications: [{ title: true, date: true, link: true }],
+    },
+    invent: {
+      wins: [{ title: true, period: true, role: true, achievements: [true] }],
+      awards: [{ title: true, context: true }],
+    },
+    lead: {
+      projects: [{ title: true, period: true, role: true, achievements: [true], link: true }],
+    },
+  },
+  interviewQA: [{ q: true, a: true }],
+  behavioralStories: [{ question: true, story: true, answer: true }],
+};
+
+const PUBLIC_LINKEDIN_FIELDS = {
+  name: true,
+  headline: true,
+  about: true,
+  skills: [true],
+  sameAs: [true],
+  experience: [{ role: true, company: true, period: true, description: true }],
+  awards: [{ title: true, date: true }],
+  featured_posts: [{ title: true, date: true, image: true, description: true, url: true }],
+  recommendations: [{ author: true, title: true, quote: true }],
+};
+
+const PUBLIC_LEAK_PATTERNS = [
+  { name: 'literal "not public"', pattern: /not public/i },
+  { name: 'literal "Never answer"', pattern: /Never answer/ },
+  { name: 'literal "Use this for"', pattern: /Use this for/ },
+  {
+    name: 'underscore-prefixed key marker',
+    pattern: /(?:^|[\s[{(,])_[A-Za-z][\w-]*\s*(?::|\*\*:)/m,
+  },
+];
+
 function repoPath(relativePath) {
   const resolved = path.resolve(ROOT, relativePath);
   if (resolved !== ROOT && !resolved.startsWith(`${ROOT}${path.sep}`)) {
@@ -96,6 +161,47 @@ function assertSourceShape(canonical, linkedin) {
   }
   if (!linkedin || typeof linkedin !== 'object' || Array.isArray(linkedin)) {
     throw new Error('data/linkedin_public.json must contain a JSON object');
+  }
+}
+
+function isAlwaysPrivateKey(key) {
+  return key.startsWith('_') || ALWAYS_PRIVATE_KEYS.has(key.toLowerCase());
+}
+
+function projectPublicFields(value, allowlist, location = '$') {
+  if (allowlist === true) {
+    if (value !== null && typeof value === 'object') {
+      throw new Error(`Public allowlist leaf ${location} unexpectedly contains an object`);
+    }
+    return value;
+  }
+
+  if (Array.isArray(allowlist)) {
+    if (!Array.isArray(value)) return undefined;
+    return value.map((item, index) => projectPublicFields(item, allowlist[0], `${location}[${index}]`));
+  }
+
+  if (!allowlist || typeof allowlist !== 'object' || !value || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const projected = {};
+  for (const [key, childAllowlist] of Object.entries(allowlist)) {
+    if (isAlwaysPrivateKey(key) || !Object.prototype.hasOwnProperty.call(value, key)) continue;
+    const child = projectPublicFields(value[key], childAllowlist, `${location}.${key}`);
+    if (child !== undefined) projected[key] = child;
+  }
+  return projected;
+}
+
+function assertNoPublicLeaks(outputs) {
+  for (const [filename, contents] of Object.entries(outputs)) {
+    for (const leak of PUBLIC_LEAK_PATTERNS) {
+      const match = contents.match(leak.pattern);
+      if (match) {
+        throw new Error(`Public leak guard rejected public/${filename}: ${leak.name} at ${JSON.stringify(match[0])}`);
+      }
+    }
   }
 }
 
@@ -338,11 +444,11 @@ function buildAgents(canonical, linkedin) {
     `- [llms.txt](${SITE_URL}/llms.txt) and [llms-full.txt](${SITE_URL}/llms-full.txt): concise and expanded machine-readable profiles.`,
     `- [pricing.md](${SITE_URL}/pricing.md): machine-readable public engagement rates.`,
     '',
-    '## Canonical data sources',
+    '## Public machine-readable sources',
     '',
-    '- `data/canonical.json` is the primary source for identity, brand, operating method, work tracks, interview Q&A, and behavioral stories.',
-    '- `data/linkedin_public.json` is the public chronology and profile source.',
-    '- When values overlap, `data/canonical.json` takes precedence.',
+    `- [Concise profile](${SITE_URL}/llms.txt)`,
+    `- [Expanded public profile](${SITE_URL}/llms-full.txt)`,
+    `- [Public engagement rates](${SITE_URL}/pricing.md)`,
     '',
     '## Concierge API',
     '',
@@ -562,6 +668,9 @@ function main() {
   const canonical = readRequiredJson(SOURCE_PATHS.canonical);
   const linkedin = readRequiredJson(SOURCE_PATHS.linkedin);
   assertSourceShape(canonical, linkedin);
+  const publicCanonical = projectPublicFields(canonical, PUBLIC_CANONICAL_FIELDS, 'canonical');
+  const publicLinkedin = projectPublicFields(linkedin, PUBLIC_LINKEDIN_FIELDS, 'linkedin');
+  assertSourceShape(publicCanonical, publicLinkedin);
 
   const talksSource = readRequiredText(SOURCE_PATHS.talks);
   const meetSource = readRequiredText(SOURCE_PATHS.meet);
@@ -572,13 +681,15 @@ function main() {
   const outputs = {
     'robots.txt': buildRobots(),
     'sitemap.xml': buildSitemap(talkSlugs, lastModified),
-    'llms.txt': buildLlms(canonical),
-    'llms-full.txt': buildLlmsFull(canonical, linkedin),
-    'AGENTS.md': buildAgents(canonical, linkedin),
+    'llms.txt': buildLlms(publicCanonical),
+    'llms-full.txt': buildLlmsFull(publicCanonical, publicLinkedin),
+    'AGENTS.md': buildAgents(publicCanonical, publicLinkedin),
     'pricing.md': buildPricing(engagementCards),
     'openapi.json': buildOpenApi(),
     '_headers': buildHeaders(),
   };
+
+  assertNoPublicLeaks(outputs);
 
   writeOutputs(outputs);
 

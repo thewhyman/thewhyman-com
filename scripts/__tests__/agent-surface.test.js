@@ -46,7 +46,7 @@ const NAMED_AGENTS = [
 let fail = 0;
 const check = (name, condition, detail = '') => {
   const ok = Boolean(condition);
-  const readableDetail = detail.length > 1200 ? `${detail.slice(0, 1200)}…` : detail;
+  const readableDetail = detail.length > 1200 ? `…${detail.slice(-1200)}` : detail;
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok || !readableDetail ? '' : `  <- ${readableDetail}`}`);
   if (!ok) fail++;
   return ok;
@@ -235,6 +235,33 @@ check('llms-full.txt is markdown content', /^#\s+\S/m.test(outputs['llms-full.tx
 check('AGENTS.md is markdown content', /^#\s+\S/m.test(outputs['AGENTS.md']), 'missing Markdown heading');
 check('pricing.md is markdown content', /^#\s+\S/m.test(outputs['pricing.md']), 'missing Markdown heading');
 check('_headers contains a header rule', /^\/\*/m.test(outputs._headers), 'missing /* rule');
+const publicText = [outputs['llms.txt'], outputs['llms-full.txt'], outputs['AGENTS.md']].join('\n');
+check('public agent text omits internal steering literals',
+  !/not public|Never answer|Use this for/i.test(publicText));
+check('public agent text omits underscore-prefixed key markers',
+  !/(?:^|[\s[{(,])_[A-Za-z][\w-]*\s*(?::|\*\*:)/m.test(publicText));
+check('AGENTS.md omits internal repository paths and precedence rules',
+  !/data\/(?:canonical|linkedin_public)\.json|takes precedence/i.test(outputs['AGENTS.md']));
+
+console.log('\nJSON-LD script safety:');
+// Asserted against the SHIPPED HTML, not by require()-ing the component.
+// An earlier pass converted JsonLd.tsx to CommonJS JavaScript purely so this
+// test could require it — restructuring production code to suit a test. The
+// component is TSX again; this checks the artifact that actually reaches users,
+// which is the stronger assertion anyway.
+for (const [filename, html] of Object.entries(builtHtml)) {
+  const bodies = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  check(`${filename}: JSON-LD blocks present`, bodies.length > 0);
+  for (const [i, body] of bodies.entries()) {
+    check(`${filename}[${i}]: no raw '<' survives into the JSON-LD body`,
+      !body.includes('<'), body.slice(0, 200));
+    check(`${filename}[${i}]: no raw U+2028/U+2029 in the JSON-LD body`,
+      !body.includes('\u2028') && !body.includes('\u2029'));
+    let parsed = null;
+    try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
+    check(`${filename}[${i}]: escaped JSON-LD still parses`, parsed !== null);
+  }
+}
 
 console.log('\nrobots.txt:');
 const robots = outputs['robots.txt'];
@@ -332,18 +359,24 @@ const nodesByFile = Object.fromEntries(
 const typesFor = (filename) => new Set((nodesByFile[filename] || []).map((node) => node['@type']));
 check('index ships Person, WebSite, and ProfilePage',
   ['Person', 'WebSite', 'ProfilePage'].every((type) => typesFor('index.html').has(type)));
-check('meet ships Person, WebSite, ProfilePage, and FAQPage',
-  ['Person', 'WebSite', 'ProfilePage', 'FAQPage'].every((type) => typesFor('meet.html').has(type)));
+check('meet ships Person, WebSite, and FAQPage but no root ProfilePage',
+  ['Person', 'WebSite', 'FAQPage'].every((type) => typesFor('meet.html').has(type))
+    && !typesFor('meet.html').has('ProfilePage'));
 
 const allNodes = Object.values(nodesByFile).flat();
 const findNodes = (type) => allNodes.filter((node) => node['@type'] === type);
 const people = findNodes('Person');
 const websites = findNodes('WebSite');
+const profilePages = findNodes('ProfilePage');
 const faqPages = findNodes('FAQPage');
 check('every Person has required non-empty values', people.length > 0 && people.every((person) =>
   ['name', 'jobTitle', 'url'].every((key) => typeof person[key] === 'string' && person[key].trim())));
 check('every WebSite has required non-empty values', websites.length > 0 && websites.every((website) =>
   ['name', 'url'].every((key) => typeof website[key] === 'string' && website[key].trim())));
+check('root ProfilePage has Person author attribution',
+  profilePages.length === 1 && profilePages[0].author?.['@id'] === `${SITE_URL}/#person`);
+check('ProfilePage dateModified never emits the Unix epoch',
+  profilePages.length === 1 && !String(profilePages[0].dateModified).startsWith('1970-'));
 check('FAQPage has exactly 13 entries', faqPages.length === 1 && faqPages[0].mainEntity?.length === 13,
   `found ${faqPages.length} FAQPage nodes and ${faqPages[0]?.mainEntity?.length ?? 0} entries`);
 check('every FAQ entry has a non-empty question and answer', faqPages.length === 1 && faqPages[0].mainEntity?.every((question) =>
@@ -361,9 +394,9 @@ const expectedCommitDate = execFileSync(
   { encoding: 'utf8' },
 ).trim();
 const ALLOWED_PROPERTIES = new Set([
-  '@context', '@graph', '@type', '@id', 'name', 'jobTitle', 'description', 'url', 'image',
+  '@context', '@graph', '@type', '@id', 'name', 'jobTitle', 'description', 'url',
   'knowsAbout', 'alumniOf', 'worksFor', 'sameAs', 'dateModified', 'mainEntity',
-  'acceptedAnswer', 'text',
+  'author', 'acceptedAnswer', 'text',
 ]);
 const ALLOWED_STRUCTURAL_VALUES = new Set([
   'https://schema.org', 'Person', 'Organization', 'EducationalOrganization', 'WebSite',
@@ -376,12 +409,6 @@ const classificationErrors = [];
 function validateDerived(key, value, location) {
   if (key === 'dateModified') {
     return value === expectedCommitDate ? '' : `${location}: dateModified is not ${expectedCommitDate}`;
-  }
-  if (key === 'image') {
-    const relativeAsset = '/icon.png';
-    if (value !== `${SITE_URL}${relativeAsset}`) return `${location}: image was not reproduced from base URL + ${relativeAsset}`;
-    if (!fs.existsSync(path.join(ROOT, 'src/app', relativeAsset.slice(1)))) return `${location}: image source asset does not exist`;
-    return '';
   }
   try {
     const url = new URL(value);
@@ -428,7 +455,7 @@ function classifyJsonLd(value, location = '$', schemaType = '') {
         continue;
       }
 
-      if (['@id', 'url', 'image', 'dateModified'].includes(key)) {
+      if (['@id', 'url', 'dateModified'].includes(key)) {
         classCounts[3]++;
         const error = validateDerived(key, child, childLocation);
         if (error) classificationErrors.push(error);
@@ -478,9 +505,10 @@ for (const person of people) {
   check('Person.jobTitle equals canonical.basics.title', person.jobTitle === canonical.basics.title);
   check('Person.description equals canonical.basics.summary', person.description === canonical.basics.summary);
   check('Person.knowsAbout equals linkedin.skills', JSON.stringify(person.knowsAbout) === JSON.stringify(linkedin.skills));
-  check('Person.worksFor equals current LinkedIn experience',
-    person.worksFor?.name === linkedin.experience[0]?.company
-      && person.worksFor?.description === linkedin.experience[0]?.description);
+  check('Person.image is omitted when no public headshot exists', person.image === undefined);
+  check('Person.worksFor never emits generic self-employment',
+    person.worksFor === undefined
+      || !/^(?:self[-\s]?employ(?:ed|ment)|freelanc(?:e|er)|independent(?:\s+(?:consultant|contractor))?)$/i.test(person.worksFor.name));
   check('Person.sameAs equals linkedin_public.sameAs source key',
     JSON.stringify(person.sameAs) === JSON.stringify(linkedin.sameAs));
   check('Person.sameAs contains only declared personal-profile URLs',
@@ -508,6 +536,18 @@ for (const [index, item] of schemaFaqPairs.entries()) {
 
 console.log('\nHTML semantics and accessibility:');
 const allHtmlFiles = walkFiles(OUT, (file) => file.endsWith('.html'));
+const profilePageRoutes = [];
+for (const file of allHtmlFiles) {
+  try {
+    const hasProfilePage = collectTypedNodes(extractJsonLd(readText(file), path.relative(OUT, file)))
+      .some((node) => node['@type'] === 'ProfilePage');
+    if (hasProfilePage) profilePageRoutes.push(routeForHtml(file));
+  } catch (error) {
+    profilePageRoutes.push(`parse-error:${path.relative(OUT, file)}:${error.message}`);
+  }
+}
+check('ProfilePage schema appears on the root route only',
+  JSON.stringify(profilePageRoutes) === JSON.stringify(['/']), profilePageRoutes.join(', '));
 const hiddenHeadings = allHtmlFiles.flatMap((file) => hiddenHeadingViolations(readText(file), path.relative(OUT, file)));
 check('zero visually-hidden headings exist in built HTML', hiddenHeadings.length === 0, hiddenHeadings.join(' | '));
 check('mobile-menu icon button has an accessible name in built HTML',
@@ -528,8 +568,11 @@ check('conditionally mounted concierge-close button has an accessible name in so
 console.log('\nclean-checkout build isolation:');
 const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'xos-230-agent-surface-'));
 let cleanResult;
+let cleanBuildResult;
+let cleanLeakResult;
 let cleanDetail = '';
 const cleanOutputs = {};
+let cleanSchemaDate = '';
 try {
   const archive = spawnSync('git', ['-C', ROOT, 'archive', '--format=tar', 'HEAD'], {
     encoding: null,
@@ -542,8 +585,36 @@ try {
     maxBuffer: 50 * 1024 * 1024,
   });
   if (extract.status !== 0) throw new Error(`archive extraction failed: ${String(extract.stderr)}`);
+
+  const workingDiff = spawnSync('git', ['-C', ROOT, 'diff', '--binary', 'HEAD', '--'], {
+    encoding: null,
+    maxBuffer: 50 * 1024 * 1024,
+  });
+  if (workingDiff.status !== 0) throw new Error(`working-tree diff failed: ${String(workingDiff.stderr)}`);
+  if (workingDiff.stdout.length > 0) {
+    const apply = spawnSync('git', ['apply', '--unsafe-paths', '-'], {
+      cwd: tempDirectory,
+      input: workingDiff.stdout,
+      encoding: null,
+      maxBuffer: 50 * 1024 * 1024,
+    });
+    if (apply.status !== 0) throw new Error(`working-tree overlay failed: ${String(apply.stderr)}`);
+  }
+
+  const untracked = execFileSync(
+    'git',
+    ['-C', ROOT, 'ls-files', '--others', '--exclude-standard', '-z'],
+    { encoding: 'utf8' },
+  ).split('\0').filter(Boolean);
+  for (const relativePath of untracked) {
+    const destination = path.join(tempDirectory, relativePath);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, relativePath), destination);
+  }
+
   const cleanEnvironment = { ...process.env };
   delete cleanEnvironment.HOME;
+  cleanEnvironment.NEXT_TELEMETRY_DISABLED = '1';
   cleanResult = spawnSync(process.execPath, ['scripts/build-agent-surface.js'], {
     cwd: tempDirectory,
     env: cleanEnvironment,
@@ -554,6 +625,46 @@ try {
   for (const filename of GENERATED_FILES) {
     cleanOutputs[filename] = readText(path.join(tempDirectory, 'public', filename));
   }
+
+  // The clean archive intentionally has no .next font cache, and CI/test sandboxes
+  // may have no network. Remove only the temporary archive's Google-font fetch so
+  // this build isolates the git-less schema/date path under test.
+  const cleanLayoutPath = path.join(tempDirectory, 'src/app/layout.tsx');
+  const cleanLayout = readText(cleanLayoutPath)
+    .replace('import { Inter } from "next/font/google";\n', '')
+    .replace('const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });', "const inter = { className: '' };");
+  fs.writeFileSync(cleanLayoutPath, cleanLayout);
+
+  fs.symlinkSync(path.join(ROOT, 'node_modules'), path.join(tempDirectory, 'node_modules'), 'dir');
+  cleanBuildResult = spawnSync(
+    process.execPath,
+    [path.join(ROOT, 'node_modules/next/dist/bin/next'), 'build'],
+    {
+      cwd: tempDirectory,
+      env: cleanEnvironment,
+      encoding: 'utf8',
+      maxBuffer: 50 * 1024 * 1024,
+    },
+  );
+  cleanDetail = [cleanDetail, cleanBuildResult.stdout, cleanBuildResult.stderr].filter(Boolean).join('\n').trim();
+  if (cleanBuildResult.status === 0) {
+    const cleanIndex = readText(path.join(tempDirectory, 'out/index.html'));
+    const cleanBlocks = extractJsonLd(cleanIndex, 'clean out/index.html');
+    const cleanProfile = collectTypedNodes(cleanBlocks).find((node) => node['@type'] === 'ProfilePage');
+    cleanSchemaDate = cleanProfile?.dateModified || '';
+  }
+
+  const cleanCanonicalPath = path.join(tempDirectory, 'data/canonical.json');
+  const cleanCanonicalSource = readText(cleanCanonicalPath);
+  const poisonedCanonical = JSON.parse(cleanCanonicalSource);
+  poisonedCanonical.basics.summary = 'This value is not public';
+  fs.writeFileSync(cleanCanonicalPath, `${JSON.stringify(poisonedCanonical, null, 2)}\n`);
+  cleanLeakResult = spawnSync(process.execPath, ['scripts/build-agent-surface.js'], {
+    cwd: tempDirectory,
+    env: cleanEnvironment,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  });
 } catch (error) {
   cleanDetail = error.message;
 } finally {
@@ -563,6 +674,14 @@ check('generator exits 0 in git archive with HOME unset', cleanResult?.status ==
 for (const filename of GENERATED_FILES) {
   check(`clean archive emits non-empty ${filename}`, cleanOutputs[filename]?.trim().length > 0, cleanDetail);
 }
+check('clean archive builds through rendered schema emission',
+  cleanBuildResult?.status === 0,
+  `status=${cleanBuildResult?.status} signal=${cleanBuildResult?.signal} error=${cleanBuildResult?.error?.message || ''}\n${cleanDetail.slice(-5000)}`);
+check('clean archive rendered ProfilePage dateModified is not 1970',
+  cleanSchemaDate.length > 0 && !cleanSchemaDate.startsWith('1970-'), cleanSchemaDate || cleanDetail);
+check('public leak guard fails hard and names the offending literal',
+  cleanLeakResult?.status !== 0 && /Public leak guard rejected public\/.*literal "not public"/.test(cleanLeakResult?.stderr || ''),
+  [cleanLeakResult?.stdout, cleanLeakResult?.stderr].filter(Boolean).join('\n'));
 
 console.log(fail === 0 ? '\nALL PASS' : `\n${fail} FAILURES`);
 process.exit(fail === 0 ? 0 : 1);

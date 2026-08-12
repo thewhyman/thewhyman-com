@@ -26,8 +26,6 @@
 
 ## How he works
 
-- ** note:** HOW HE WORKS — operating method at executive altitude. Use this for 'how does he execute / ship / work / decide' questions. Never answer those with component names; those live in tracks.build.
-
 - **Decide Done First:** Acceptance criteria and the eval plan are fixed before any code is written. He will not start until 'done' is defined and measurable, because a target agreed after the fact is not a target.
 
 - **Validate Before Scaling:** Demand is tested before the build scales. At AI Fund he validated against ~150 companies; 19 of 22 confirmed the technical gap but not commercial urgency, so he killed the wedge on evidence with minimal sunk cost.
@@ -41,8 +39,6 @@
 - **Measurement Before Opinion:** He stands up the measurement spine before running the experiment, not after — evaluation is infrastructure, not a phase that happens once the build is done.
 
 - **Culture He Runs:** No-blame postmortems, and engineers who own outcomes rather than tickets. He has run this at Google across a $40B portfolio and at Trellis across 50 engineers.
-
-- **Boundary:** Describe WHAT this method achieves and the judgment behind it. The implementation of the tooling that enforces it is not public.
 
 ## Tracks
 

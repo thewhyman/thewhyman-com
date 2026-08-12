@@ -1,4 +1,6 @@
 import { execFileSync } from 'node:child_process';
+import { statSync } from 'node:fs';
+import { resolve } from 'node:path';
 import canonical from '../../data/canonical.json';
 import linkedin from '../../data/linkedin_public.json';
 import { FAQ_ITEMS } from '@/data/faq';
@@ -9,7 +11,15 @@ const SOURCE_PATHS = [
   'data/canonical.json',
   'data/linkedin_public.json',
 ] as const;
-const STABLE_DATE_FALLBACK = '1970-01-01T00:00:00.000Z';
+
+function sourceMtime() {
+  const newestMtime = Math.max(
+    ...SOURCE_PATHS.map((sourcePath) => statSync(resolve(process.cwd(), sourcePath)).mtimeMs),
+  );
+  const value = new Date(newestMtime).toISOString();
+  if (value.startsWith('1970-')) throw new Error('Source-file mtime resolved to an invalid epoch date');
+  return value;
+}
 
 function sourceCommitDate() {
   try {
@@ -19,13 +29,18 @@ function sourceCommitDate() {
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
     ).trim();
 
-    return value && !Number.isNaN(Date.parse(value)) ? value : STABLE_DATE_FALLBACK;
+    return value && !Number.isNaN(Date.parse(value)) ? value : sourceMtime();
   } catch {
-    return STABLE_DATE_FALLBACK;
+    return sourceMtime();
   }
 }
 
 const currentExperience = linkedin.experience[0];
+const GENERIC_SELF_EMPLOYMENT = /^(?:self[-\s]?employ(?:ed|ment)|freelanc(?:e|er)|independent(?:\s+(?:consultant|contractor))?)$/i;
+const currentOrganization = currentExperience
+  && !GENERIC_SELF_EMPLOYMENT.test(currentExperience.company.trim())
+  ? currentExperience
+  : null;
 
 const person = {
   '@type': 'Person',
@@ -34,14 +49,13 @@ const person = {
   jobTitle: canonical.basics.title,
   description: canonical.basics.summary,
   url: SITE_URL,
-  image: `${SITE_URL}/icon.png`,
   knowsAbout: linkedin.skills,
-  ...(currentExperience
+  ...(currentOrganization
     ? {
         worksFor: {
           '@type': 'Organization',
-          name: currentExperience.company,
-          description: currentExperience.description,
+          name: currentOrganization.company,
+          description: currentOrganization.description,
         },
       }
     : {}),
@@ -58,14 +72,17 @@ export const siteWideSchema = {
       name: canonical.basics.name,
       url: SITE_URL,
     },
-    {
-      '@type': 'ProfilePage',
-      '@id': `${SITE_URL}/#profile`,
-      url: SITE_URL,
-      dateModified: sourceCommitDate(),
-      mainEntity: { '@id': person['@id'] },
-    },
   ],
+};
+
+export const profilePageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${SITE_URL}/#profile`,
+  url: SITE_URL,
+  dateModified: sourceCommitDate(),
+  mainEntity: { '@id': person['@id'] },
+  author: { '@id': person['@id'] },
 };
 
 export const faqPageSchema = {
