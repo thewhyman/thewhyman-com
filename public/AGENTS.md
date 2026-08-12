@@ -1,0 +1,30 @@
+# Agent guide for https://thewhyman.com
+
+## Who this site is about
+
+This is the official professional site for Anand Vallamsetla, Applied AI Engineering Leader | Evaluation-First LLM & Agent Platforms | Reliability & Guardrail Design | ex-Google.
+
+Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).
+
+## What agents can find
+
+- [Home](https://thewhyman.com/): professional overview and primary navigation.
+- [Meet](https://thewhyman.com/meet): public engagement options, rates, and booking links.
+- [Resources](https://thewhyman.com/resources): writing and project resources.
+- [Build](https://thewhyman.com/build-details), [Invent](https://thewhyman.com/invent-details), and [Lead](https://thewhyman.com/lead-details): evidence grouped by professional track.
+- [Talks](https://thewhyman.com/talks): public talk abstracts and presentation materials.
+- [llms.txt](https://thewhyman.com/llms.txt) and [llms-full.txt](https://thewhyman.com/llms-full.txt): concise and expanded machine-readable profiles.
+- [pricing.md](https://thewhyman.com/pricing.md): machine-readable public engagement rates.
+
+## Canonical data sources
+
+- `data/canonical.json` is the primary source for identity, brand, operating method, work tracks, interview Q&A, and behavioral stories.
+- `data/linkedin_public.json` is the public chronology and profile source.
+- When values overlap, `data/canonical.json` takes precedence.
+
+## Concierge API
+
+- Endpoint: `POST https://thewhyman.com/api/chat`
+- Contract: [OpenAPI 3.1](https://thewhyman.com/openapi.json)
+- Request body: a `messages` array whose entries contain `role` (`user`, `bot`, or `assistant`) and string `content`.
+- The endpoint streams `text/event-stream` by default. Add `?stream=0` for a buffered JSON response containing `role` and `content`.
