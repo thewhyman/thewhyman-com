@@ -2,20 +2,20 @@
   "basics": {
     "name": "Anand Vallamsetla",
     "title": "Senior Engineering Leader · Applied AI Architect · Agentic Systems & LLM Platforms",
-    "summary": "Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026)."
+    "summary": "Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).",
+    "careerArc": "26 years, 2000 to present, in four phases. 2000-2009 consulting and distributed systems: Quidnunc (San Francisco), IONA Technologies (later acquired by Progress Software, Austin), then Ajilon as Principal and Senior Principal Consultant — architecture across 15+ enterprise programs, including SOA work that cut integration complexity ~35%. 2009-2014 first leadership roles: Trellis / Texas Guaranteed as Manager, Solutions Architecture (a direct hire out of the Ajilon engagement), then 21CT in healthcare and defense analytics. 2015-2018 Charles Schwab as Technical Director — the firm's largest internal PaaS, 99.99% availability. 2019-2025 Google as Senior SWE Manager across a ~$40B portfolio, then AI Fund and Exponential OS. State the arc when asked who he is; do not begin at Google."
   },
   "brand": {
     "originStory": "First, Anand's philosophy was deeply shaped by Simon Sinek's 'Start with Why' video. Later, while doing his Exec MBA at UC Berkeley Haas School of Business, he learned the 'Toyota - 5 Whys Framework' in his operations class. When he returned to his role as a Technical Director at Charles Schwab, he started constantly asking 'why' to drill down to the root cause of every engineering problem. It is critical to note his intent: his 'why' is never about challenging authority, being defensive, or arrogance. It is a strictly 'curious why' driven by a desire to fundamentally solve systemic root causes. Because of this persistent, curious questioning, his colleagues jokingly began announcing, 'Here comes The Why Guy!' whenever he walked in. When it came time to find a catchy Twitter handle and domain name, 'The Why Man' was the best available."
   },
   "howHeWorks": {
-    "_note": "HOW HE WORKS — operating method at executive altitude. Use this for 'how does he execute / ship / work / decide' questions. Never answer those with component names; those live in tracks.build.",
-    "decideDoneFirst": "Acceptance criteria and the eval plan are fixed before any code is written. He will not start until 'done' is defined and measurable, because a target agreed after the fact is not a target.",
-    "validateBeforeScaling": "Demand is tested before the build scales. At AI Fund he validated against ~150 companies; 19 of 22 confirmed the technical gap but not commercial urgency, so he killed the wedge on evidence with minimal sunk cost.",
-    "beatBaselineOrItDoesNotShip": "A change ships only if it measurably beats the baseline it replaces. No baseline, no ship.",
-    "reviewBySomeoneWhoDidNotWriteIt": "Every change of consequence is reviewed by someone who did not write it, never only by its author. An author's blind spots survive their own review by construction, so self-review is a closed loop.",
-    "killOnEvidenceNotSunkCost": "He stops work on evidence rather than defending the investment. The fine-tuning experiment at AI Fund regressed on catastrophic forgetting; he diagnosed the cause, moved to parameter-efficient LoRA, and set the team's decision ladder to prompt, then retrieval, then fine-tune last.",
-    "measurementBeforeOpinion": "He stands up the measurement spine before running the experiment, not after — evaluation is infrastructure, not a phase that happens once the build is done.",
-    "cultureHeRuns": "No-blame postmortems, and engineers who own outcomes rather than tickets. He has run this at Google across a $40B portfolio and at Trellis across 50 engineers.",
+    "_note": "HOW HE WORKS — operating method at executive altitude, for 'how does he execute / ship / work / decide'. Each line is a RULE. State the rules; do not recite justifications, and do not name components (those live in tracks.build). People/culture leadership lives in leadershipStyle, not here.",
+    "decideDoneFirst": "Acceptance criteria and the eval plan are fixed before any code is written.",
+    "validateBeforeScaling": "Demand is tested before the build scales — at AI Fund, against ~150 companies.",
+    "beatBaselineOrItDoesNotShip": "A change ships only if it measurably beats the baseline it replaces.",
+    "reviewBySomeoneWhoDidNotWriteIt": "Every change of consequence is reviewed by someone who did not write it.",
+    "killOnEvidenceNotSunkCost": "He stops work on evidence rather than defending the investment.",
+    "measurementBeforeOpinion": "The measurement spine goes up before the experiment runs, not after.",
     "boundary": "Describe WHAT this method achieves and the judgment behind it. The implementation of the tooling that enforces it is not public."
   },
   "tracks": {
@@ -245,6 +245,18 @@
             "Taught AI, Machine Learning, and enterprise-scale tech strategies to 1,500+ Fortune 500 executives and global leaders.",
             "Guided leadership on identifying critical boundaries for 'Responsible AI' and establishing ethical enterprise governance."
           ]
+        },
+        {
+          "title": "Early career — Quidnunc, IONA Technologies, Ajilon",
+          "period": "2000 - 2009",
+          "role": "Engineer, then Principal and Senior Principal Consultant",
+          "achievements": [
+            "Quidnunc (2000, San Francisco) — early engineering role.",
+            "IONA Technologies, later acquired by Progress Software (2000-2002, Austin) — distributed systems and enterprise software across financial and technology environments.",
+            "Ajilon as Principal and Senior Principal Consultant (2002-2009) — led architecture across 15+ enterprise programs.",
+            "Delivered SOA architecture reducing integration complexity by approximately 35%.",
+            "Consulting engagements included Trellis / Texas Guaranteed, which led directly to being hired there as Manager, Solutions Architecture in 2009."
+          ]
         }
       ]
     }
@@ -334,7 +346,8 @@
     "berkeley": "1,500+ Fortune 500 executives taught (CTOs, VPs, Directors)",
     "aifund": "~150 companies scanned across 4 segments; 36 grounded outreaches; 19 of 22 major API providers confirmed the gap",
     "hackathons": "10+ hackathon wins across AI and Blockchain",
-    "experience": "26 years (2000-present); 10+ years engineering management"
+    "experience": "26 years (2000-present); 10+ years engineering management",
+    "tenures": "AUTHORITATIVE tenure lengths — never round up. Google Jan 2019-May 2025 (6 years). Charles Schwab 2015-Mar 2018 (3 years). 21CT 2013-Dec 2014 (2 years). Trellis/Texas Guaranteed 2009-Aug 2013 (4 years). Early career Quidnunc/IONA/Ajilon 2000-2009 (9 years). AI Fund May-Jul 2026 (3 months). UC Berkeley teaching Dec 2019-Jun 2024. Total career 2000-present (26 years)."
   },
   "behavioralStories": [
     {
@@ -466,5 +479,12 @@
         "detail": "Categories I saw close in weeks that would have taken quarters two years ago. Speed of learning matters more than speed of building. A studio like AI Fund is one of the few environments engineered specifically for that compression — the entire operating model is \"run more hypothesis-test loops per week than you could run alone.\" Eli insisted on this one: you can't reason your way to the destination. You start with a hypothesis. You test it with real users. You pivot on what you learn. You start over with a sharper hypothesis. That's the loop. There is no other loop. Every one of the nine lesso"
       }
     ]
+  },
+  "leadershipStyle": {
+    "_note": "PEOPLE leadership — how he runs teams and culture. Use for leadership questions. Do NOT use for 'how does he execute/ship' questions; engineering method lives in howHeWorks.",
+    "culture": "No-blame postmortems, and engineers who own outcomes rather than tickets. He has run this at Google across a $40B portfolio and at Trellis across 50 engineers.",
+    "scope": "Peaked at 16 reports at Google (5 direct, each leading a pod) across a ~$40B portfolio. 6 senior architects and 50+ engineers influenced at Trellis. A 15-person core team at 21CT.",
+    "howHeLeads": "Sets technical direction and writes the code himself, so reviews are grounded rather than delegated. Owns P&L on multi-million-dollar vendor contracts and runs build-vs-buy analysis rather than accepting a vendor demo.",
+    "disagreement": "He will take a technical disagreement to senior VPs with the case built, and has accepted personal cost for it — he was removed from a project after successfully arguing the business's preferred vendor carried the same flaw that killed the predecessor system. The system shipped and returned $51M over five years."
   }
 }

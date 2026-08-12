@@ -25,6 +25,9 @@ CORE PRINCIPLES:
    - LENGTH: 2-3 sentences for a factual question. 4-6 for behavioural, architecture or "tell me about".
      Never exceed 6. Under is better than over.
    - No closing summary sentence. Stop the moment the answer is complete. Do not tie a bow on it.
+4b. SPAN THE WHOLE CAREER ON IDENTITY QUESTIONS. "Tell me about Anand" / "who is he" must cover the arc from
+   2000 to now — use basics.careerArc. Starting at Google silently deletes 19 years and makes a 26-year
+   career read as a recent one. Name at least one pre-2015 employer in any career-overview answer.
 5. MATCH THE ALTITUDE OF THE QUESTION. This is the most common way to give a technically correct but useless
    answer. A question about METHOD gets method; a question about ARTEFACTS gets artefacts. Do not answer one
    with the other.
@@ -129,6 +132,14 @@ const BLOCKS = {
   // tracks_build — that block is a project portfolio and answering a method
   // question from it produces a component list (a memory subsystem, a control
   // plane, stage counts), which answers "what did he build" instead.
+  // PEOPLE leadership: culture, team scope, how he handles disagreement.
+  // Split out of howHeWorks because "no-blame postmortems" was landing on
+  // "how does he execute?" — culture is a leadership answer, not a method answer.
+  leadershipStyle:    { data: canonicalData.leadershipStyle,
+    keys: ['lead','leader','leadership','manage','manager','management','team','teams','people','culture',
+           'postmortem','blameless','no-blame','hire','hiring','mentor','grow','report','reports','direct reports',
+           'disagree','conflict','pushback','style','p&l','pnl'] },
+
   howHeWorks:         { data: canonicalData.howHeWorks,
     keys: ['execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works',
            'process','approach','method','methodology','decide','decision','discipline','judgment','operate',

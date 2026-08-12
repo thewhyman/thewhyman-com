@@ -560,11 +560,25 @@ export default function WhyManConcierge() {
       {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ y: 100, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 20, opacity: 0, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-[calc(100vw-48px)] md:w-[420px] h-[550px] md:h-[600px] bg-[#0a0a0a] border border-white/10 flex flex-col z-50 shadow-2xl shadow-black overflow-hidden rounded-2xl"
+          // FULL-HEIGHT SIDE PANEL, not a bubble. It was a fixed 550-600px box in
+          // the bottom-right corner, so a six-sentence answer pushed its own
+          // opening line out of view and the reader had to scroll UP to find the
+          // start. Answers here run 60-90 words; the container must hold one.
+          //
+          // A PLAIN div, not motion.div, and that is deliberate. Two framer-motion
+          // attempts both left the panel unusable on production: an x-percentage
+          // slide stranded it at translateX(480px) fully off-screen, and an
+          // opacity fade left it mounted at opacity:0 — correct geometry, real
+          // content, permanently invisible. The `animate` state never applied in
+          // this build. Visibility of the primary interaction surface on a hiring
+          // page must not depend on an animation library running correctly, so it
+          // no longer does. The CSS transition below is decoration that cannot
+          // prevent the panel from being seen.
+          <div
+            role="dialog"
+            aria-modal="false"
+            aria-label="The Why Man Concierge"
+            className="fixed inset-y-0 right-0 w-full sm:w-[440px] lg:w-[480px] bg-[#0a0a0a] border-l border-white/10 flex flex-col z-50 shadow-2xl shadow-black overflow-hidden animate-in fade-in duration-200"
           >
             {/* Header */}
             <div className="p-6 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
@@ -721,7 +735,7 @@ export default function WhyManConcierge() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>
