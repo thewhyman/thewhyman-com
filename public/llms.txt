@@ -1,0 +1,26 @@
+# Anand Vallamsetla — The Why Man
+
+> Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).
+
+## Profile
+
+- [Home](https://thewhyman.com/): Senior Engineering Leader · Applied AI Architect · Agentic Systems & LLM Platforms.
+- [Meet](https://thewhyman.com/meet): Book a recruiter conversation, consulting session, invited meeting, or introduction. Acceptance criteria and the eval plan are fixed before any code is written.
+
+## Work
+
+- [Build](https://thewhyman.com/build-details): Exponential OS — Multi-Agent Harness (exponentialos.io) — Acceptance criteria and evals fixed before code; a change ships only if it beats baseline.
+- [Invent](https://thewhyman.com/invent-details): Exponential OS — a multi-agent harness built from zero — The thesis: platform-based agents are loyal to the platform, not the operator. Owning the harness means the constitution, the memory and the agents belong to you.
+- [Lead](https://thewhyman.com/lead-details): AI Fund — product discovery to delivery — Owned the full loop across two major pivots: customer discovery, ICP selection, contextual inquiry and Mom Test interviews, with demand validated before any build was scaled.
+
+## Resources and talks
+
+- [Resources](https://thewhyman.com/resources): Writing, projects, and the origin of The Why Man. First, Anand's philosophy was deeply shaped by Simon Sinek's 'Start with Why' video.
+- [Talks](https://thewhyman.com/talks): Public talks and presentation materials by Anand Vallamsetla.
+
+## Agent resources
+
+- [Full profile](https://thewhyman.com/llms-full.txt): Expanded canonical profile, interview Q&A, behavioral stories, and work tracks.
+- [Agent guide](https://thewhyman.com/AGENTS.md): Site map, canonical sources, and API usage.
+- [Pricing](https://thewhyman.com/pricing.md): Public meeting and consulting rates.
+- [Chat API](https://thewhyman.com/openapi.json): OpenAPI 3.1 description of the concierge endpoint.
