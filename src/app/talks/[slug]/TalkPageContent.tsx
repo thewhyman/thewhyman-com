@@ -133,6 +133,36 @@ export default function TalkPageContent({ talk }: { talk: Talk }) {
         </motion.div>
 
         {/* PDF embed */}
+                {/* Recording, when one exists. Placed ABOVE the deck: a visitor who can
+            watch three minutes of the talk gets more than they get from slides. */}
+        {talk.videoUrl && (
+          <div className="mb-16 rounded-2xl overflow-hidden border border-white/10 bg-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+              <div className={`text-[10px] font-black ${accentBadge} tracking-[0.3em] uppercase`}>
+                Recording
+              </div>
+              <a
+                href={talk.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[11px] font-black text-zinc-500 hover:text-teal-400 transition-colors uppercase tracking-widest"
+              >
+                Watch on YouTube <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+            <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${talk.videoUrl.split('v=')[1]?.split('&')[0] ?? ''}`}
+                className="absolute inset-0 w-full h-full"
+                title={`${talk.title} — recording`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

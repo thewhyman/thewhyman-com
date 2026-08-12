@@ -33,6 +33,9 @@ export type Talk = {
   accentColor: AccentColor;
   themes: TalkTheme[];
   substackUrl: string;
+  /** YouTube watch URL. When present the talk page embeds the recording above
+   *  the deck — a recording is stronger evidence than slides. */
+  videoUrl?: string;
   linkedinPosts?: LinkedInPost[];
 };
 
@@ -76,6 +79,7 @@ export const talks: Talk[] = [
       },
     ],
     substackUrl: 'https://www.thewhyman.blog/p/the-customer-is-no-longer-human',
+    videoUrl: 'https://www.youtube.com/watch?v=A8-ojnb9ygk',
   },
   {
     slug: 'exponential-advantage',
@@ -173,7 +177,7 @@ export const talks: Talk[] = [
     themes: [
       {
         label: 'THE WALLED GARDEN PROBLEM',
-        text: 'Claude. Copilot. Cursor. Gemini. Separate memory. Separate context. Separate compute. No portable identity layer exists across them — the fragmentation is intentional.',
+        text: 'Claude. Copilot. Cursor. Gemini. Separate memory. Separate context. Separate compute. No agent passport exists — the fragmentation is intentional.',
         color: 'teal',
       },
       {
