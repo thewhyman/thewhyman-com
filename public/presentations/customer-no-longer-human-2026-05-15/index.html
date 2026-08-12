@@ -4,61 +4,114 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Customer Is No Longer Human — Health+Tech 2026</title>
-<meta name="description" content="Notes from a Health+Tech 2026 roundtable on agents, attention, and what survives the transition. Seven slides.">
+<meta name="description" content="Health+Tech 2026 roundtable on agents, attention and economics: what happens to marketing when the buyer is an agent rather than a person. Seven slides.">
 <style>
-  :root { color-scheme: dark; }
+  /* iframe srcs are extensionless on purpose: Cloudflare Pages strips .html
+     and 308-redirects, so pointing at slide-01.html costs an extra round trip
+     per slide. */
+  /* Each slide is a self-contained 1200x675 HTML document with its own <style>.
+     They are embedded in iframes rather than inlined so their CSS cannot collide —
+     every slide defines the same class names (.slide, .card, h1) with different
+     rules. HTML rather than the PNG renders means the text stays selectable,
+     stays crisp at any zoom, and is readable by an agent. */
+  :root { color-scheme: dark; --w: 1200; --h: 675; }
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: #050505;
-    color: #e4e4e7;
+    margin: 0; background: #050505; color: #e4e4e7;
     font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  header {
-    padding: 40px 24px 28px;
-    max-width: 960px;
-    margin: 0 auto;
-    border-bottom: 1px solid rgba(255,255,255,.08);
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 20px 72px; }
+  .kicker { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #c8a96e; font-weight: 700; margin: 0 0 10px; }
+  h1 { font-size: clamp(24px, 4.2vw, 40px); line-height: 1.12; margin: 0 0 12px; letter-spacing: -.02em; }
+  .sub { color: #a1a1aa; margin: 0; max-width: 64ch; }
+  .meta { margin: 16px 0 0; font-size: 13px; color: #71717a; }
+  .meta a { color: #c8a96e; }
+  hr { border: 0; border-top: 1px solid rgba(255,255,255,.08); margin: 30px 0; }
+
+  .slide-frame {
+    position: relative; width: 100%;
+    aspect-ratio: var(--w) / var(--h);
+    margin: 0 0 20px;
+    border: 1px solid rgba(255,255,255,.1); border-radius: 10px;
+    overflow: hidden; background: #0a0a0a;
   }
-  .kicker {
-    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-    color: #2dd4bf; font-weight: 700; margin: 0 0 10px;
+  .slide-frame iframe {
+    position: absolute; top: 0; left: 0;
+    width: 1200px; height: 675px; border: 0;
+    transform-origin: top left;
   }
-  h1 { font-size: clamp(24px, 4.5vw, 38px); line-height: 1.15; margin: 0 0 10px; letter-spacing: -.02em; }
-  .sub { color: #a1a1aa; margin: 0; max-width: 62ch; }
-  .meta { margin: 18px 0 0; font-size: 13px; color: #71717a; }
-  main { max-width: 960px; margin: 0 auto; padding: 28px 24px 72px; }
-  figure { margin: 0 0 22px; }
-  img {
-    display: block; width: 100%; height: auto;
-    border: 1px solid rgba(255,255,255,.1); border-radius: 10px; background: #0a0a0a;
-  }
-  figcaption { margin-top: 8px; font-size: 12px; color: #71717a; }
-  footer { max-width: 960px; margin: 0 auto; padding: 0 24px 64px; font-size: 13px; color: #71717a; }
-  a { color: #2dd4bf; }
+  .num { font-size: 12px; color: #71717a; margin: 0 0 26px; }
+  footer { font-size: 13px; color: #71717a; }
+  footer a { color: #c8a96e; }
+  @media print { .slide-frame { break-inside: avoid; } }
 </style>
 </head>
 <body>
-<header>
+<div class="wrap">
   <p class="kicker">Roundtable · AI, Marketing, Economics</p>
   <h1>The Customer Is No Longer Human</h1>
   <p class="sub">How AI agents are rewriting marketing — and why the Cyborg is the only protection you have. Notes from a session on agents, attention, and what survives the transition.</p>
-  <p class="meta">Health+Tech 2026 · AI Marketing Group session · May 2026 · Anand Vallamsetla</p>
-</header>
+  <p class="meta">Health+Tech 2026 · AI Marketing Group session · May 2026 · Anand Vallamsetla ·
+     <a href="https://www.youtube.com/watch?v=A8-ojnb9ygk">watch the recording</a></p>
+  <hr>
 
-<main>
-  <figure><img src="slide-01.png" alt="Title slide: The customer is no longer human. Notes from a session on agents, attention, and what survives the transition." loading="eager"><figcaption>1 — The customer is no longer human</figcaption></figure>
-  <figure><img src="slide-02.png" alt="The Customer Question: who the brand is actually addressing when an agent does the buying." loading="lazy"><figcaption>2 — The customer question</figcaption></figure>
-  <figure><img src="slide-03.png" alt="The Shift: attention is being replaced by execution. The internet's primary metric stops being impressions and becomes outcomes." loading="lazy"><figcaption>3 — Attention is being replaced by execution</figcaption></figure>
-  <figure><img src="slide-04.png" alt="Two Readers, Two Surfaces: one reader has a body and a memory, the other has a parser and a budget." loading="lazy"><figcaption>4 — Two readers, two surfaces</figcaption></figure>
-  <figure><img src="slide-05.png" alt="Agency Under the Optimizer: when the optimizer knows you first, the question is who it is loyal to." loading="lazy"><figcaption>5 — Agency under the optimizer</figcaption></figure>
-  <figure><img src="slide-06.png" alt="Agents as Economic Parties: agents with memory, reputation, a budget and the right to sign are counterparties, not tools." loading="lazy"><figcaption>6 — Agents as economic parties</figcaption></figure>
-  <figure><img src="slide-07.png" alt="The Real Question: amplify or replace is not the choice. It is being made slide by slide, contract by contract, build by build." loading="lazy"><figcaption>7 — The real question</figcaption></figure>
-</main>
+  <div class="slide-frame"><iframe src="slide-01" title="Slide 1 — The customer is no longer human" loading="eager" scrolling="no"></iframe></div>
+  <p class="num">1 — The customer is no longer human</p>
 
-<footer>
-  <p>Companion essay: <a href="https://www.thewhyman.blog/p/the-customer-is-no-longer-human">The Customer Is No Longer Human</a> · <a href="https://thewhyman.com/talks">All talks</a></p>
-</footer>
+  <div class="slide-frame"><iframe src="slide-02" title="Slide 2 — The customer question" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">2 — The customer question</p>
+
+  <div class="slide-frame"><iframe src="slide-03" title="Slide 3 — Attention is being replaced by execution" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">3 — Attention is being replaced by execution</p>
+
+  <div class="slide-frame"><iframe src="slide-04" title="Slide 4 — Two readers, two surfaces" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">4 — Two readers, two surfaces</p>
+
+  <div class="slide-frame"><iframe src="slide-05" title="Slide 5 — Agency under the optimizer" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">5 — Agency under the optimizer</p>
+
+  <div class="slide-frame"><iframe src="slide-06" title="Slide 6 — Agents as economic parties" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">6 — Agents as economic parties</p>
+
+  <div class="slide-frame"><iframe src="slide-07" title="Slide 7 — The real question" loading="lazy" scrolling="no"></iframe></div>
+  <p class="num">7 — The real question</p>
+
+  <footer>
+    <p>Companion essay: <a href="https://www.thewhyman.blog/p/the-customer-is-no-longer-human">The Customer Is No Longer Human</a>
+       · <a href="https://thewhyman.com/talks">All talks</a></p>
+  </footer>
+</div>
+
+<script>
+  // Slides are authored at a fixed 1200x675. CSS alone cannot scale a fixed-size
+  // iframe to a fluid container, so the scale factor is set here and kept in sync
+  // on resize. Without this the slides clip on any viewport under 1200px.
+  (function () {
+    var W = 1200;
+    function fit() {
+      document.querySelectorAll('.slide-frame').forEach(function (box) {
+        var f = box.querySelector('iframe');
+        if (f) f.style.transform = 'scale(' + (box.clientWidth / W) + ')';
+      });
+    }
+    fit();
+    window.addEventListener('resize', fit, { passive: true });
+    window.addEventListener('load', fit);
+  })();
+</script>
+
+<noscript>
+  <div class="wrap">
+    <p class="num">Static renders of the same slides:</p>
+    <img src="slide-01.png" alt="Slide 1 — The customer is no longer human" style="width:100%">
+    <img src="slide-02.png" alt="Slide 2 — The customer question" style="width:100%">
+    <img src="slide-03.png" alt="Slide 3 — Attention is being replaced by execution" style="width:100%">
+    <img src="slide-04.png" alt="Slide 4 — Two readers, two surfaces" style="width:100%">
+    <img src="slide-05.png" alt="Slide 5 — Agency under the optimizer" style="width:100%">
+    <img src="slide-06.png" alt="Slide 6 — Agents as economic parties" style="width:100%">
+    <img src="slide-07.png" alt="Slide 7 — The real question" style="width:100%">
+  </div>
+</noscript>
 </body>
 </html>
