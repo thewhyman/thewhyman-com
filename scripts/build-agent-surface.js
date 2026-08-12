@@ -12,7 +12,7 @@ const SOURCE_PATHS = {
   canonical: 'data/canonical.json',
   linkedin: 'data/linkedin_public.json',
   talks: 'src/data/talks.ts',
-  meet: 'src/app/meet/page.tsx',
+  meet: 'src/app/meet/MeetPageContent.tsx',
 };
 
 const STATIC_ROUTES = [
