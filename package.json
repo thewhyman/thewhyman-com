@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "node scripts/fetch-substack.mjs && node scripts/build-cloudflare-function.js"
+    "prebuild": "node scripts/fetch-substack.mjs && node scripts/build-cloudflare-function.js",
+    "test:visual": "node scripts/__tests__/concierge-visual-gate.test.js"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.2",

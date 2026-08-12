@@ -126,6 +126,14 @@ export default function WhyManConcierge() {
   const [listening, setListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState({ in: false, out: false });
   const recognitionRef = useRef<any>(null);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+
+  // handleSend is recreated every render because it closes over `messages`.
+  // SpeechRecognition is constructed ONCE, so its onresult handler would
+  // otherwise capture the very first render's handleSend and send voice
+  // questions with an empty conversation history. Route through a ref that
+  // always points at the current handleSend.
+  const handleSendRef = useRef<(text: string, dimension?: 'BUILD' | 'INVENT' | 'LEAD') => void>(() => {});
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -134,23 +142,42 @@ export default function WhyManConcierge() {
     if (!SR) return;
     const r = new SR();
     r.continuous = false;
-    r.interimResults = false;
+    r.interimResults = true;   // show words as they are spoken
     r.lang = 'en-US';
     r.onresult = (e: any) => {
-      const t = e.results[0][0].transcript;
-      setInputValue(t);
-      setListening(false);
-      handleSend(t);
+      let interim = '';
+      let final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const chunk = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += chunk;
+        else interim += chunk;
+      }
+      if (interim) setInputValue(interim);
+      if (final.trim()) {
+        setInputValue(final);
+        setListening(false);
+        try { r.stop(); } catch {}
+        handleSendRef.current(final.trim());
+      }
     };
     r.onerror = () => setListening(false);
     r.onend = () => setListening(false);
     recognitionRef.current = r;
     return () => { try { r.abort(); } catch {} };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Chrome returns an empty voice list until the voiceschanged event fires, so
+  // the first spoken reply used the wrong voice. Cache them as they arrive.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const load = () => { voicesRef.current = window.speechSynthesis.getVoices() || []; };
+    load();
+    window.speechSynthesis.addEventListener?.('voiceschanged', load);
+    return () => window.speechSynthesis.removeEventListener?.('voiceschanged', load);
   }, []);
 
   const pickVoice = () => {
-    const vs = window.speechSynthesis.getVoices();
+    const vs = voicesRef.current.length ? voicesRef.current : (window.speechSynthesis.getVoices() || []);
     // Prefer a clear neutral en-US voice; explicitly not a personal clone.
     const preferred = ['Google US English', 'Samantha', 'Microsoft Aria Online (Natural) - English (United States)'];
     for (const name of preferred) {
@@ -160,10 +187,24 @@ export default function WhyManConcierge() {
     return vs.find(v => v.lang?.startsWith('en')) ?? null;
   };
 
+  // Strip markdown so the synthesiser does not read asterisks and backticks aloud.
+  const forSpeech = (text: string) =>
+    text
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/`([^`]*)`/g, '$1')
+      .replace(/\*\*([^*]*)\*\*/g, '$1')
+      .replace(/[*_#>]/g, '')
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+      .replace(/https?:\/\/\S+/g, 'the link on screen')
+      .replace(/\s+/g, ' ')
+      .trim();
+
   const speak = (text: string) => {
     if (!voiceOut || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const clean = forSpeech(text);
+    if (!clean) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(clean);
     const v = pickVoice();
     if (v) u.voice = v;
     u.rate = 1.03;
@@ -181,6 +222,16 @@ export default function WhyManConcierge() {
   useEffect(() => {
     if (!voiceOut && typeof window !== 'undefined') window.speechSynthesis?.cancel();
   }, [voiceOut]);
+
+  // Stop speech if the panel closes or the tab is hidden — a disembodied voice
+  // continuing after the widget is shut is the worst possible impression.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!isOpen) window.speechSynthesis?.cancel();
+    const onHide = () => { if (document.hidden) window.speechSynthesis?.cancel(); };
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
+  }, [isOpen]);
 
   // Surface follow-ups related to what they just asked; fall back to openers.
   const suggestions = React.useMemo(() => {
@@ -215,6 +266,43 @@ export default function WhyManConcierge() {
     }
   }, [isOpen]);
 
+  // A visual is an exhibit, not decoration. It earns its place only when the
+  // VISITOR asked about that specific thing, and only the first time — repeating
+  // the same diagram under every answer reads as a broken template, which is
+  // exactly how this behaved before (a recruiter-facing surface showing the
+  // Exponential OS architecture under "tell me about his Google experience").
+  const shownVisuals = useRef<Set<string>>(new Set());
+
+  const pickVisual = (question: string): 'harness' | 'codi' | undefined => {
+    const q = question.toLowerCase();
+
+    // Phrases a person types when they actually want to see the system, not
+    // words that merely appear near it. "architecture" alone is far too broad:
+    // Anand's own title is Applied AI Architect.
+    const harnessAsk = [
+      'exponential os', 'exponentialos', 'your harness', 'his harness',
+      'the harness', 'multi-agent harness', 'agent harness',
+      'harness architecture', 'system architecture', 'how is it built',
+      'how does it work', 'show me the architecture', 'control plane',
+      'memory layer', 'what are the layers', 'diagram',
+    ];
+    const codiAsk = [
+      'co-dialectic', 'codialectic', 'codi', 'open source', 'open-source',
+      'socratic', 'dialectic', 'prompt optimizer', 'prompt quality',
+    ];
+
+    const wantsHarness = harnessAsk.some(k => q.includes(k));
+    const wantsCodi = !wantsHarness && codiAsk.some(k => q.includes(k));
+
+    const choice: 'harness' | 'codi' | undefined =
+      wantsHarness ? 'harness' : wantsCodi ? 'codi' : undefined;
+
+    if (!choice) return undefined;
+    if (shownVisuals.current.has(choice)) return undefined;  // once per conversation
+    shownVisuals.current.add(choice);
+    return choice;
+  };
+
   const handleSend = async (text: string, dimension?: 'BUILD' | 'INVENT' | 'LEAD') => {
     if (!text.trim() || isLoading) return;
     
@@ -230,25 +318,70 @@ export default function WhyManConcierge() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: updatedMessages.map(m => ({ role: m.role, content: m.content })) 
+        body: JSON.stringify({
+          messages: updatedMessages.map(m => ({ role: m.role, content: m.content }))
         }),
       });
 
-      const data = await response.json();
-      
-      if (data.content) {
-        const q = (userContent + ' ' + data.content).toLowerCase();
-        const wantsHarness = ['harness','exponential os','architecture','layers','memory layer','control plane','constitution']
-          .some(k => q.includes(k));
-        const wantsCodi = !wantsHarness && ['co-dialectic','codi','open source','socratic','dialectic','plato','prompt improve']
-          .some(k => q.includes(k));
-        setMessages(prev => [...prev, { 
-          id: Date.now() + 1, 
-          role: 'bot', 
-          content: data.content,
-          visual: wantsHarness ? 'harness' : wantsCodi ? 'codi' : undefined
-        }]);
+      const botId = Date.now() + 1;
+      // Decide the visual from the QUESTION alone. Deciding it from the answer
+      // too meant the harness diagram appeared on almost every reply, because
+      // the knowledge base is saturated with words like "architecture" and
+      // "constitution" (measured 2026-08-11: 2 of 3 ordinary answers tripped it).
+      const visual = pickVisual(userContent);
+      let full = '';
+
+      const isStream = (response.headers.get('content-type') || '').includes('text/event-stream');
+
+      if (isStream && response.body) {
+        setMessages(prev => [...prev, { id: botId, role: 'bot', content: '', visual }]);
+        setIsLive(true);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          // SSE frames are separated by a blank line.
+          const frames = buffer.split('\n\n');
+          buffer = frames.pop() ?? '';
+
+          for (const frame of frames) {
+            for (const line of frame.split('\n')) {
+              if (!line.startsWith('data:')) continue;
+              const payload = line.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const j = JSON.parse(payload);
+                const delta =
+                  j.response ??
+                  j.choices?.[0]?.delta?.content ??
+                  j.choices?.[0]?.text ??
+                  '';
+                if (delta) {
+                  full += delta;
+                  setMessages(prev =>
+                    prev.map(m => (m.id === botId ? { ...m, content: full } : m))
+                  );
+                }
+              } catch {
+                // partial JSON across chunk boundaries — ignore, it re-arrives
+              }
+            }
+          }
+        }
+
+        if (!full.trim()) throw new Error('empty stream');
+        // Speak once, at the end. Speaking each delta would stutter badly.
+        speak(full);
+      } else {
+        const data = await response.json();
+        if (!data.content) throw new Error('no content');
+        setMessages(prev => [...prev, { id: botId, role: 'bot', content: data.content, visual }]);
         setIsLive(true);
         speak(data.content);
       }
@@ -264,6 +397,10 @@ export default function WhyManConcierge() {
       setIsLoading(false);
     }
   };
+
+  // Keep the ref pointing at the CURRENT closure so voice input sends with the
+  // live conversation history rather than the first render's empty one.
+  handleSendRef.current = handleSend;
 
   return (
     <>

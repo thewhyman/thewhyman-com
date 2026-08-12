@@ -108,13 +108,51 @@ export const onRequestPost = async (context) => {
 
     const SYSTEM_PROMPT = \`${escapedPrompt}\`;
 
-    const result = await env.AI.run('@cf/moonshotai/kimi-k2.6', {
+    // Keep only the last few turns. The system prompt already carries the whole
+    // knowledge base, so replaying a long transcript buys nothing and costs
+    // latency on every request.
+    const MAX_TURNS = 8;
+    const trimmed = messages.length > MAX_TURNS ? messages.slice(-MAX_TURNS) : messages;
+
+    const payload = {
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        ...messages,
+        ...trimmed,
       ],
-      max_tokens: 4096,
-    });
+      // The prompt asks for 2-4 sentences, up to 8 for interview questions.
+      // 4096 let the model run for the better part of a minute; measured
+      // 2026-08-11: 10.7s / 57.5s / 24.2s on three ordinary questions.
+      max_tokens: 700,
+      temperature: 0.4,
+    };
+
+    // Stream by default: a recruiter sees words in ~1-2s instead of waiting for
+    // the whole completion. Falls back to a single response if streaming is
+    // unavailable, so a stream failure degrades instead of breaking the widget.
+    const wantsStream = new URL(request.url).searchParams.get('stream') !== '0';
+
+    if (wantsStream) {
+      try {
+        const stream = await env.AI.run('@cf/moonshotai/kimi-k2.6', {
+          ...payload,
+          stream: true,
+        });
+
+        return new Response(stream, {
+          headers: {
+            'Content-Type': 'text/event-stream; charset=utf-8',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',
+          },
+        });
+      } catch (streamError) {
+        console.error('Stream failed, falling back to buffered:', streamError);
+        // fall through to the buffered path below
+      }
+    }
+
+    const result = await env.AI.run('@cf/moonshotai/kimi-k2.6', payload);
 
     // Response shape varies by model family: Workers-AI style returns a top-level
     // 'response' field; OpenAI-compatible models nest it under choices[0].message.

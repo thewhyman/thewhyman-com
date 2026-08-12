@@ -1,5 +1,12 @@
 [
   {
+    "title": "The Startup Moat Moved: What Every AI-Native Founder Has to Unlearn",
+    "date": "Aug 2026",
+    "description": "Three months as an EIR at Andrew Ng's AI Fund — on finding the pain, the moats that are left, and how you actually build now.",
+    "url": "https://www.thewhyman.blog/p/the-startup-moat-moved-what-every",
+    "image": "https://substack-post-media.s3.amazonaws.com/public/images/6d5f6c5a-917b-47ef-a37b-320d778ecb60_1456x816.png"
+  },
+  {
     "title": "Why your site is invisible to ChatGPT (even when Google loves you)",
     "date": "Jul 2026",
     "description": "Ranking on Google and being citable by AI are not the same problem — and I asked four engines the same question to prove it.",
@@ -19,12 +26,5 @@
     "description": "Notes from Health+Tech 2026 conference session on agents, attention, and what survives the transition",
     "url": "https://www.thewhyman.blog/p/the-customer-is-no-longer-human",
     "image": "https://substackcdn.com/image/youtube/w_728,c_limit/A8-ojnb9ygk"
-  },
-  {
-    "title": "Invite your friends to read TEP: Technology, Education and Policy",
-    "date": "May 2026",
-    "description": "Thank you for reading TEP: Technology, Education and Policy — your support allows me to keep doing this work.",
-    "url": "https://www.thewhyman.blog/p/invite-your-friends-to-read-tep-technology",
-    "image": "https://substackcdn.com/image/fetch/$s_!Z0Ez!,w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb866b3c9-2a56-41b2-8864-3239eb0ef170_1280x1280.png"
   }
 ]
