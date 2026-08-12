@@ -215,11 +215,11 @@ CANONICAL DATA:
           ]
         },
         {
-          "title": "Tree of Souls & gPals (Google Innovation)",
+          "title": "Multi-Agent Wisdom Marketplace & gPals (Google Innovation)",
           "period": "2024",
           "role": "Lead Architect / Creator",
           "achievements": [
-            "Conceptualized the 'Tree of Souls': a multi-agent wisdom marketplace that properly incentivizes creators over IP theft.",
+            "Conceptualized a multi-agent wisdom marketplace that properly incentivizes creators over IP theft.",
             "Built 'gPals' (Omni Personal Digital Companions), iterating 14 prototypes during a single hackathon to validate a multi-billion dollarTAM.",
             "Secured buy-in and \$3.7B revenue validation from the GCP Finance Director by executing 50+ face-to-face customer interviews."
           ]
@@ -556,7 +556,7 @@ LINKEDIN / CHRONOLOGICAL HISTORY:
 {
   "name": "Anand Vallamsetla",
   "headline": "Applied AI Engineering Leader | Evaluation-First LLM & Agent Platforms | Reliability & Guardrail Design | ex-Google",
-  "about": "Engineering executive with 20+ years leading distributed systems at Google scale — including software platforms managing \$40B annual capex delivered with \$500M+ ROI. Now bridging the gap between model capability and production reality through evaluation-first architectures. I treat evaluation as infrastructure, ensuring AI systems are reliable, guardrail-aware, and built for real-world deployment. Taught 1,500+ Fortune 500 executives at UC Berkeley on AI system design and governance. Recent work includes cross-model agent interoperability, reliability scaffolding for agentic systems, and frontier experimentation (DeepMind Hackathon – Tree of Souls).",
+  "about": "Engineering executive with 20+ years leading distributed systems at Google scale — including software platforms managing \$40B annual capex delivered with \$500M+ ROI. Now bridging the gap between model capability and production reality through evaluation-first architectures. I treat evaluation as infrastructure, ensuring AI systems are reliable, guardrail-aware, and built for real-world deployment. Taught 1,500+ Fortune 500 executives at UC Berkeley on AI system design and governance. Recent work includes cross-model agent interoperability, reliability scaffolding for agentic systems, and frontier experimentation (Google DeepMind Hackathon).",
   "skills": [
     "Engineering Leadership",
     "AI Systems Architecture",
@@ -581,7 +581,7 @@ LINKEDIN / CHRONOLOGICAL HISTORY:
       "role": "Senior Software Engineering Manager",
       "company": "Google",
       "period": "Jan 2019 – May 2025",
-      "description": "6 years as Senior SWE Manager for Google's global data center and office construction platform (~\$40B annual portfolio). Over the last 2-3 years, developed a distinct applied AI and ML thread alongside enterprise-scale delivery.\\n\\nApplied AI & Machine Learning (2022-2025)\\nLed CViC (Construction Virtualization Innovation Center) -- Google's applied computer vision program. Shipped first-ever 1P Android app to the public Google Play Store. Initiated and led Google's first supply chain risk AI/ML program. Led iSCaaS+ at the 2023 SCOT Hackathon: reduced supply chain recall from 6 months to 30 seconds (51,840,000% efficiency gain). Won 2nd prize (Product Excellence Award). Led gPals (gHacks24) -- 'Omni Personal Digital Companions' category-defining platform. Led Tree of Souls (multi-agentic AI wisdom marketplace) at Google DeepMind hackathon.\\n\\nPlatform Engineering at Scale\\n\$500M+ ROI across 6 engineering tracks. Delivered 400% performance improvement and \$6.3M/yr savings in key platforms. Led end-to-end platform delivery architecture and global 14-vendor evaluations.\\n\\nLeadership\\nManaged up to 16 engineers and contractors; P&L ownership for multi-million dollar vendor contracts. Built no-blame postmortem culture."
+      "description": "6 years as Senior SWE Manager for Google's global data center and office construction platform (~\$40B annual portfolio). Over the last 2-3 years, developed a distinct applied AI and ML thread alongside enterprise-scale delivery.\\n\\nApplied AI & Machine Learning (2022-2025)\\nLed CViC (Construction Virtualization Innovation Center) -- Google's applied computer vision program. Shipped first-ever 1P Android app to the public Google Play Store. Initiated and led Google's first supply chain risk AI/ML program. Led iSCaaS+ at the 2023 SCOT Hackathon: reduced supply chain recall from 6 months to 30 seconds (51,840,000% efficiency gain). Won 2nd prize (Product Excellence Award). Led gPals (gHacks24) -- 'Omni Personal Digital Companions' category-defining platform. Led a multi-agentic AI wisdom marketplace project at the Google DeepMind hackathon.\\n\\nPlatform Engineering at Scale\\n\$500M+ ROI across 6 engineering tracks. Delivered 400% performance improvement and \$6.3M/yr savings in key platforms. Led end-to-end platform delivery architecture and global 14-vendor evaluations.\\n\\nLeadership\\nManaged up to 16 engineers and contractors; P&L ownership for multi-million dollar vendor contracts. Built no-blame postmortem culture."
     },
     {
       "role": "Instructor – AI & Emerging Technologies",
