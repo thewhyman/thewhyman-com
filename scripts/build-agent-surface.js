@@ -47,42 +47,8 @@ const ALWAYS_PRIVATE_KEYS = new Set([
   '_note',
   'internal',
   'instructions',
+  'handling',
 ]);
-
-const PUBLIC_CANONICAL_FIELDS = {
-  basics: {
-    name: true,
-    title: true,
-    summary: true,
-  },
-  brand: {
-    originStory: true,
-  },
-  howHeWorks: {
-    decideDoneFirst: true,
-    validateBeforeScaling: true,
-    beatBaselineOrItDoesNotShip: true,
-    reviewBySomeoneWhoDidNotWriteIt: true,
-    killOnEvidenceNotSunkCost: true,
-    measurementBeforeOpinion: true,
-    cultureHeRuns: true,
-  },
-  tracks: {
-    build: {
-      projects: [{ title: true, period: true, role: true, achievements: [true], link: true }],
-      publications: [{ title: true, date: true, link: true }],
-    },
-    invent: {
-      wins: [{ title: true, period: true, role: true, achievements: [true] }],
-      awards: [{ title: true, context: true }],
-    },
-    lead: {
-      projects: [{ title: true, period: true, role: true, achievements: [true], link: true }],
-    },
-  },
-  interviewQA: [{ q: true, a: true }],
-  behavioralStories: [{ question: true, story: true, answer: true }],
-};
 
 const PUBLIC_LINKEDIN_FIELDS = {
   name: true,
@@ -104,6 +70,29 @@ const PUBLIC_LEAK_PATTERNS = [
     name: 'underscore-prefixed key marker',
     pattern: /(?:^|[\s[{(,])_[A-Za-z][\w-]*\s*(?::|\*\*:)/m,
   },
+];
+
+// A literal instruction scan cannot recognize semantically private mechanism
+// detail. These terms name the wiring that canonical.json's own boundaries keep
+// private. The same list both strips outcome-only blocks and fail-hard checks
+// every emitted public artifact, so a newly public block cannot bypass it.
+const PUBLIC_MECHANISM_DENYLIST = [
+  { name: 'isolated worktree implementation', pattern: /\b(?:isolated\s+(?:git\s+)?)?worktrees?\b/i },
+  { name: 'lifecycle hook implementation', pattern: /\blifecycle\s+hooks?\b/i },
+  { name: 'pre-prompt hook implementation', pattern: /\bpre[-\s]?prompt(?:\s+hooks?)?\b/i },
+  { name: 'session-end hook implementation', pattern: /\bsession[-\s]?end(?:\s+hooks?)?\b/i },
+  { name: 'model/task routing implementation', pattern: /\b(?:model|task)\s+(?:routing|selection)\b/i },
+  { name: 'jury escalation implementation', pattern: /\b(?:cross[-\s]?LLM\s+)?jury\b|\bcascad(?:ing|ed)\s+escalation\b/i },
+  { name: 'gate wiring implementation', pattern: /\b(?:gate|enforcement)\s+wiring\b|\b(?:structural|semantic|hard|verification|independent[-\s]?verification)\s+gates?\b/i },
+  { name: 'workflow gate implementation', pattern: /\benforced\s+in\s+(?:his|the)\s+workflow\s+as\s+a\s+gate\b/i },
+  { name: 'cross-agent coordination implementation', pattern: /\bcross[-\s]?agent\s+coordination\b/i },
+  { name: 'carry-forward implementation', pattern: /\bcarry[-\s]?forward\s+mechanism\b|\brehydrat(?:e|ed|ion)\b/i },
+  { name: 'memory subsystem implementation', pattern: /\bmemory\s+subsystem\b|\blong[-\s]?term\s+index\b/i },
+  { name: 'control-plane implementation', pattern: /\bcontrol\s+plane\b/i },
+  { name: 'model right-sizing implementation', pattern: /\bmodel\s+right[-\s]?sizing\b/i },
+  { name: 'security-tooling implementation', pattern: /\bsecurity\s+(?:scanning|tooling)\b|\bSonarQube\b|\bGitHub\s+Actions\s+CI\b/i },
+  { name: 'render-review implementation', pattern: /\bvision[-\s]?model\s+review\b/i },
+  { name: 'dangling implementation reference', pattern: /\bproduction\s+agentic\s+systems\s+on\s+it\b/i },
 ];
 
 function repoPath(relativePath) {
@@ -164,6 +153,23 @@ function assertSourceShape(canonical, linkedin) {
   }
 }
 
+function assertPublicationBoundaries(canonical) {
+  const boundaries = canonical._publicationBoundaries;
+  if (!boundaries || typeof boundaries !== 'object' || Array.isArray(boundaries)) {
+    throw new Error('data/canonical.json must declare _publicationBoundaries');
+  }
+
+  const validLevels = new Set(['public', 'outcome-only', 'published-only']);
+  for (const [key, declaration] of Object.entries(boundaries)) {
+    if (!Object.prototype.hasOwnProperty.call(canonical, key)) {
+      throw new Error(`Publication boundary references missing canonical block: ${key}`);
+    }
+    if (!declaration || !validLevels.has(declaration.level) || !String(declaration.justification || '').trim()) {
+      throw new Error(`Publication boundary for ${key} must have a valid level and justification`);
+    }
+  }
+}
+
 function isAlwaysPrivateKey(key) {
   return key.startsWith('_') || ALWAYS_PRIVATE_KEYS.has(key.toLowerCase());
 }
@@ -194,12 +200,65 @@ function projectPublicFields(value, allowlist, location = '$') {
   return projected;
 }
 
+function mechanismViolation(value) {
+  return PUBLIC_MECHANISM_DENYLIST.find(({ pattern }) => pattern.test(String(value)));
+}
+
+function stripMechanismSentences(value) {
+  const sentences = String(value).split(/(?<=[.!?])\s+(?=[A-Z0-9])/);
+  const publicSentences = sentences.filter((sentence) => !mechanismViolation(sentence));
+  return publicSentences.join(' ').trim() || undefined;
+}
+
+function projectDeclaredValue(value, level) {
+  if (typeof value === 'string') {
+    return level === 'outcome-only' ? stripMechanismSentences(value) : value.trim();
+  }
+  if (value === null || typeof value !== 'object') return value;
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => projectDeclaredValue(item, level))
+      .filter((item) => item !== undefined && item !== null);
+  }
+
+  const projected = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (isAlwaysPrivateKey(key)) continue;
+    const projectedChild = projectDeclaredValue(child, level);
+    if (projectedChild !== undefined) projected[key] = projectedChild;
+  }
+  return projected;
+}
+
+function projectCanonicalByBoundary(canonical) {
+  assertPublicationBoundaries(canonical);
+  const projected = {};
+
+  for (const [key, declaration] of Object.entries(canonical._publicationBoundaries)) {
+    if (declaration.level === 'published-only') {
+      const block = canonical[key];
+      projected[key] = projectDeclaredValue({ where: block.where, articles: block.articles }, 'public');
+      continue;
+    }
+    projected[key] = projectDeclaredValue(canonical[key], declaration.level);
+  }
+
+  return projected;
+}
+
 function assertNoPublicLeaks(outputs) {
   for (const [filename, contents] of Object.entries(outputs)) {
     for (const leak of PUBLIC_LEAK_PATTERNS) {
       const match = contents.match(leak.pattern);
       if (match) {
         throw new Error(`Public leak guard rejected public/${filename}: ${leak.name} at ${JSON.stringify(match[0])}`);
+      }
+    }
+    for (const mechanism of PUBLIC_MECHANISM_DENYLIST) {
+      const match = contents.match(mechanism.pattern);
+      if (match) {
+        throw new Error(`Public mechanism guard rejected public/${filename}: ${mechanism.name} at ${JSON.stringify(match[0])}`);
       }
     }
   }
@@ -260,6 +319,21 @@ function getLastModifiedDate() {
     );
     return new Date(newestMtime).toISOString().slice(0, 10);
   }
+}
+
+function writeBuildMeta(lastModifiedDate) {
+  // The middleware must not fabricate Last-Modified. It previously stamped
+  // new Date() on every request, which told every cache and agent the page had
+  // just changed — a false freshness signal, the same class of defect as the
+  // 1970 epoch fallback. This exports the REAL source date instead.
+  // Underscore-prefixed files in functions/ are not routed, so this is importable
+  // without becoming an endpoint.
+  const httpDate = new Date(`${lastModifiedDate}T00:00:00Z`).toUTCString();
+  const out = `// AUTO-GENERATED by scripts/build-agent-surface.js — DO NOT EDIT\nexport const SOURCE_LAST_MODIFIED = ${JSON.stringify(httpDate)};\n`;
+  const dir = path.join(ROOT, 'functions');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, '_build-meta.js'), out);
+  return httpDate;
 }
 
 function xmlEscape(value) {
@@ -415,6 +489,22 @@ function buildLlmsFull(canonical, linkedin) {
     '## Behavioral stories',
     '',
     renderMarkdownValue(canonical.behavioralStories),
+    '',
+    '## Why Exponential OS',
+    '',
+    renderMarkdownValue(canonical.whyExponentialOs),
+    '',
+    '## Co-Dialectic',
+    '',
+    renderMarkdownValue(canonical.coDialecticDepth),
+    '',
+    '## Published writing',
+    '',
+    renderMarkdownValue(canonical.writingLibrary),
+    '',
+    '## AI Fund lessons',
+    '',
+    renderMarkdownValue(canonical.aiFundLessons),
     '',
     '## Public LinkedIn profile',
     '',
@@ -668,7 +758,7 @@ function main() {
   const canonical = readRequiredJson(SOURCE_PATHS.canonical);
   const linkedin = readRequiredJson(SOURCE_PATHS.linkedin);
   assertSourceShape(canonical, linkedin);
-  const publicCanonical = projectPublicFields(canonical, PUBLIC_CANONICAL_FIELDS, 'canonical');
+  const publicCanonical = projectCanonicalByBoundary(canonical);
   const publicLinkedin = projectPublicFields(linkedin, PUBLIC_LINKEDIN_FIELDS, 'linkedin');
   assertSourceShape(publicCanonical, publicLinkedin);
 
@@ -677,6 +767,7 @@ function main() {
   const talkSlugs = extractTalkSlugs(talksSource);
   const engagementCards = extractEngagementCards(meetSource);
   const lastModified = getLastModifiedDate();
+  const lastModifiedHttp = writeBuildMeta(lastModified);
 
   const outputs = {
     'robots.txt': buildRobots(),

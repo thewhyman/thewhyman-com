@@ -1,6 +1,9 @@
+import { SOURCE_LAST_MODIFIED } from './_build-meta.js';
+
 const MARKDOWN_BY_PATH = new Map([
   ['/', '/llms.txt'],
   ['/meet', '/pricing.md'],
+  ['/resources', '/AGENTS.md'],
 ]);
 
 function parseMediaRange(value, index) {
@@ -46,16 +49,29 @@ function prefersMarkdown(acceptHeader) {
   return markdownQuality > 0 && markdownQuality > htmlQuality;
 }
 
-function markdownPath(pathname) {
-  if (MARKDOWN_BY_PATH.has(pathname)) return MARKDOWN_BY_PATH.get(pathname);
-  if (/\.(?:txt|md)$/i.test(pathname)) return pathname;
-  return '/AGENTS.md';
+function appendVaryAccept(headers) {
+  const vary = headers.get('Vary');
+  if (!vary) headers.set('Vary', 'Accept');
+  else if (!/(^|,)\s*accept\s*(,|$)/i.test(vary)) headers.set('Vary', `${vary}, Accept`);
 }
 
-function withLastModified(response, contentType) {
+function negotiated(response, contentType) {
   const headers = new Headers(response.headers);
   if (contentType) headers.set('Content-Type', contentType);
-  if (!headers.has('Last-Modified')) headers.set('Last-Modified', new Date().toUTCString());
+
+  // Vary goes on BOTH representations. The same URL can return HTML or
+  // Markdown, so a cache that saw one must not serve it for a request that
+  // prefers the other. Setting it only on the Markdown branch is the bug.
+  appendVaryAccept(headers);
+
+  // Last-Modified comes from the real source date baked in at build time.
+  // It previously used new Date() per request, which announced "just changed"
+  // on every single response — a fabricated freshness signal. If the asset
+  // already carries one, that wins; otherwise use the build date; never invent.
+  if (!headers.has('Last-Modified') && SOURCE_LAST_MODIFIED) {
+    headers.set('Last-Modified', SOURCE_LAST_MODIFIED);
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -66,12 +82,14 @@ function withLastModified(response, contentType) {
 export async function onRequest(context) {
   const { request } = context;
   const methodCanNegotiate = request.method === 'GET' || request.method === 'HEAD';
+  const pathname = new URL(request.url).pathname;
+  const markdownPath = MARKDOWN_BY_PATH.get(pathname);
 
-  if (methodCanNegotiate && prefersMarkdown(request.headers.get('Accept'))) {
-    const assetUrl = new URL(markdownPath(new URL(request.url).pathname), request.url);
+  if (methodCanNegotiate && markdownPath && prefersMarkdown(request.headers.get('Accept'))) {
+    const assetUrl = new URL(markdownPath, request.url);
     const assetResponse = await context.env.ASSETS.fetch(new Request(assetUrl, { method: request.method }));
-    if (assetResponse.ok) return withLastModified(assetResponse, 'text/markdown; charset=utf-8');
+    if (assetResponse.ok) return negotiated(assetResponse, 'text/markdown; charset=utf-8');
   }
 
-  return withLastModified(await context.next());
+  return negotiated(await context.next());
 }

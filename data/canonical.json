@@ -1,4 +1,46 @@
 {
+  "_publicationBoundaries": {
+    "basics": {
+      "level": "outcome-only",
+      "justification": "Public professional identity for the hiring surface; Exponential OS implementation mechanisms are excluded."
+    },
+    "brand": {
+      "level": "public",
+      "justification": "Public origin story used on the professional site."
+    },
+    "howHeWorks": {
+      "level": "outcome-only",
+      "justification": "Its boundary permits the method, outcomes and judgment but not enforcement implementation."
+    },
+    "tracks": {
+      "level": "outcome-only",
+      "justification": "Public professional proof-of-work; Exponential OS mechanism details remain private."
+    },
+    "interviewQA": {
+      "level": "outcome-only",
+      "justification": "Public recruiter Q&A rendered on the hiring surface; Exponential OS answers must stay above mechanism level."
+    },
+    "behavioralStories": {
+      "level": "public",
+      "justification": "Public behavioral interview stories for the hiring surface."
+    },
+    "whyExponentialOs": {
+      "level": "outcome-only",
+      "justification": "Its note marks the math, concepts and framing safe to share while its boundary excludes implementation mechanisms."
+    },
+    "coDialecticDepth": {
+      "level": "public",
+      "justification": "Its note declares the block fully public and open source."
+    },
+    "writingLibrary": {
+      "level": "published-only",
+      "justification": "Its note declares articles published and forthcoming work not yet live."
+    },
+    "aiFundLessons": {
+      "level": "public",
+      "justification": "Its note declares these public lessons from the AI Fund EIR."
+    }
+  },
   "basics": {
     "name": "Anand Vallamsetla",
     "title": "Senior Engineering Leader · Applied AI Architect · Agentic Systems & LLM Platforms",

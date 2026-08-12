@@ -243,25 +243,39 @@ check('public agent text omits underscore-prefixed key markers',
 check('AGENTS.md omits internal repository paths and precedence rules',
   !/data\/(?:canonical|linkedin_public)\.json|takes precedence/i.test(outputs['AGENTS.md']));
 
-console.log('\nJSON-LD script safety:');
-// Asserted against the SHIPPED HTML, not by require()-ing the component.
-// An earlier pass converted JsonLd.tsx to CommonJS JavaScript purely so this
-// test could require it — restructuring production code to suit a test. The
-// component is TSX again; this checks the artifact that actually reaches users,
-// which is the stronger assertion anyway.
-for (const [filename, html] of Object.entries(builtHtml)) {
-  const bodies = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-  check(`${filename}: JSON-LD blocks present`, bodies.length > 0);
-  for (const [i, body] of bodies.entries()) {
-    check(`${filename}[${i}]: no raw '<' survives into the JSON-LD body`,
-      !body.includes('<'), body.slice(0, 200));
-    check(`${filename}[${i}]: no raw U+2028/U+2029 in the JSON-LD body`,
-      !body.includes('\u2028') && !body.includes('\u2029'));
-    let parsed = null;
-    try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
-    check(`${filename}[${i}]: escaped JSON-LD still parses`, parsed !== null);
-  }
-}
+console.log('\ncanonical publication projection:');
+const publicationBoundaries = JSON.parse(readText(path.join(ROOT, 'data/canonical.json')))._publicationBoundaries || {};
+const expectedProjectionKeys = [
+  'basics',
+  'brand',
+  'howHeWorks',
+  'tracks',
+  'interviewQA',
+  'behavioralStories',
+  'whyExponentialOs',
+  'coDialecticDepth',
+  'writingLibrary',
+  'aiFundLessons',
+];
+check('canonical declares the exact public projection key set',
+  JSON.stringify(Object.keys(publicationBoundaries)) === JSON.stringify(expectedProjectionKeys),
+  Object.keys(publicationBoundaries).join(', '));
+check('every public projection block declares a level and justification',
+  expectedProjectionKeys.every((key) => publicationBoundaries[key]?.level && publicationBoundaries[key]?.justification));
+check('llms-full includes declared-safe Exponential OS reasoning',
+  outputs['llms-full.txt'].includes('If you used these tools yesterday and today feels exactly like starting over'));
+check('llms-full includes fully public Co-Dialectic proof-of-work',
+  outputs['llms-full.txt'].includes('Co-Dialectic is a free, open-source LLM prompt and context optimizer'));
+check('llms-full includes the published writing library',
+  outputs['llms-full.txt'].includes('The Cyborg — The Customer Is No Longer Human'));
+check('llms-full excludes unpublished writing metadata',
+  !/PUBLISHING 2026|publishes today|Forthcoming/i.test(outputs['llms-full.txt']));
+check('llms-full includes public AI Fund lessons',
+  outputs['llms-full.txt'].includes('Commercial signal is not the same as user delight'));
+
+const publicMechanismPattern = /\b(?:isolated\s+(?:git\s+)?)?worktrees?\b|\blifecycle\s+hooks?\b|\bpre[-\s]?prompt(?:\s+hooks?)?\b|\bsession[-\s]?end(?:\s+hooks?)?\b|\b(?:model|task)\s+(?:routing|selection)\b|\b(?:cross[-\s]?LLM\s+)?jury\b|\bcascad(?:ing|ed)\s+escalation\b|\b(?:gate|enforcement)\s+wiring\b|\b(?:structural|semantic|hard|verification|independent[-\s]?verification)\s+gates?\b|\benforced\s+in\s+(?:his|the)\s+workflow\s+as\s+a\s+gate\b|\bcross[-\s]?agent\s+coordination\b|\bcarry[-\s]?forward\s+mechanism\b|\brehydrat(?:e|ed|ion)\b|\bmemory\s+subsystem\b|\blong[-\s]?term\s+index\b|\bcontrol\s+plane\b|\bmodel\s+right[-\s]?sizing\b|\bsecurity\s+(?:scanning|tooling)\b|\bSonarQube\b|\bGitHub\s+Actions\s+CI\b|\bvision[-\s]?model\s+review\b|\bproduction\s+agentic\s+systems\s+on\s+it\b/i;
+check('all generated public outputs omit denied mechanism vocabulary',
+  !publicMechanismPattern.test(Object.values(outputs).join('\n')));
 
 console.log('\nrobots.txt:');
 const robots = outputs['robots.txt'];
@@ -528,6 +542,26 @@ check('all 13 FAQ schema pairs equal canonical.interviewQA',
   JSON.stringify(schemaFaqPairs) === JSON.stringify(canonical.interviewQA));
 
 console.log('\nFAQ DOM/schema equality:');
+console.log('\nJSON-LD script safety:');
+// Asserted against the SHIPPED HTML, not by require()-ing the component.
+// An earlier pass converted JsonLd.tsx to CommonJS JavaScript purely so this
+// test could require it — restructuring production code to suit a test. The
+// component is TSX again; this checks the artifact that actually reaches users,
+// which is the stronger assertion anyway.
+for (const [filename, html] of Object.entries(builtHtml)) {
+  const bodies = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  check(`${filename}: JSON-LD blocks present`, bodies.length > 0);
+  for (const [i, body] of bodies.entries()) {
+    check(`${filename}[${i}]: no raw '<' survives into the JSON-LD body`,
+      !body.includes('<'), body.slice(0, 200));
+    check(`${filename}[${i}]: no raw U+2028/U+2029 in the JSON-LD body`,
+      !body.includes('\u2028') && !body.includes('\u2029'));
+    let parsed = null;
+    try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
+    check(`${filename}[${i}]: escaped JSON-LD still parses`, parsed !== null);
+  }
+}
+
 const visibleMeetTextNodes = new Set(extractVisibleTextNodes(builtHtml['meet.html']));
 for (const [index, item] of schemaFaqPairs.entries()) {
   check(`FAQ ${index + 1} question is visible and string-equal`, visibleMeetTextNodes.has(normalizeText(item.q)), item.q);
@@ -570,6 +604,7 @@ const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'xos-230-agent-surfa
 let cleanResult;
 let cleanBuildResult;
 let cleanLeakResult;
+let cleanMechanismLeakResult;
 let cleanDetail = '';
 const cleanOutputs = {};
 let cleanSchemaDate = '';
@@ -665,6 +700,16 @@ try {
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
   });
+
+  const mechanismPoisonedCanonical = JSON.parse(cleanCanonicalSource);
+  mechanismPoisonedCanonical.coDialecticDepth.whatItIs = 'Public worktree implementation details.';
+  fs.writeFileSync(cleanCanonicalPath, `${JSON.stringify(mechanismPoisonedCanonical, null, 2)}\n`);
+  cleanMechanismLeakResult = spawnSync(process.execPath, ['scripts/build-agent-surface.js'], {
+    cwd: tempDirectory,
+    env: cleanEnvironment,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  });
 } catch (error) {
   cleanDetail = error.message;
 } finally {
@@ -682,6 +727,10 @@ check('clean archive rendered ProfilePage dateModified is not 1970',
 check('public leak guard fails hard and names the offending literal',
   cleanLeakResult?.status !== 0 && /Public leak guard rejected public\/.*literal "not public"/.test(cleanLeakResult?.stderr || ''),
   [cleanLeakResult?.stdout, cleanLeakResult?.stderr].filter(Boolean).join('\n'));
+check('public mechanism guard fails hard and names the offending mechanism',
+  cleanMechanismLeakResult?.status !== 0
+    && /Public mechanism guard rejected public\/.*isolated worktree implementation/.test(cleanMechanismLeakResult?.stderr || ''),
+  [cleanMechanismLeakResult?.stdout, cleanMechanismLeakResult?.stderr].filter(Boolean).join('\n'));
 
 console.log(fail === 0 ? '\nALL PASS' : `\n${fail} FAILURES`);
 process.exit(fail === 0 ? 0 : 1);
