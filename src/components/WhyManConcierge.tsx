@@ -334,12 +334,17 @@ export default function WhyManConcierge() {
       const isStream = (response.headers.get('content-type') || '').includes('text/event-stream');
 
       if (isStream && response.body) {
-        setMessages(prev => [...prev, { id: botId, role: 'bot', content: '', visual }]);
         setIsLive(true);
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let sawReasoning = false;
+        // The bubble is created on the FIRST WORD, not up front. This model
+        // streams its reasoning before any answer, so an empty bubble would sit
+        // blank for most of the wait while the thinking indicator disappeared —
+        // dead air that reads as broken. Keep the indicator until words arrive.
+        let bubbleCreated = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -357,16 +362,29 @@ export default function WhyManConcierge() {
               if (!payload || payload === '[DONE]') continue;
               try {
                 const j = JSON.parse(payload);
+                const choice = j.choices?.[0];
+
+                // This model thinks out loud first: delta.reasoning_content
+                // streams before any delta.content. The reasoning is NOT the
+                // answer and must never be rendered as one — but its arrival is
+                // proof the bot is alive, so use it to hold the thinking state.
+                if (choice?.delta?.reasoning_content) sawReasoning = true;
+
                 const delta =
                   j.response ??
-                  j.choices?.[0]?.delta?.content ??
-                  j.choices?.[0]?.text ??
+                  choice?.delta?.content ??
+                  choice?.text ??
                   '';
                 if (delta) {
                   full += delta;
-                  setMessages(prev =>
-                    prev.map(m => (m.id === botId ? { ...m, content: full } : m))
-                  );
+                  if (!bubbleCreated) {
+                    bubbleCreated = true;
+                    setMessages(prev => [...prev, { id: botId, role: 'bot', content: full, visual }]);
+                  } else {
+                    setMessages(prev =>
+                      prev.map(m => (m.id === botId ? { ...m, content: full } : m))
+                    );
+                  }
                 }
               } catch {
                 // partial JSON across chunk boundaries — ignore, it re-arrives
@@ -375,7 +393,28 @@ export default function WhyManConcierge() {
           }
         }
 
-        if (!full.trim()) throw new Error('empty stream');
+        if (!full.trim()) {
+          // The stream completed with reasoning but no answer — usually the
+          // token budget ran out mid-thought. Retry once, buffered, rather than
+          // showing the visitor an error. A recruiter must never see a failure
+          // that a second request would have answered.
+          const retry = await fetch('/api/chat?stream=0', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: updatedMessages.map(m => ({ role: m.role, content: m.content }))
+            }),
+          });
+          const rd = await retry.json();
+          if (!rd.content) throw new Error(sawReasoning ? 'reasoning-only stream' : 'empty stream');
+          full = rd.content;
+          setMessages(prev =>
+            bubbleCreated
+              ? prev.map(m => (m.id === botId ? { ...m, content: full } : m))
+              : [...prev, { id: botId, role: 'bot', content: full, visual }]
+          );
+        }
+
         // Speak once, at the end. Speaking each delta would stutter badly.
         speak(full);
       } else {

@@ -684,26 +684,47 @@ LINKEDIN / CHRONOLOGICAL HISTORY:
     const MAX_TURNS = 8;
     const trimmed = messages.length > MAX_TURNS ? messages.slice(-MAX_TURNS) : messages;
 
+    // Allowlisted only — this is a public endpoint and an open model parameter
+    // would let anyone select an expensive model on the account.
+    const MODELS = {
+      fast: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      kimi: '@cf/moonshotai/kimi-k2.6',
+    };
+    const url = new URL(request.url);
+    // Default is kimi. Measured 2026-08-11 head to head: llama-3.3-70b-fast is
+    // ~3s quicker but hedged and leaked prompt scaffolding to the visitor
+    // ("not explicitly stated in the provided context ... in the interviewQA
+    // section"). On a hiring surface a leaked internal structure costs more
+    // than three seconds. ?model=fast stays available for comparison.
+    const MODEL = MODELS[url.searchParams.get('model')] || MODELS.kimi;
+
     const payload = {
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         ...trimmed,
       ],
-      // The prompt asks for 2-4 sentences, up to 8 for interview questions.
-      // 4096 let the model run for the better part of a minute; measured
-      // 2026-08-11: 10.7s / 57.5s / 24.2s on three ordinary questions.
-      max_tokens: 700,
+      // @cf/moonshotai/kimi-k2.6 is a REASONING model: it emits
+      // delta.reasoning_content (its chain of thought) before any
+      // delta.content. That trace counts against max_tokens.
+      //
+      // 2026-08-11: capping this at 700 to cut latency silently broke the bot —
+      // the reasoning trace consumed the entire budget and delta.content never
+      // arrived, so every answer came back empty (verified in-browser: 705
+      // frames, 704 parsed, 0 characters of content). The budget must cover
+      // reasoning AND the answer. Latency comes from streaming, not from
+      // starving the model.
+      max_tokens: 4096,
       temperature: 0.4,
     };
 
     // Stream by default: a recruiter sees words in ~1-2s instead of waiting for
     // the whole completion. Falls back to a single response if streaming is
     // unavailable, so a stream failure degrades instead of breaking the widget.
-    const wantsStream = new URL(request.url).searchParams.get('stream') !== '0';
+    const wantsStream = url.searchParams.get('stream') !== '0';
 
     if (wantsStream) {
       try {
-        const stream = await env.AI.run('@cf/moonshotai/kimi-k2.6', {
+        const stream = await env.AI.run(MODEL, {
           ...payload,
           stream: true,
         });
@@ -722,7 +743,7 @@ LINKEDIN / CHRONOLOGICAL HISTORY:
       }
     }
 
-    const result = await env.AI.run('@cf/moonshotai/kimi-k2.6', payload);
+    const result = await env.AI.run(MODEL, payload);
 
     // Response shape varies by model family: Workers-AI style returns a top-level
     // 'response' field; OpenAI-compatible models nest it under choices[0].message.
