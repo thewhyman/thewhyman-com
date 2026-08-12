@@ -122,7 +122,7 @@ function IntentBanner() {
   );
 }
 
-export default function MeetPageContent() {
+export default function MeetPageContent({ children }: { children?: React.ReactNode }) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -146,7 +146,7 @@ export default function MeetPageContent() {
       <div className="absolute top-0 -left-1/4 w-[800px] h-[800px] bg-teal-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 -right-1/4 w-[600px] h-[600px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-      <section className="relative z-10 pt-24 pb-12 px-2 md:px-8">
+      <header className="relative z-10 pt-24 pb-12 px-2 md:px-8">
         <div className="max-w-screen-xl mx-auto flex flex-col items-center text-center">
           <IntentBanner />
           <motion.div
@@ -178,10 +178,16 @@ export default function MeetPageContent() {
             I guard my calendar the way I guard production systems — no waste, no noise. The pricing is intentional: it signals that your time matters too. Show up prepared and we&apos;ll move fast.
           </motion.p>
         </div>
-      </section>
+      </header>
 
       {/* Engagement Cards */}
-      <section className="relative z-10 px-2 md:px-8">
+      <section aria-labelledby="engagement-heading" className="relative z-10 px-2 md:px-8">
+        <h2
+          id="engagement-heading"
+          className="max-w-screen-xl mx-auto mb-10 text-2xl md:text-3xl font-black tracking-tight text-zinc-100"
+        >
+          How would you like to connect?
+        </h2>
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -254,6 +260,10 @@ export default function MeetPageContent() {
           All sessions remote • Book at thewhyman.bio • Time is the only non-renewable resource
         </motion.p>
       </section>
+
+      {/* Server-rendered FAQ, passed in from the server page so its 13 answers
+          ship in the static HTML rather than behind this client boundary. */}
+      {children}
 
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />

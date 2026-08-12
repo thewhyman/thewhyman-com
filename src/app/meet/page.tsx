@@ -3,6 +3,7 @@ import canonical from '../../../data/canonical.json';
 import JsonLd from '@/components/JsonLd';
 import { faqPageSchema } from '@/lib/structuredData';
 import MeetPageContent from './MeetPageContent';
+import FaqSection from '@/components/FaqSection';
 
 export const metadata: Metadata = {
   title: `Meet | ${canonical.basics.name}`,
@@ -13,7 +14,9 @@ export default function MeetPage() {
   return (
     <>
       <JsonLd data={faqPageSchema} />
-      <MeetPageContent />
+      <MeetPageContent>
+        <FaqSection />
+      </MeetPageContent>
     </>
   );
 }

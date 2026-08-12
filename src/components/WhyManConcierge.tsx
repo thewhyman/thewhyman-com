@@ -582,6 +582,7 @@ export default function WhyManConcierge() {
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Close concierge"
                 className="p-2 hover:bg-white/5 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5 text-zinc-500" />

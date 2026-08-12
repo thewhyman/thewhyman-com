@@ -33,6 +33,7 @@ function PostCard({ post, i }: { post: FeaturedPost; i: number }) {
       transition={{ delay: i * 0.2 }}
       className="glass-card p-10 group hover:border-purple-500/30 transition-all border-white/5 relative flex flex-col justify-start overflow-hidden"
     >
+      <article className="flex flex-1 flex-col">
       {showFallback ? (
         <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden border border-white/5 relative bg-gradient-to-br from-zinc-900 to-zinc-800 shrink-0 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
@@ -72,6 +73,7 @@ function PostCard({ post, i }: { post: FeaturedPost; i: number }) {
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">{post.description}</p>
         </div>
       </div>
+      </article>
     </motion.a>
   );
 }
@@ -101,7 +103,7 @@ export default function HeroPage() {
       <div className="absolute bottom-0 -right-1/4 w-[600px] h-[600px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       {/* Hero Content */}
-      <section className="relative z-10 pt-32 pb-20 px-8">
+      <header className="relative z-10 pt-32 pb-20 px-8">
         <div className="max-w-screen-xl mx-auto flex flex-col items-center text-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -179,7 +181,7 @@ export default function HeroPage() {
              </a>
           </motion.div>
         </div>
-      </section>
+      </header>
 
       {/* Methodology Section */}
       <section id="methodology" className="relative z-10 py-32 border-y border-white/5 bg-white/[0.01]">
@@ -187,7 +189,7 @@ export default function HeroPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase mb-4">THE CURIOUS WHY METHOD</div>
-              <h2 className="text-4xl font-bold mb-8 leading-tight text-white">Reliability is a byproduct of profound curiosity.</h2>
+              <h2 className="text-4xl font-bold mb-8 leading-tight text-white">Why is reliability a byproduct of profound curiosity?</h2>
               <div className="space-y-6 text-zinc-400 leading-relaxed text-lg">
                 <p>
                   As an Engineering Leader, I have found that the most complex technical challenges—from managing $40B portfolios at Google to compressing supply chain recall from months to seconds—are solved by identifying the core &ldquo;Why.&rdquo;

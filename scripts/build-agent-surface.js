@@ -504,10 +504,28 @@ function buildOpenApi() {
 }
 
 function buildHeaders() {
+  // CSP rolls out in Report-Only mode first. Promote this exact policy to an
+  // enforcing Content-Security-Policy only after production reports show zero
+  // violations: blocked hydration/GA code can look rendered while being inert.
+  const contentSecurityPolicy = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'self'",
+    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
+    "img-src 'self' data: https://media.licdn.com https://substack-post-media.s3.amazonaws.com https://substackcdn.com https://*.google-analytics.com https://*.googletagmanager.com",
+    "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+    "frame-src 'self' https://docs.google.com",
+    "form-action 'self'",
+  ].join('; ');
+
   return [
     '/*',
     '  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload',
     '  X-Frame-Options: SAMEORIGIN',
+    `  Content-Security-Policy-Report-Only: ${contentSecurityPolicy}`,
     '  Link: </llms.txt>; rel="alternate"; type="text/plain", </sitemap.xml>; rel="sitemap"; type="application/xml"',
     '',
   ].join('\n');
