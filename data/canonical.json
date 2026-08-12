@@ -2,7 +2,7 @@
   "basics": {
     "name": "Anand Vallamsetla",
     "title": "Senior Engineering Leader \u00b7 Applied AI Architect \u00b7 Agentic Systems & LLM Platforms",
-    "summary": "Hands-on engineering leader and applied AI architect with 25+ years of experience (2000-present) \u2014 sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026)."
+    "summary": "Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) \u2014 sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026)."
   },
   "brand": {
     "originStory": "First, Anand's philosophy was deeply shaped by Simon Sinek's 'Start with Why' video. Later, while doing his Exec MBA at UC Berkeley Haas School of Business, he learned the 'Toyota - 5 Whys Framework' in his operations class. When he returned to his role as a Technical Director at Charles Schwab, he started constantly asking 'why' to drill down to the root cause of every engineering problem. It is critical to note his intent: his 'why' is never about challenging authority, being defensive, or arrogance. It is a strictly 'curious why' driven by a desire to fundamentally solve systemic root causes. Because of this persistent, curious questioning, his colleagues jokingly began announcing, 'Here comes The Why Guy!' whenever he walked in. When it came time to find a catchy Twitter handle and domain name, 'The Why Man' was the best available."
@@ -306,7 +306,7 @@
     },
     {
       "q": "He has run his own thing. Will he leave in a year to start a company?",
-      "a": "A fair question, and he does not deflect it. He knows precisely what solo work gives and what it does not: full autonomy, but no scale and no distribution. Those two are what he wants back, and they are what a strong team provides and independent work cannot. The consistent pattern across 25 years is that he builds the system that makes the whole team faster, at Google across a $40B portfolio and again in his own harness. That is a long-horizon instinct rather than a short-tenure one. What holds him is a hard problem with real reach behind it and the scope to architect the system around it."
+      "a": "A fair question, and he does not deflect it. He knows precisely what solo work gives and what it does not: full autonomy, but no scale and no distribution. Those two are what he wants back, and they are what a strong team provides and independent work cannot. The consistent pattern across 26 years is that he builds the system that makes the whole team faster, at Google across a $40B portfolio and again in his own harness. That is a long-horizon instinct rather than a short-tenure one. What holds him is a hard problem with real reach behind it and the scope to architect the system around it."
     }
   ],
   "keyMetricsTripwire": {
@@ -323,7 +323,7 @@
     "berkeley": "1,500+ Fortune 500 executives taught (CTOs, VPs, Directors)",
     "aifund": "~150 companies scanned across 4 segments; 36 grounded outreaches; 19 of 22 major API providers confirmed the gap",
     "hackathons": "10+ hackathon wins across AI and Blockchain",
-    "experience": "25+ years (2000-present); 10+ years engineering management"
+    "experience": "26 years (2000-present); 10+ years engineering management"
   },
   "behavioralStories": [
     {

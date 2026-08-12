@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "prebuild": "node scripts/fetch-substack.mjs && node scripts/build-cloudflare-function.js",
-    "test:visual": "node scripts/__tests__/concierge-visual-gate.test.js"
+    "test:visual": "node scripts/__tests__/concierge-visual-gate.test.js",
+    "test:chips": "node scripts/__tests__/concierge-opening-chips.test.js",
+    "test": "npm run test:visual && npm run test:chips && npm run test:context",
+    "test:context": "node scripts/__tests__/context-selection.test.js"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.2",

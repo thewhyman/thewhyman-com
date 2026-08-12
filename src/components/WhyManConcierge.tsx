@@ -45,8 +45,21 @@ export default function WhyManConcierge() {
 
   // Question bank. `chip` is the short label shown in the UI; `ask` is the full
   // question sent to the model. `tags` drive contextual surfacing.
-  type Q = { chip: string; ask: string; dim?: 'BUILD' | 'INVENT' | 'LEAD'; tags: string[]; opener?: boolean };
+  type Q = { chip: string; ask: string; dim?: 'BUILD' | 'INVENT' | 'LEAD'; tags: string[]; opener?: boolean; broad?: boolean };
   const QUESTIONS: Q[] = [
+    // — BROAD OPENERS: an interviewer starts wide ("tell me about his leadership")
+    //   and narrows from the answer. These five are the only `broad` entries, so
+    //   they own the first row; everything below is a narrowing follow-up that
+    //   surfaces once the visitor picks a lane.
+    { chip: "Tell me about Anand", ask: "Tell me about Anand — who he is, what he does, and what he's known for.", tags: ['about','who','overview','background','summary','intro','tell'], broad: true },
+    { chip: "His leadership", ask: "Tell me about Anand's leadership — team sizes, scope, and how he actually leads.", dim: 'LEAD', tags: ['leadership','manager','team','people','lead','scope'], broad: true },
+    { chip: "How he executes", ask: "How does Anand execute and ship? Walk me through how he takes something from decision to delivered.", dim: 'BUILD', tags: ['execution','ship','delivery','build','process','how'], broad: true },
+    { chip: "What he's invented", ask: "What has Anand invented or taken from zero to one?", dim: 'INVENT', tags: ['invent','0to1','innovation','product','new'], broad: true },
+    { chip: "Story behind the name", ask: "What's the story behind the name 'The Why Man'?", tags: ['name','brand','story','why'], broad: true },
+    // Scale is a NARROWING follow-up under leadership, not an opener — an
+    // interviewer asks "how big?" after "tell me about your leadership".
+    { chip: "Scale he's operated at", ask: "What scale has Anand operated at — teams, budget, systems, users?", dim: 'LEAD', tags: ['scale','google','roi','budget','portfolio','size','leadership','team'] },
+
     // — the differentiator
     { chip: "Why his own harness?", ask: "Why did Anand build his own multi-agent harness instead of using an existing framework?", dim: 'BUILD', tags: ['harness','agent','ai','build','architecture'], opener: true },
     { chip: "What is Exponential OS?", ask: "What is Exponential OS and what are its layers?", dim: 'BUILD', tags: ['harness','exponential','os','platform','architecture'], opener: true },
@@ -107,8 +120,50 @@ export default function WhyManConcierge() {
     // job-seeking. Tagged widely so it surfaces the moment anyone probes fit or motivation.
     { chip: "Why is he looking?", ask: "Why is Anand looking for a new role, and what is he optimizing for?", tags: ['fit','role','targeting','hiring','looking','motivation','leave','founder','tenure','next','opportunity','aifund'] },
     { chip: "Teaching + speaking", ask: "What is his teaching and public speaking experience?", tags: ['teaching','berkeley','speaking','executives'] },
-    { chip: "Story behind the name", ask: "What's the story behind the name 'The Why Man'?", tags: ['name','brand','story','why'], opener: true },
   ];
+
+  // The opening row is the first impression a recruiter gets. It used to be
+  // "whichever `opener` items appear first in the array", which had silently
+  // drifted to three Exponential OS chips out of five — a product pitch to
+  // someone who came to evaluate a candidate.
+  //
+  // Two rules now govern it, both structural rather than a hand-kept list:
+  //   1. BROAD FIRST. An interviewer opens wide ("tell me about his leadership")
+  //      and narrows from the answer. The opening row offers themes; the
+  //      narrowing questions surface as tag-matched follow-ups once they pick.
+  //   2. COVER THE CATEGORIES. The site is organised around BUILD / INVENT /
+  //      LEAD, so the first row must span all three plus a human question.
+  // Add or rename chips freely — coverage is enforced here, not by memory.
+  // Slot 1 is the universal interview opener — "tell me about yourself" — which
+  // every real conversation starts with and which then branches into a category.
+  // Slots 2-4 are the three site dimensions. Slot 5 is the human hook.
+  const OPENING_SLOTS: Array<'LEAD' | 'BUILD' | 'INVENT' | 'HUMAN'> = [
+    'HUMAN',   // "Tell me about Anand" — the standard first question
+    'LEAD',    // leadership
+    'BUILD',   // execution — how he ships
+    'INVENT',  // 0 to 1
+    'HUMAN',   // story behind the name
+  ];
+
+  const pickOpeners = (pool: Q[]): Q[] => {
+    const out: Q[] = [];
+    const take = (want: string, broadOnly: boolean) =>
+      pool.find(q =>
+        !out.includes(q) &&
+        (broadOnly ? q.broad : (q.broad || q.opener)) &&
+        (want === 'HUMAN' ? !q.dim : q.dim === want)
+      );
+    for (const want of OPENING_SLOTS) {
+      const q = take(want, true) ?? take(want, false);
+      if (q) out.push(q);
+    }
+    // Top up only if a whole category is exhausted mid-conversation.
+    for (const q of pool) {
+      if (out.length >= 5) break;
+      if (!out.includes(q) && (q.broad || q.opener)) out.push(q);
+    }
+    return out.slice(0, 5);
+  };
 
   const iconFor = (q: Q) =>
     q.dim === 'BUILD' ? <Cpu className="w-3 h-3" />
@@ -237,12 +292,18 @@ export default function WhyManConcierge() {
   const suggestions = React.useMemo(() => {
     const lastUser = [...messages].reverse().find(m => m.role === 'user')?.content.toLowerCase() ?? '';
     const pool = QUESTIONS.filter(q => !asked.includes(q.chip));
-    if (!lastUser) return pool.filter(q => q.opener).slice(0, 5);
+
+    const openers = pickOpeners(pool);
+
+    if (!lastUser) return openers;
+
+    // Follow-ups: score every chip against what they just asked. Unchanged —
+    // this is what makes the row track the conversation instead of sitting static.
     const scored = pool
       .map(q => ({ q, score: q.tags.reduce((n, t) => n + (lastUser.includes(t) ? 1 : 0), 0) }))
       .sort((a, b) => b.score - a.score);
     const related = scored.filter(s => s.score > 0).slice(0, 4).map(s => s.q);
-    const filler = pool.filter(q => q.opener && !related.includes(q)).slice(0, 5 - related.length);
+    const filler = openers.filter(q => !related.includes(q)).slice(0, 5 - related.length);
     return [...related, ...filler].slice(0, 5);
   }, [messages, asked]);
 
@@ -584,7 +645,11 @@ export default function WhyManConcierge() {
 
             {/* Suggestions & Input */}
             <div className="p-6 border-t border-white/5 bg-white/[0.02] space-y-4">
-              <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-0.5">
+              {/* Wrap, do not scroll. These were in an overflow-x row, so the
+                  4th and 5th chips sat off-screen behind an invisible scrollbar
+                  and read as cut off. Wrapping shows every suggestion at once,
+                  which is the whole point of offering them. */}
+              <div className="flex flex-wrap gap-2 -mx-1 px-1 pb-0.5">
                 {suggestions.map((q) => (
                   <button
                     key={q.chip}
