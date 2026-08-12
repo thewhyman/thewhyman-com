@@ -1,0 +1,568 @@
+// Acceptance gate for the built agent-facing surface (XOS-230).
+//
+// This deliberately reads out/, not implementation source. A source change that
+// never reaches the static export is not a shipped feature. Exceptions are
+// derivation evidence (canonical JSON, the declared route table, git history, and
+// the repository image path) and source-only contracts for conditionally mounted UI.
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { execFileSync, spawnSync } = require('child_process');
+
+const ROOT = path.resolve(__dirname, '../..');
+const OUT = path.join(ROOT, 'out');
+const SITE_URL = 'https://thewhyman.com';
+const GENERATED_FILES = [
+  'robots.txt',
+  'sitemap.xml',
+  'llms.txt',
+  'llms-full.txt',
+  'AGENTS.md',
+  'pricing.md',
+  'openapi.json',
+  '_headers',
+];
+const SOURCE_COMMIT_PATHS = [
+  'data/canonical.json',
+  'data/linkedin_public.json',
+];
+const NAMED_AGENTS = [
+  'GPTBot',
+  'ClaudeBot',
+  'Google-Extended',
+  'CCBot',
+  'PerplexityBot',
+  'ChatGPT-User',
+  'Claude-User',
+  'OAI-SearchBot',
+  'Claude-SearchBot',
+  'Applebot-Extended',
+  'Amazonbot',
+  'meta-externalagent',
+  'Bytespider',
+];
+
+let fail = 0;
+const check = (name, condition, detail = '') => {
+  const ok = Boolean(condition);
+  const readableDetail = detail.length > 1200 ? `${detail.slice(0, 1200)}…` : detail;
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok || !readableDetail ? '' : `  <- ${readableDetail}`}`);
+  if (!ok) fail++;
+  return ok;
+};
+
+function readText(file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+function walkFiles(directory, predicate, found = []) {
+  if (!fs.existsSync(directory)) return found;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) walkFiles(absolute, predicate, found);
+    else if (predicate(absolute)) found.push(absolute);
+  }
+  return found;
+}
+
+function decodeEntities(value) {
+  const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+  return value.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi, (entity, code) => {
+    if (code[0] !== '#') return named[code.toLowerCase()];
+    const number = code[1].toLowerCase() === 'x'
+      ? Number.parseInt(code.slice(2), 16)
+      : Number.parseInt(code.slice(1), 10);
+    return String.fromCodePoint(number);
+  });
+}
+
+function normalizeText(value) {
+  return decodeEntities(String(value)).replace(/\s+/g, ' ').trim();
+}
+
+function validateXmlEntities(value) {
+  const residue = value.replace(/&(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-f]+);/gi, '');
+  if (residue.includes('&')) throw new Error('contains an unescaped or unknown entity');
+}
+
+function assertWellFormedXml(xml) {
+  const stack = [];
+  let cursor = 0;
+  let roots = 0;
+  const tokenPattern = /<[^>]*>/g;
+  let token;
+
+  while ((token = tokenPattern.exec(xml))) {
+    const text = xml.slice(cursor, token.index);
+    validateXmlEntities(text);
+    if (stack.length === 0 && text.trim()) throw new Error('text exists outside the root element');
+
+    const tag = token[0];
+    if (/^<\?xml\s+version=["']1\.0["'](?:\s+encoding=["'][^"']+["'])?\s*\?>$/i.test(tag)) {
+      if (token.index !== 0) throw new Error('XML declaration is not first');
+    } else if (/^<!--(?:[\s\S]*?)-->$/.test(tag)) {
+      // Comments do not affect nesting.
+    } else if (/^<\//.test(tag)) {
+      const closing = tag.match(/^<\/([A-Za-z_][\w:.-]*)\s*>$/);
+      if (!closing) throw new Error(`invalid closing tag ${tag}`);
+      const expected = stack.pop();
+      if (expected !== closing[1]) throw new Error(`closing ${closing[1]} while ${expected || 'nothing'} is open`);
+    } else {
+      const opening = tag.match(/^<([A-Za-z_][\w:.-]*)([\s\S]*?)(\/?)>$/);
+      if (!opening) throw new Error(`invalid opening tag ${tag}`);
+      const attributeText = opening[2];
+      const withoutAttributes = attributeText.replace(
+        /\s+[A-Za-z_:][\w:.-]*\s*=\s*(?:"[^"]*"|'[^']*')/g,
+        '',
+      );
+      if (withoutAttributes.trim()) throw new Error(`invalid attributes in ${tag}`);
+      validateXmlEntities(attributeText);
+      if (stack.length === 0) roots++;
+      if (!opening[3]) stack.push(opening[1]);
+    }
+    cursor = tokenPattern.lastIndex;
+  }
+
+  const trailing = xml.slice(cursor);
+  validateXmlEntities(trailing);
+  if (trailing.trim()) throw new Error('trailing text exists outside the root element');
+  if (stack.length) throw new Error(`unclosed tag ${stack[stack.length - 1]}`);
+  if (roots !== 1) throw new Error(`expected one root element, found ${roots}`);
+}
+
+function routeForHtml(file) {
+  let relative = path.relative(OUT, file).split(path.sep).join('/').replace(/\.html$/, '');
+  if (relative === 'index') return '/';
+  relative = relative.replace(/\/index$/, '');
+  return `/${relative}`;
+}
+
+function setDifference(left, right) {
+  return [...left].filter((value) => !right.has(value)).sort();
+}
+
+function extractJsonLd(html, filename) {
+  const blocks = [];
+  for (const script of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    if (!/\btype\s*=\s*["']application\/ld\+json["']/i.test(script[1])) continue;
+    try {
+      blocks.push(JSON.parse(script[2]));
+    } catch (error) {
+      throw new Error(`${filename} JSON-LD does not parse: ${error.message}`);
+    }
+  }
+  return blocks;
+}
+
+function collectStringLeaves(value, output = []) {
+  if (typeof value === 'string') output.push(value);
+  else if (Array.isArray(value)) value.forEach((child) => collectStringLeaves(child, output));
+  else if (value && typeof value === 'object') Object.values(value).forEach((child) => collectStringLeaves(child, output));
+  return output;
+}
+
+function collectTypedNodes(value, output = []) {
+  if (Array.isArray(value)) value.forEach((child) => collectTypedNodes(child, output));
+  else if (value && typeof value === 'object') {
+    if (typeof value['@type'] === 'string') output.push(value);
+    Object.values(value).forEach((child) => collectTypedNodes(child, output));
+  }
+  return output;
+}
+
+function extractVisibleTextNodes(html) {
+  const withoutNonVisible = html
+    .replace(/<!--([\s\S]*?)-->/g, '')
+    .replace(/<(script|style|template|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+  return withoutNonVisible
+    .split(/<[^>]+>/g)
+    .map(normalizeText)
+    .filter(Boolean);
+}
+
+function hiddenHeadingViolations(html, filename) {
+  const violations = [];
+  const withoutScripts = html.replace(/<(script|style|template|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+  const tags = [...withoutScripts.matchAll(/<\/?([A-Za-z][\w:-]*)\b([^>]*)>/g)];
+  const stack = [];
+  const voidTags = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+  const isHidden = (attributes) => {
+    const className = (attributes.match(/\bclass=["']([^"']*)["']/i) || [])[1] || '';
+    const style = (attributes.match(/\bstyle=["']([^"']*)["']/i) || [])[1] || '';
+    return /(?:^|\s)(?:sr-only|visually-hidden|screen-reader-only|a11y-hidden|hidden|invisible)(?:\s|$)/.test(className)
+      || /(?:^|\s)aria-hidden=["']true["']/i.test(attributes)
+      || /(?:^|\s)hidden(?:\s|=|$)/i.test(attributes)
+      || /(?:display\s*:\s*none|visibility\s*:\s*hidden|clip(?:-path)?\s*:)/i.test(style);
+  };
+
+  for (const match of tags) {
+    const raw = match[0];
+    const name = match[1].toLowerCase();
+    if (raw.startsWith('</')) {
+      const index = stack.map((entry) => entry.name).lastIndexOf(name);
+      if (index !== -1) stack.splice(index);
+      continue;
+    }
+    const inheritedHidden = stack.some((entry) => entry.hidden);
+    const hidden = inheritedHidden || isHidden(match[2]);
+    if (/^h[1-6]$/.test(name) && hidden) violations.push(`${filename}: ${raw.slice(0, 160)}`);
+    if (!voidTags.has(name) && !raw.endsWith('/>')) stack.push({ name, hidden });
+  }
+  return violations;
+}
+
+function hasButtonWithName(html, accessibleName) {
+  return [...html.matchAll(/<button\b([^>]*)>/gi)].some((match) => {
+    const label = (match[1].match(/\baria-label=["']([^"']+)["']/i) || [])[1];
+    return normalizeText(label || '') === accessibleName;
+  });
+}
+
+console.log('\ngenerated files:');
+const outputs = {};
+for (const filename of GENERATED_FILES) {
+  const contents = readText(path.join(OUT, filename));
+  outputs[filename] = contents;
+  check(`${filename} has emitted content`, contents.trim().length > 0, 'missing or empty in out/');
+}
+check('llms.txt is markdown content', /^#\s+\S/m.test(outputs['llms.txt']), 'missing Markdown heading');
+check('llms-full.txt is markdown content', /^#\s+\S/m.test(outputs['llms-full.txt']), 'missing Markdown heading');
+check('AGENTS.md is markdown content', /^#\s+\S/m.test(outputs['AGENTS.md']), 'missing Markdown heading');
+check('pricing.md is markdown content', /^#\s+\S/m.test(outputs['pricing.md']), 'missing Markdown heading');
+check('_headers contains a header rule', /^\/\*/m.test(outputs._headers), 'missing /* rule');
+
+console.log('\nrobots.txt:');
+const robots = outputs['robots.txt'];
+const universalRobotsGroup = robots.split(/\r?\n\s*\r?\n/).find((group) => /^User-agent:\s*\*\s*$/mi.test(group)) || '';
+check('robots has the allow-all policy', /^Allow:\s*\/\s*$/mi.test(universalRobotsGroup));
+check('robots has Content-Signal', /(?:^|\n)Content-Signal:\s*\S+/m.test(robots));
+check('robots has Sitemap', new RegExp(`(?:^|\\n)Sitemap:\\s*${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/sitemap\\.xml(?:\\r?$)`, 'm').test(robots));
+check('robots has zero Disallow lines', !/(?:^|\n)Disallow:/mi.test(robots));
+check('robots has zero HTML doctypes', !/<!doctype/i.test(robots));
+for (const agent of NAMED_AGENTS) {
+  const group = new RegExp(`User-agent:\\s*${agent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\r?\\nAllow:\\s*/`, 'i');
+  check(`robots explicitly allows ${agent}`, group.test(robots));
+}
+
+console.log('\nsitemap.xml:');
+let xmlError = '';
+try {
+  assertWellFormedXml(outputs['sitemap.xml']);
+} catch (error) {
+  xmlError = error.message;
+}
+check('sitemap is well-formed XML', !xmlError, xmlError);
+const sitemapLocations = new Set(
+  [...outputs['sitemap.xml'].matchAll(/<loc>([\s\S]*?)<\/loc>/g)].map((match) => decodeEntities(match[1].trim())),
+);
+const htmlRoutes = new Set(
+  walkFiles(OUT, (file) => file.endsWith('.html') && path.basename(file) !== '404.html')
+    .map(routeForHtml),
+);
+const sitemapRoutes = new Set();
+const invalidLocations = [];
+for (const location of sitemapLocations) {
+  try {
+    const url = new URL(location);
+    if (url.origin !== SITE_URL || url.search || url.hash) invalidLocations.push(location);
+    else sitemapRoutes.add(url.pathname === '/' ? '/' : url.pathname.replace(/\/$/, ''));
+  } catch {
+    invalidLocations.push(location);
+  }
+}
+check('every sitemap loc is a canonical site URL', invalidLocations.length === 0, invalidLocations.join(', '));
+const routesMissingFromSitemap = setDifference(htmlRoutes, sitemapRoutes);
+const routesMissingFromOut = setDifference(sitemapRoutes, htmlRoutes);
+check('every built HTML route is in sitemap', routesMissingFromSitemap.length === 0, routesMissingFromSitemap.join(', '));
+check('every sitemap route exists as built HTML', routesMissingFromOut.length === 0, routesMissingFromOut.join(', '));
+
+console.log('\nopenapi.json:');
+let openapi;
+let openapiError = '';
+try {
+  openapi = JSON.parse(outputs['openapi.json']);
+} catch (error) {
+  openapiError = error.message;
+}
+check('openapi.json parses as JSON', !openapiError, openapiError);
+check('openapi.json declares OpenAPI 3.x', /^3(?:\.|$)/.test(openapi?.openapi || ''), `got ${openapi?.openapi}`);
+check('openapi.json declares POST /api/chat', Boolean(openapi?.paths?.['/api/chat']?.post));
+const chatSchema = openapi?.components?.schemas;
+check('OpenAPI request requires messages', chatSchema?.ChatRequest?.required?.includes('messages'));
+check('OpenAPI message requires role and content', ['role', 'content'].every((key) => chatSchema?.ChatMessage?.required?.includes(key)));
+check('OpenAPI response declares SSE and JSON', Boolean(
+  openapi?.paths?.['/api/chat']?.post?.responses?.[200]?.content?.['text/event-stream']
+  && openapi?.paths?.['/api/chat']?.post?.responses?.[200]?.content?.['application/json'],
+));
+const handlerSource = readText(path.join(ROOT, 'functions/api/chat.js'));
+check('OpenAPI roles match the shipped handler',
+  ['user', 'bot', 'assistant'].every((role) => handlerSource.includes(`m.role === '${role}'`))
+    && ['user', 'bot', 'assistant'].every((role) => chatSchema?.ChatMessage?.properties?.role?.enum?.includes(role)),
+  'handler/schema role contract drifted');
+check('OpenAPI streaming default matches the shipped handler',
+  handlerSource.includes("url.searchParams.get('stream') !== '0'")
+    && Boolean(openapi?.paths?.['/api/chat']?.post?.parameters?.find((item) => item.name === 'stream')),
+  'stream query contract drifted');
+
+console.log('\nJSON-LD anti-fabrication contract:');
+const canonical = JSON.parse(readText(path.join(ROOT, 'data/canonical.json')));
+const linkedin = JSON.parse(readText(path.join(ROOT, 'data/linkedin_public.json')));
+const sourceLeaves = new Set([...collectStringLeaves(canonical), ...collectStringLeaves(linkedin)]);
+const builtHtml = {
+  'index.html': readText(path.join(OUT, 'index.html')),
+  'meet.html': readText(path.join(OUT, 'meet.html')),
+};
+const blocksByFile = {};
+let jsonLdError = '';
+try {
+  for (const [filename, html] of Object.entries(builtHtml)) blocksByFile[filename] = extractJsonLd(html, filename);
+} catch (error) {
+  jsonLdError = error.message;
+}
+check('all emitted JSON-LD blocks parse as JSON', !jsonLdError, jsonLdError);
+
+const nodesByFile = Object.fromEntries(
+  Object.entries(blocksByFile).map(([filename, blocks]) => [filename, collectTypedNodes(blocks)]),
+);
+const typesFor = (filename) => new Set((nodesByFile[filename] || []).map((node) => node['@type']));
+check('index ships Person, WebSite, and ProfilePage',
+  ['Person', 'WebSite', 'ProfilePage'].every((type) => typesFor('index.html').has(type)));
+check('meet ships Person, WebSite, ProfilePage, and FAQPage',
+  ['Person', 'WebSite', 'ProfilePage', 'FAQPage'].every((type) => typesFor('meet.html').has(type)));
+
+const allNodes = Object.values(nodesByFile).flat();
+const findNodes = (type) => allNodes.filter((node) => node['@type'] === type);
+const people = findNodes('Person');
+const websites = findNodes('WebSite');
+const faqPages = findNodes('FAQPage');
+check('every Person has required non-empty values', people.length > 0 && people.every((person) =>
+  ['name', 'jobTitle', 'url'].every((key) => typeof person[key] === 'string' && person[key].trim())));
+check('every WebSite has required non-empty values', websites.length > 0 && websites.every((website) =>
+  ['name', 'url'].every((key) => typeof website[key] === 'string' && website[key].trim())));
+check('FAQPage has exactly 13 entries', faqPages.length === 1 && faqPages[0].mainEntity?.length === 13,
+  `found ${faqPages.length} FAQPage nodes and ${faqPages[0]?.mainEntity?.length ?? 0} entries`);
+check('every FAQ entry has a non-empty question and answer', faqPages.length === 1 && faqPages[0].mainEntity?.every((question) =>
+  typeof question.name === 'string' && question.name.trim()
+    && typeof question.acceptedAnswer?.text === 'string' && question.acceptedAnswer.text.trim()));
+
+const externalRouteSource = readText(path.join(ROOT, 'src/data/navbarExternalLinks.ts'));
+const productRouteSource = externalRouteSource.match(/products:\s*\[([\s\S]*?)\],\s*profiles:/)?.[1] || '';
+const profileRouteSource = externalRouteSource.match(/profiles:\s*\{([\s\S]*?)\n  \},\n\};/)?.[1] || '';
+const declaredProductUrls = [...productRouteSource.matchAll(/\bhref:\s*['"]([^'"]+)['"]/g)].map((match) => match[1]);
+const declaredPersonalProfileUrls = [...profileRouteSource.matchAll(/\bhref:\s*['"]([^'"]+)['"]/g)].map((match) => match[1]);
+const expectedCommitDate = execFileSync(
+  'git',
+  ['-C', ROOT, 'log', '-1', '--format=%cI', '--', ...SOURCE_COMMIT_PATHS],
+  { encoding: 'utf8' },
+).trim();
+const ALLOWED_PROPERTIES = new Set([
+  '@context', '@graph', '@type', '@id', 'name', 'jobTitle', 'description', 'url', 'image',
+  'knowsAbout', 'alumniOf', 'worksFor', 'sameAs', 'dateModified', 'mainEntity',
+  'acceptedAnswer', 'text',
+]);
+const ALLOWED_STRUCTURAL_VALUES = new Set([
+  'https://schema.org', 'Person', 'Organization', 'EducationalOrganization', 'WebSite',
+  'ProfilePage', 'FAQPage', 'Question', 'Answer',
+]);
+const ALLOWED_IDS = new Set(['#person', '#website', '#profile']);
+const classCounts = { 1: 0, 2: 0, 3: 0 };
+const classificationErrors = [];
+
+function validateDerived(key, value, location) {
+  if (key === 'dateModified') {
+    return value === expectedCommitDate ? '' : `${location}: dateModified is not ${expectedCommitDate}`;
+  }
+  if (key === 'image') {
+    const relativeAsset = '/icon.png';
+    if (value !== `${SITE_URL}${relativeAsset}`) return `${location}: image was not reproduced from base URL + ${relativeAsset}`;
+    if (!fs.existsSync(path.join(ROOT, 'src/app', relativeAsset.slice(1)))) return `${location}: image source asset does not exist`;
+    return '';
+  }
+  try {
+    const url = new URL(value);
+    if (url.origin !== SITE_URL) return `${location}: derived URL is outside ${SITE_URL}`;
+    const route = url.pathname === '/' ? '/' : url.pathname.replace(/\/$/, '');
+    if (!htmlRoutes.has(route)) return `${location}: ${route} is absent from the built route table`;
+    if (key === '@id' && !ALLOWED_IDS.has(url.hash)) return `${location}: undeclared identity fragment ${url.hash}`;
+    return '';
+  } catch {
+    return `${location}: invalid derived URL ${value}`;
+  }
+}
+
+function classifyJsonLd(value, location = '$', schemaType = '') {
+  if (Array.isArray(value)) {
+    value.forEach((child, index) => classifyJsonLd(child, `${location}[${index}]`, schemaType));
+    return;
+  }
+  if (!value || typeof value !== 'object') return;
+
+  const currentType = typeof value['@type'] === 'string' ? value['@type'] : schemaType;
+  for (const [key, child] of Object.entries(value)) {
+    const childLocation = `${location}.${key}`;
+    if (!ALLOWED_PROPERTIES.has(key)) classificationErrors.push(`${childLocation}: schema property is not allowlisted`);
+
+    if (typeof child === 'string') {
+      if (key === '@context' || key === '@type') {
+        classCounts[2]++;
+        if (!ALLOWED_STRUCTURAL_VALUES.has(child)) classificationErrors.push(`${childLocation}: structural value ${JSON.stringify(child)} is not allowlisted`);
+        continue;
+      }
+
+      const isClass1 = (
+        (currentType === 'Person' && ['name', 'jobTitle', 'description'].includes(key))
+        || (currentType === 'Organization' && ['name', 'description'].includes(key))
+        || (currentType === 'EducationalOrganization' && ['name', 'description'].includes(key))
+        || (currentType === 'WebSite' && key === 'name')
+        || (currentType === 'Question' && key === 'name')
+        || (currentType === 'Answer' && key === 'text')
+      );
+      if (isClass1) {
+        classCounts[1]++;
+        if (!sourceLeaves.has(child)) classificationErrors.push(`${childLocation}: Class-1 value has no canonical JSON source`);
+        continue;
+      }
+
+      if (['@id', 'url', 'image', 'dateModified'].includes(key)) {
+        classCounts[3]++;
+        const error = validateDerived(key, child, childLocation);
+        if (error) classificationErrors.push(error);
+        continue;
+      }
+
+      classificationErrors.push(`${childLocation}: string leaf falls outside Classes 1-3`);
+      continue;
+    }
+
+    if (Array.isArray(child) && currentType === 'Person' && ['knowsAbout', 'sameAs'].includes(key)) {
+      child.forEach((leaf, index) => {
+        const leafLocation = `${childLocation}[${index}]`;
+        if (typeof leaf !== 'string') {
+          classificationErrors.push(`${leafLocation}: expected a Class-1 string leaf`);
+          return;
+        }
+        classCounts[1]++;
+        if (!sourceLeaves.has(leaf)) classificationErrors.push(`${leafLocation}: Class-1 value has no canonical JSON source`);
+      });
+      continue;
+    }
+
+    classifyJsonLd(child, childLocation, currentType);
+  }
+}
+
+for (const [filename, blocks] of Object.entries(blocksByFile)) {
+  blocks.forEach((block, index) => classifyJsonLd(block, `${filename}[${index}]`));
+}
+check('Class 1: every biographical/FAQ leaf equals a canonical JSON value',
+  !classificationErrors.some((error) => /Class-1/.test(error)),
+  classificationErrors.filter((error) => /Class-1/.test(error)).join(' | '));
+check('Class 2: every schema property and structural constant is allowlisted',
+  !classificationErrors.some((error) => /schema property|structural value/.test(error)),
+  classificationErrors.filter((error) => /schema property|structural value/.test(error)).join(' | '));
+check('Class 3: every derived value is reproduced by its derivation rule',
+  !classificationErrors.some((error) => /derived|dateModified|image source|identity fragment|built route table/.test(error)),
+  classificationErrors.filter((error) => /derived|dateModified|image source|identity fragment|built route table/.test(error)).join(' | '));
+check('no JSON-LD string leaf falls outside Classes 1-3',
+  !classificationErrors.some((error) => /falls outside/.test(error)),
+  classificationErrors.filter((error) => /falls outside/.test(error)).join(' | '));
+check('all three anti-fabrication classes were exercised', Object.values(classCounts).every((count) => count > 0), JSON.stringify(classCounts));
+
+for (const person of people) {
+  check('Person.name equals canonical.basics.name', person.name === canonical.basics.name);
+  check('Person.jobTitle equals canonical.basics.title', person.jobTitle === canonical.basics.title);
+  check('Person.description equals canonical.basics.summary', person.description === canonical.basics.summary);
+  check('Person.knowsAbout equals linkedin.skills', JSON.stringify(person.knowsAbout) === JSON.stringify(linkedin.skills));
+  check('Person.worksFor equals current LinkedIn experience',
+    person.worksFor?.name === linkedin.experience[0]?.company
+      && person.worksFor?.description === linkedin.experience[0]?.description);
+  check('Person.sameAs equals linkedin_public.sameAs source key',
+    JSON.stringify(person.sameAs) === JSON.stringify(linkedin.sameAs));
+  check('Person.sameAs contains only declared personal-profile URLs',
+    Array.isArray(person.sameAs) && person.sameAs.length > 0
+      && person.sameAs.every((url) => declaredPersonalProfileUrls.includes(url)));
+  check('Person.sameAs excludes every declared product URL',
+    Array.isArray(person.sameAs)
+      && declaredProductUrls.every((url) => !person.sameAs.includes(url)));
+}
+
+const faq = faqPages[0];
+const schemaFaqPairs = (faq?.mainEntity || []).map((question) => ({
+  q: question.name,
+  a: question.acceptedAnswer?.text,
+}));
+check('all 13 FAQ schema pairs equal canonical.interviewQA',
+  JSON.stringify(schemaFaqPairs) === JSON.stringify(canonical.interviewQA));
+
+console.log('\nFAQ DOM/schema equality:');
+const visibleMeetTextNodes = new Set(extractVisibleTextNodes(builtHtml['meet.html']));
+for (const [index, item] of schemaFaqPairs.entries()) {
+  check(`FAQ ${index + 1} question is visible and string-equal`, visibleMeetTextNodes.has(normalizeText(item.q)), item.q);
+  check(`FAQ ${index + 1} answer is visible and string-equal`, visibleMeetTextNodes.has(normalizeText(item.a)), item.a);
+}
+
+console.log('\nHTML semantics and accessibility:');
+const allHtmlFiles = walkFiles(OUT, (file) => file.endsWith('.html'));
+const hiddenHeadings = allHtmlFiles.flatMap((file) => hiddenHeadingViolations(readText(file), path.relative(OUT, file)));
+check('zero visually-hidden headings exist in built HTML', hiddenHeadings.length === 0, hiddenHeadings.join(' | '));
+check('mobile-menu icon button has an accessible name in built HTML',
+  hasButtonWithName(builtHtml['index.html'], 'Open menu'));
+const conciergeSource = readText(path.join(ROOT, 'src/components/WhyManConcierge.tsx'));
+const closeHandler = 'onClick={() => setIsOpen(false)}';
+const closeHandlerIndex = conciergeSource.indexOf(closeHandler);
+const closeButtonStart = closeHandlerIndex >= 0 ? conciergeSource.lastIndexOf('<button', closeHandlerIndex) : -1;
+const closeButtonEnd = closeHandlerIndex >= 0 ? conciergeSource.indexOf('>', closeHandlerIndex + closeHandler.length) : -1;
+const closeButtonOpeningTag = closeButtonStart >= 0 && closeButtonEnd >= 0
+  ? conciergeSource.slice(closeButtonStart, closeButtonEnd + 1)
+  : '';
+const closeButtonAccessibleName = closeButtonOpeningTag.match(/\baria-label\s*=\s*['"]([^'"]+)['"]/)?.[1]?.trim() || '';
+check('conditionally mounted concierge-close button has an accessible name in source',
+  closeButtonAccessibleName.length > 0,
+  closeButtonOpeningTag || 'close button opening tag was not found');
+
+console.log('\nclean-checkout build isolation:');
+const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'xos-230-agent-surface-'));
+let cleanResult;
+let cleanDetail = '';
+const cleanOutputs = {};
+try {
+  const archive = spawnSync('git', ['-C', ROOT, 'archive', '--format=tar', 'HEAD'], {
+    encoding: null,
+    maxBuffer: 50 * 1024 * 1024,
+  });
+  if (archive.status !== 0) throw new Error(`git archive failed: ${String(archive.stderr)}`);
+  const extract = spawnSync('tar', ['-xf', '-', '-C', tempDirectory], {
+    input: archive.stdout,
+    encoding: null,
+    maxBuffer: 50 * 1024 * 1024,
+  });
+  if (extract.status !== 0) throw new Error(`archive extraction failed: ${String(extract.stderr)}`);
+  const cleanEnvironment = { ...process.env };
+  delete cleanEnvironment.HOME;
+  cleanResult = spawnSync(process.execPath, ['scripts/build-agent-surface.js'], {
+    cwd: tempDirectory,
+    env: cleanEnvironment,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  cleanDetail = [cleanResult.stdout, cleanResult.stderr].filter(Boolean).join('\n').trim();
+  for (const filename of GENERATED_FILES) {
+    cleanOutputs[filename] = readText(path.join(tempDirectory, 'public', filename));
+  }
+} catch (error) {
+  cleanDetail = error.message;
+} finally {
+  fs.rmSync(tempDirectory, { recursive: true, force: true });
+}
+check('generator exits 0 in git archive with HOME unset', cleanResult?.status === 0, cleanDetail);
+for (const filename of GENERATED_FILES) {
+  check(`clean archive emits non-empty ${filename}`, cleanOutputs[filename]?.trim().length > 0, cleanDetail);
+}
+
+console.log(fail === 0 ? '\nALL PASS' : `\n${fail} FAILURES`);
+process.exit(fail === 0 ? 0 : 1);

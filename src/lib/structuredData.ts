@@ -2,14 +2,12 @@ import { execFileSync } from 'node:child_process';
 import canonical from '../../data/canonical.json';
 import linkedin from '../../data/linkedin_public.json';
 import { FAQ_ITEMS } from '@/data/faq';
-import { NAVBAR_EXTERNAL_LINKS } from '@/data/navbarExternalLinks';
 
 export const SITE_URL = 'https://thewhyman.com';
 
 const SOURCE_PATHS = [
   'data/canonical.json',
   'data/linkedin_public.json',
-  'src/data/navbarExternalLinks.ts',
 ] as const;
 const STABLE_DATE_FALLBACK = '1970-01-01T00:00:00.000Z';
 
@@ -28,10 +26,6 @@ function sourceCommitDate() {
 }
 
 const currentExperience = linkedin.experience[0];
-const sameAs = [
-  ...NAVBAR_EXTERNAL_LINKS.products.map(({ href }) => href),
-  ...Object.values(NAVBAR_EXTERNAL_LINKS.profiles).map(({ href }) => href),
-];
 
 const person = {
   '@type': 'Person',
@@ -51,7 +45,7 @@ const person = {
         },
       }
     : {}),
-  sameAs,
+  sameAs: linkedin.sameAs,
 };
 
 export const siteWideSchema = {

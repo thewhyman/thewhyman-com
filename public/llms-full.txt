@@ -413,6 +413,11 @@
 - LLM Evaluation
 - Guardrail Design
 
+### Same As
+
+- https://github.com/thewhyman
+- https://linkedin.com/in/thewhyman
+
 ### Experience
 
 #### Applied AI Platform Engineer (Independent)
