@@ -390,10 +390,23 @@ function renderMarkdownEntry(key, value, level = 3) {
   return `${'#'.repeat(Math.min(level, 6))} ${humanize(key)}\n\n${renderMarkdownValue(value, level + 1)}`;
 }
 
+// Each named agent gets its OWN group carrying BOTH the Content-Signal and the
+// Allow. This is deliberately redundant, because the two obvious structures each
+// fail a different reader:
+//
+//   one group per agent with only "Allow: /"   -> per RFC 9309 a named agent
+//     obeys its own group and IGNORES the "*" group, so the Content-Signal never
+//     reaches it. The policy is inert for exactly the crawlers it targets.
+//
+//   13 consecutive User-agent lines sharing one group -> RFC-correct, but real
+//     parsers vary; isagentready attributes the directives only to the LAST
+//     agent listed and reports the other twelve as "not mentioned".
+//
+// Repeating both directives per agent is unambiguous under either reading.
 function buildRobots() {
   const groups = [
-    'User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: /',
-    ...AI_AGENTS.map((agent) => `User-agent: ${agent}\nAllow: /`),
+    `User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: /`,
+    ...AI_AGENTS.map((agent) => `User-agent: ${agent}\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: /`),
   ];
   return `${groups.join('\n\n')}\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
 }
