@@ -166,6 +166,11 @@ function collectStringLeaves(value, output = []) {
   return output;
 }
 
+function visibleTextOf(html) {
+  return decodeEntities(String(html).replace(/<script\b[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' '))
+    .replace(/\s+/g, ' ');
+}
+
 function collectTypedNodes(value, output = []) {
   if (Array.isArray(value)) value.forEach((child) => collectTypedNodes(child, output));
   else if (value && typeof value === 'object') {
@@ -440,11 +445,29 @@ check('root ProfilePage has Person author attribution',
   profilePages.length === 1 && profilePages[0].author?.['@id'] === `${SITE_URL}/#person`);
 check('ProfilePage dateModified never emits the Unix epoch',
   profilePages.length === 1 && !String(profilePages[0].dateModified).startsWith('1970-'));
-check('FAQPage has exactly 13 entries', faqPages.length === 1 && faqPages[0].mainEntity?.length === 13,
-  `found ${faqPages.length} FAQPage nodes and ${faqPages[0]?.mainEntity?.length ?? 0} entries`);
-check('every FAQ entry has a non-empty question and answer', faqPages.length === 1 && faqPages[0].mainEntity?.every((question) =>
+// TWO FAQPage nodes now ship, deliberately: /meet renders all thirteen, and the
+// homepage renders a curated five because the scanner reads the ROOT page. Each
+// must match what ITS page renders, so this is asserted per page rather than
+// globally — a global "exactly one FAQPage with 13 entries" would force the
+// homepage to either omit the schema or emit questions it does not show.
+const faqByPage = Object.fromEntries(Object.entries(builtHtml).map(([file, html]) => [
+  file,
+  collectTypedNodes(extractJsonLd(html, file)).filter((node) => node['@type'] === 'FAQPage'),
+]));
+check('/meet carries exactly one FAQPage with all 13 entries',
+  faqByPage['meet.html']?.length === 1 && faqByPage['meet.html'][0].mainEntity?.length === 13,
+  `found ${faqByPage['meet.html']?.length ?? 0} nodes, ${faqByPage['meet.html']?.[0]?.mainEntity?.length ?? 0} entries`);
+check('homepage carries exactly one FAQPage with a curated subset',
+  faqByPage['index.html']?.length === 1
+    && faqByPage['index.html'][0].mainEntity?.length > 0
+    && faqByPage['index.html'][0].mainEntity?.length < 13,
+  `found ${faqByPage['index.html']?.length ?? 0} nodes, ${faqByPage['index.html']?.[0]?.mainEntity?.length ?? 0} entries`);
+check('no other page carries a FAQPage',
+  Object.entries(faqByPage).every(([file, nodes]) => nodes.length === 0 || file === 'meet.html' || file === 'index.html'),
+  Object.entries(faqByPage).filter(([f, n]) => n.length && !['meet.html', 'index.html'].includes(f)).map(([f]) => f).join(', '));
+check('every FAQ entry has a non-empty question and answer', faqPages.length > 0 && faqPages.every((page) => page.mainEntity?.every((question) =>
   typeof question.name === 'string' && question.name.trim()
-    && typeof question.acceptedAnswer?.text === 'string' && question.acceptedAnswer.text.trim()));
+    && typeof question.acceptedAnswer?.text === 'string' && question.acceptedAnswer.text.trim())));
 
 const externalRouteSource = readText(path.join(ROOT, 'src/data/navbarExternalLinks.ts'));
 const productRouteSource = externalRouteSource.match(/products:\s*\[([\s\S]*?)\],\s*profiles:/)?.[1] || '';
@@ -582,13 +605,27 @@ for (const person of people) {
       && declaredProductUrls.every((url) => !person.sameAs.includes(url)));
 }
 
-const faq = faqPages[0];
+// Take /meet's FAQPage explicitly. faqPages[0] was fine when only one existed;
+// with the homepage's curated node also present, index order decides which page
+// this assertion checks — a silent coin-flip.
+const faq = faqByPage['meet.html']?.[0];
 const schemaFaqPairs = (faq?.mainEntity || []).map((question) => ({
   q: question.name,
   a: question.acceptedAnswer?.text,
 }));
-check('all 13 FAQ schema pairs equal canonical.interviewQA',
+check('all 13 /meet FAQ schema pairs equal canonical.interviewQA',
   JSON.stringify(schemaFaqPairs) === JSON.stringify(canonical.interviewQA));
+
+// And the homepage subset must be drawn from canonical, in canonical's own text.
+const homeFaqPairs = (faqByPage['index.html']?.[0]?.mainEntity || []).map((question) => ({
+  q: question.name,
+  a: question.acceptedAnswer?.text,
+}));
+check('every homepage FAQ pair appears verbatim in canonical.interviewQA',
+  homeFaqPairs.length > 0 && homeFaqPairs.every((pair) => canonical.interviewQA
+    .some((entry) => entry.q === pair.q && entry.a === pair.a)),
+  homeFaqPairs.filter((pair) => !canonical.interviewQA.some((e) => e.q === pair.q && e.a === pair.a))
+    .map((pair) => pair.q).join(' | '));
 
 console.log('\nFAQ DOM/schema equality:');
 console.log('\nJSON-LD script safety:');
@@ -609,6 +646,44 @@ for (const [filename, html] of Object.entries(builtHtml)) {
     try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
     check(`${filename}[${i}]: escaped JSON-LD still parses`, parsed !== null);
   }
+}
+
+console.log('\nhomepage FAQ:');
+{
+  // The scanner reads the ROOT page, so the homepage carries its own FAQPage.
+  // It must describe EXACTLY what the homepage renders — emitting all thirteen
+  // here while showing five would be invisible schema, scoring the checkpoint
+  // without delivering the content.
+  const homeHtml = builtHtml['index.html'];
+  const homeBlocks = extractJsonLd(homeHtml, 'index.html');
+  const homeFaq = collectTypedNodes(homeBlocks).find((n) => n['@type'] === 'FAQPage');
+  check('homepage carries a FAQPage block', Boolean(homeFaq));
+
+  const schemaQs = (homeFaq?.mainEntity || []).map((q) => q.name);
+  const schemaAs = (homeFaq?.mainEntity || []).map((q) => q.acceptedAnswer?.text);
+  const visible = visibleTextOf(homeHtml);
+  check('every homepage FAQ question is visible on the homepage',
+    schemaQs.every((q) => visible.includes(q)),
+    schemaQs.filter((q) => !visible.includes(q)).join(' | '));
+  check('every homepage FAQ answer is visible on the homepage',
+    schemaAs.every((a) => visible.includes(a)),
+    schemaAs.filter((a) => !visible.includes(a)).map((a) => String(a).slice(0, 60)).join(' | '));
+
+  // Inverse direction: nothing rendered that the schema omits.
+  const renderedQs = [...homeHtml.matchAll(/<span class="flex-1[^"]*">([\s\S]*?)<\/span>/g)]
+    .map((m) => decodeEntities(m[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim());
+  check('every rendered homepage FAQ question is in the schema',
+    renderedQs.every((q) => schemaQs.includes(q)),
+    renderedQs.filter((q) => !schemaQs.includes(q)).join(' | '));
+
+  // The subset must come from canonical, not be hand-written beside it.
+  const allQs = canonical.interviewQA.map((e) => e.q);
+  check('homepage FAQ is a strict subset of canonical interviewQA',
+    schemaQs.length > 0 && schemaQs.length < allQs.length && schemaQs.every((q) => allQs.includes(q)),
+    `${schemaQs.length} of ${allQs.length}`);
+  check('/meet still carries the FULL question set',
+    (collectTypedNodes(extractJsonLd(builtHtml['meet.html'], 'meet.html'))
+      .find((n) => n['@type'] === 'FAQPage')?.mainEntity || []).length === allQs.length);
 }
 
 const visibleMeetTextNodes = new Set(extractVisibleTextNodes(builtHtml['meet.html']));
