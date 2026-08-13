@@ -287,6 +287,23 @@ check('all generated public outputs omit denied mechanism vocabulary',
   !publicMechanismPattern.test(Object.values(outputs).join('\n')));
 
 console.log('\nrobots.txt:');
+// Regression guard: a named agent's group must carry BOTH directives.
+// This shipped wrong — the named groups had only "Allow: /", so per RFC 9309
+// the Content-Signal in the "*" group never reached GPTBot, ClaudeBot or any
+// other named crawler. The policy was inert for exactly its target audience.
+{
+  const groups = outputs['robots.txt'].split(/\n\s*\n/).map((g) => g.trim())
+    .filter((g) => g.startsWith('User-agent:'));
+  const missing = groups.filter((g) => !/^Content-Signal:.*ai-train=yes/m.test(g) || !/^Allow: \/$/m.test(g))
+    .map((g) => g.split('\n')[0]);
+  check('robots.txt has the wildcard group plus one per named AI agent',
+    groups.length >= 14, `found ${groups.length}`);
+  check('every robots.txt group carries BOTH Content-Signal and Allow',
+    missing.length === 0, missing.join(', '));
+  check('no robots.txt group carries Disallow',
+    !/^Disallow: \//m.test(outputs['robots.txt']));
+}
+
 const robots = outputs['robots.txt'];
 const universalRobotsGroup = robots.split(/\r?\n\s*\r?\n/).find((group) => /^User-agent:\s*\*\s*$/mi.test(group)) || '';
 check('robots has the allow-all policy', /^Allow:\s*\/\s*$/mi.test(universalRobotsGroup));
@@ -294,9 +311,15 @@ check('robots has Content-Signal', /(?:^|\n)Content-Signal:\s*\S+/m.test(robots)
 check('robots has Sitemap', new RegExp(`(?:^|\\n)Sitemap:\\s*${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/sitemap\\.xml(?:\\r?$)`, 'm').test(robots));
 check('robots has zero Disallow lines', !/(?:^|\n)Disallow:/mi.test(robots));
 check('robots has zero HTML doctypes', !/<!doctype/i.test(robots));
+// Match the agent's GROUP, not "User-agent" immediately followed by "Allow".
+// Each named group now also carries Content-Signal between those two lines, so
+// an adjacency regex would fail on a correct file.
+const robotsGroups = robots.split(/\n\s*\n/).map((g) => g.trim()).filter((g) => g.startsWith('User-agent:'));
+const groupFor = (agent) => robotsGroups.find((g) => new RegExp(`^User-agent:\\s*${agent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'im').test(g));
 for (const agent of NAMED_AGENTS) {
-  const group = new RegExp(`User-agent:\\s*${agent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\r?\\nAllow:\\s*/`, 'i');
-  check(`robots explicitly allows ${agent}`, group.test(robots));
+  const group = groupFor(agent);
+  check(`robots explicitly allows ${agent}`, Boolean(group) && /^Allow:\s*\/$/m.test(group));
+  check(`robots gives ${agent} its own Content-Signal`, Boolean(group) && /^Content-Signal:.*ai-train=yes/m.test(group));
 }
 
 console.log('\nsitemap.xml:');
