@@ -78,7 +78,7 @@ function PostCard({ post, i }: { post: FeaturedPost; i: number }) {
   );
 }
 
-export default function HeroPage() {
+export default function HeroPage({ faq }: { faq?: React.ReactNode }) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -324,7 +324,11 @@ export default function HeroPage() {
           </div>
         </div>
 
-        {/* Unified CTA */}
+        {/* Server-rendered FAQ, passed from the server page so its answers ship
+          in the static HTML rather than behind this client boundary. */}
+      {faq}
+
+      {/* Unified CTA */}
         <div className="mt-32 flex flex-col items-center">
           <motion.button 
             whileHover={{ scale: 1.05 }}

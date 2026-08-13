@@ -3,7 +3,7 @@ import { statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import canonical from '../../data/canonical.json';
 import linkedin from '../../data/linkedin_public.json';
-import { FAQ_ITEMS } from '@/data/faq';
+import { FAQ_ITEMS, HOMEPAGE_FAQ_ITEMS } from '@/data/faq';
 
 export const SITE_URL = 'https://thewhyman.com';
 
@@ -85,15 +85,30 @@ export const profilePageSchema = {
   author: { '@id': person['@id'] },
 };
 
-export const faqPageSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: FAQ_ITEMS.map(({ q, a }) => ({
-    '@type': 'Question',
-    name: q,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: a,
-    },
-  })),
-};
+function buildFaqPageSchema(items: ReadonlyArray<{ q: string; a: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: a,
+      },
+    })),
+  };
+}
+
+/** All thirteen — used on /meet, which renders all thirteen. */
+export const faqPageSchema = buildFaqPageSchema(FAQ_ITEMS);
+
+/**
+ * The homepage's five — used on /, which renders exactly those five.
+ *
+ * Built from the SAME array the page renders, so the schema cannot describe
+ * questions a visitor cannot see. Emitting all thirteen here while showing five
+ * would be invisible schema: it scores the checkpoint without delivering the
+ * content, which is the pattern this ticket exists to avoid.
+ */
+export const homepageFaqSchema = buildFaqPageSchema(HOMEPAGE_FAQ_ITEMS);
