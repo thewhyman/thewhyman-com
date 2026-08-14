@@ -129,6 +129,19 @@ HOW TO HANDLE THE QUESTIONS YOU WILL ACTUALLY GET:
 - "What scale has he operated at?" $500M+ ROI across 6 GCP engineering tracks in a ~$40B portfolio, 5 direct
   reports each leading pods, 50 reports at Trellis, 99.99% availability at Charles Schwab.
 - Behavioral questions: answer with a concrete situation, what he did, and the measurable outcome.
+- WEAKNESS / GROWTH-AREA QUESTIONS HAVE A REQUIRED SHAPE. Answer ONLY from growthAreas, and give ALL FIVE
+  parts in order: (1) the STRENGTH underneath, (2) how it OVER-APPLIES, (3) the EARLY SIGNAL he uses to catch
+  it fast, (4) the GUARD he put in place, (5) what he does INSTEAD now. Parts 3-5 are the whole point: anyone
+  can name a flaw, he built a system around his. An answer that stops at "here is my weakness and I am working
+  on it" is a FAILED answer.
+  NEVER answer with an interpersonal deficit -- not communication, not collaboration, not teamwork, not
+  people skills, not conflict avoidance. No senior candidate names those, and asserting one on his behalf
+  is disqualifying. If asked for "the biggest opportunity to improve", pick ONE area and give all five parts.
+  Do not invent a fourth area.
+- EDUCATION: answer from the education block. He EARNED an Executive MBA at UC Berkeley Haas (2016-2017)
+  and separately TAUGHT at UC Berkeley Executive Education (2019-2024). Both are true; never conflate them,
+  never omit the earlier degrees (Philadelphia University, Osmania University) just because Berkeley is the
+  recognisable name.
 - NEVER PRESENT AN ARTICLE AS A TALK, OR A TALK AS AN ARTICLE. writingLibrary is published writing; speaking is
   talks, keynotes and teaching. They are different artifacts and a recruiter checks them differently. Asked about
   TALKS, lead with the HealthTech Summit 2026 keynote, the SXSW and Step SF invited talks, the UC Berkeley faculty
@@ -141,9 +154,24 @@ HOW TO HANDLE THE QUESTIONS YOU WILL ACTUALLY GET:
   nobody reads that. One sentence on how many and where they live. Then the TWO or THREE strongest, one line each.
   Then offer to go deeper on any of them. Do not walk the whole library.
 - "Summarize your article on X" / "what have you written about?" Use writingLibrary. Give the thesis in 3-5
-  sentences in your own words, then offer the link if one is listed. If asked about a topic he has NOT written
-  about, say so plainly rather than inventing an article — a fabricated title is the worst possible failure
-  here because it is trivially checkable.
+  sentences in your own words, then offer the link if one is listed. Never invent a title — a fabricated title
+  is trivially checkable and is the worst failure here.
+- BUT A DENIAL IS ALSO A CLAIM, AND A FALSE ONE COSTS HIM THE ROLE. Before you say he has not written or
+  spoken about something, match the question's SUBJECT against every title AND thesis in the library — not its
+  vocabulary. A piece counts if it is ABOUT the thing, even when it never uses the visitor's word for it. An
+  essay on agents deciding what gets bought IS an essay about marketing, whether or not the word "marketing"
+  appears. Asked about a topic where the closest work is adjacent rather than exact, NAME THE ADJACENT PIECE
+  and say how it relates — lead with the piece: "X argues Y, which covers this directly."
+  NEVER PAIR A DENIAL WITH A CITATION. If you can name a piece, you are not denying — you are answering, so
+  drop the denial entirely and open with the title. "He has not published on that, though the closest work is
+  X…" is a self-contradiction: it tells the visitor no and then proves yes, and the sentence they remember is
+  the no. There is no phrasing in which "he has not published on that" and a title belong in the same answer.
+  A bare "he has not written about that" is correct ONLY when the library holds nothing you would cite — no
+  title follows it, ever. This includes HEDGED denials, which are the same failure wearing a qualifier: "he has
+  not published an article SPECIFICALLY / DIRECTLY / EXCLUSIVELY on X, the closest is Y" is banned for the same
+  reason. Do not grade how precisely a piece matches the visitor's phrasing — they asked whether he has covered
+  the subject, and if a piece covers it, the answer is yes. Open with the title. A false denial is worse than a vague answer: the visitor believes it, does not
+  check, and silently downgrades him.
 
 ANSWER DIRECTLY:
 The answer is already in the context below. This is retrieval and phrasing, not analysis. Find the fact, state
@@ -188,6 +216,31 @@ const tracks = canonicalData.tracks || {};
 const BLOCKS = {
   basics:             { data: canonicalData.basics,             always: true },
   keyMetricsTripwire: { data: canonicalData.keyMetricsTripwire, always: true },
+
+  // Degrees and certifications. Live users at the Berkeley EMBA Bay Area chapter
+  // dinner (2026-08-13) asked what schools he attended and got nothing back --
+  // two of his three degrees were entirely absent from the knowledge base.
+  education:          { data: canonicalData.education,
+    keys: ['school','schools','university','universities','college','degree','degrees','education','educated',
+           'educational','study','studied','studies','alma mater','mba','emba','masters',"master's",'bachelors',"bachelor's",
+           'undergrad','undergraduate','graduate','grad school','haas','berkeley','osmania','philadelphia',
+           'academic','academics','qualification','qualifications','where did he go','what did he study'] },
+
+  // Weakness / growth-area questions. WITHOUT this block the model improvised and
+  // produced "communication and collaboration" -- an interpersonal deficit, which
+  // is the one answer that is disqualifying in an interview. See the prompt rule.
+  growthAreas:        { data: canonicalData.growthAreas,
+    keys: ['weakness','weaknesses','improve','improvement','improving','growth area','growth areas',
+           'development area','blind spot','blind spots','work on','working on','shortcoming','shortcomings',
+           'limitation','limitations','struggle','struggles','biggest opportunity','area to improve',
+           'what is he bad at','not good at','gets wrong','criticism','feedback he'] },
+
+  // The 2026 senior-candidate separator per field research: AI adoption inside the
+  // org WITH a measurable productivity number. Also carries culture-under-pressure.
+  seniorSignals:      { data: canonicalData.seniorSignals,
+    keys: ['productivity','throughput','velocity','how much faster','output','ship faster','shipped',
+           'ai adoption','adopt ai','ai tooling','ai in engineering','governance','measurable',
+           'culture','under pressure','how does he respond','prs','pull requests','how fast'] },
 
   brand:              { data: canonicalData.brand,
     keys: ['name','why man','whyman','called','story behind','brand','nickname','origin'] },
@@ -254,7 +307,10 @@ const BLOCKS = {
            'thought leadership','audience','stage','webinar','podcast'] },
 
   writingLibrary:     { data: canonicalData.writingLibrary,
-    keys: ['write','wrote','written','writing','article','articles','publish','published','post','blog','substack','linkedin article','defense in depth','thought leadership','content'] },
+    // Topic keys ('marketing', 'agents', ...) matter as much as the verbs: a visitor asks what he has written
+    // about a SUBJECT, and without them the block never loads and the model denies from an empty context.
+    keys: ['write','wrote','written','writing','article','articles','publish','published','post','blog','substack','linkedin article','defense in depth','thought leadership','content',
+           'marketing','go-to-market','gtm','agentic commerce','buyer','buyers','essay','essays','newsletter'] },
   aiFundLessons:      { data: canonicalData.aiFundLessons,
     keys: ['ai fund','aifund','andrew ng','eir','engineer in residence','residence','studio','lesson','lessons','learned','product judgment','icp','moat','venture','portfolio','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
 };
@@ -486,4 +542,9 @@ if (!fs.existsSync(dir)) {
 }
 
 fs.writeFileSync(path.join(dir, 'chat.js'), functionCode);
-console.log('✅ Generated functions/api/chat.js → Cloudflare Workers AI @cf/moonshotai/kimi-k2.6');
+// Read the default out of the emitted source rather than hardcoding it — this line
+// claimed kimi long after the default moved to mistral, which is how a build log
+// starts lying to the next person who reads it.
+const emittedDefault = (functionCode.match(/MODELS\[url\.searchParams\.get\('model'\)\] \|\| MODELS\.(\w+)/) || [])[1];
+const emittedModel = (functionCode.match(new RegExp(`${emittedDefault}:\\s*'([^']+)'`)) || [])[1];
+console.log(`✅ Generated functions/api/chat.js → Cloudflare Workers AI ${emittedModel || '(model unresolved)'}`);

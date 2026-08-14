@@ -94,6 +94,55 @@ check('method question does NOT pull the artefact portfolio',
 check('artefact question does NOT pull the method block',
   !artefactSel.includes('howHeWorks'), 'artefact question selected howHeWorks');
 
+// Regression: a visitor asking what he has written about a SUBJECT must load the
+// writing library. Production answered "Anand has not published on AI agents and
+// marketing" while The Customer Is No Longer Human — a Substack essay AND a talk on
+// exactly that — sat in the library. The block was never selected, so the model
+// denied from an empty context. A false denial is as damaging as a fabricated title:
+// the visitor believes it, never checks, and quietly downgrades him.
+for (const q of [
+  'What has Anand written about AI agents and marketing?',
+  'any essays on go-to-market?',
+  'has he published anything about agentic commerce?',
+]) {
+  check(`subject-only writing question selects writingLibrary: "${q}"`,
+    select(q).some(b => b.name === 'writingLibrary'),
+    'writingLibrary not selected — this is how the "has not published" bug happened');
+}
+
+// Regression: Berkeley EMBA Bay Area chapter dinner, 2026-08-13. Live alumni asked
+// the chatbot what schools Anand attended and got nothing usable back — TWO of his
+// three degrees (Philadelphia University, Osmania University) were absent from the
+// knowledge base entirely, and "EMBA" appeared nowhere. An alumni audience asking
+// about his education is the single most likely question from that crowd.
+for (const q of [
+  'what schools did he attend?',
+  'where did Anand go to university?',
+  'does he have an MBA?',
+  'what is his educational background?',
+  'did he study at Berkeley?',
+]) {
+  check(`education question selects the education block: "${q}"`,
+    select(q).some(b => b.name === 'education'),
+    'education block not selected — this is how "no answer on schools" happened');
+}
+
+// Regression: same dinner. Asked for his biggest opportunity to improve, the bot
+// answered "communication and collaboration" — an INTERPERSONAL DEFICIT. No senior
+// candidate names one, and asserting it on his behalf is disqualifying. There was no
+// growthAreas block at all, so the model improvised. Every growth answer must be a
+// genuine strength over-applied plus the correction he actually made.
+for (const q of [
+  'what is his biggest opportunity to improve?',
+  'what are his weaknesses?',
+  'what does he need to work on?',
+  'what is his blind spot?',
+]) {
+  check(`growth-area question selects growthAreas: "${q}"`,
+    select(q).some(b => b.name === 'growthAreas'),
+    'growthAreas not selected — this is how "communication & collaboration" happened');
+}
+
 const avg = Math.round(totalPct / measured);
 console.log(`\naverage prompt size: ${avg}% of full KB`);
 check('selection meaningfully shrinks the prompt (avg < 60%)', avg < 60, `avg ${avg}%`);
