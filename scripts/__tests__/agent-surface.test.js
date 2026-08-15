@@ -856,5 +856,77 @@ check('public mechanism guard fails hard and names the offending mechanism',
     && /Public mechanism guard rejected public\/.*isolated worktree implementation/.test(cleanMechanismLeakResult?.stderr || ''),
   [cleanMechanismLeakResult?.stdout, cleanMechanismLeakResult?.stderr].filter(Boolean).join('\n'));
 
+
+// ── XOS-238: the search corpus must not drift behind canonical.json ─────────
+// A rebuild once silently dropped ~20KB because build-ai-search-corpus.js had
+// fallen behind sections that were added to canonical.json (and that the chatbot
+// already retrieved). The failure was invisible: the generator exits 0 and emits
+// a smaller, quietly poorer corpus. This pins the invariant instead of trusting
+// whoever runs the build next to read a 13-file diff.
+{
+  const canonicalPath = path.join(ROOT, 'data/canonical.json');
+  const corpusDir = path.join(ROOT, '.ai-search-corpus');
+  // The ONLY two deliberate exclusions, documented at the top of the generator:
+  // they stay pinned in the system prompt so retrieval can never decide truth.
+  const PINNED_NOT_RETRIEVED = new Set(['basics', 'keyMetricsTripwire']);
+
+  const canonical = JSON.parse(fs.readFileSync(canonicalPath, 'utf8'));
+  const sections = Object.keys(canonical).filter((k) => !k.startsWith('_'));
+  const corpus = fs.existsSync(corpusDir)
+    ? fs.readdirSync(corpusDir).filter((f) => f.endsWith('.md'))
+        .map((f) => fs.readFileSync(path.join(corpusDir, f), 'utf8')).join('\n')
+    : '';
+
+  // Test the OUTPUT, not the implementation. An earlier version grepped the
+  // generator source for `canonical.<key>`, which silently passed sections
+  // emitted through bracket access: it tested how the code was written rather
+  // than what it produced. Instead take the longest STRING LEAF in each section
+  // (asText emits string values verbatim) and require it to survive into the
+  // corpus. If a section is emitted at all, its longest sentence is there.
+  const longestLeaf = (v) => {
+    let best = '';
+    const walk = (x) => {
+      if (typeof x === 'string') { if (x.length > best.length) best = x; return; }
+      if (Array.isArray(x)) return x.forEach(walk);
+      if (x && typeof x === 'object') return Object.entries(x).forEach(([k, val]) => { if (!k.startsWith('_')) walk(val); });
+    };
+    walk(v);
+    return best;
+  };
+  const norm = (t) => t.replace(/\s+/g, ' ').trim();
+  const corpusFlat = norm(corpus);
+  const unemitted = sections.filter((k) => {
+    if (PINNED_NOT_RETRIEVED.has(k)) return false;
+    const leaf = norm(longestLeaf(canonical[k])).slice(0, 60);
+    return leaf.length > 25 && !corpusFlat.includes(leaf);
+  });
+  check('every canonical.json section is emitted to the search corpus (or pinned on purpose)',
+    unemitted.length === 0,
+    unemitted.length
+      ? `Never emitted and not pinned: ${unemitted.join(', ')}. Either emit them in ` +
+        'scripts/build-ai-search-corpus.js or add them to PINNED_NOT_RETRIEVED with a documented reason.'
+      : '');
+
+  // Content spot-check: the leadership culture line lives in leadershipStyle now,
+  // and vanished from the corpus entirely when that section went unemitted.
+  const cultureLine = ((canonical.leadershipStyle || {}).culture || '').slice(0, 40);
+  check('leadership culture line survives a corpus rebuild',
+    !cultureLine || corpus.includes(cultureLine),
+    `Expected the corpus to contain: ${cultureLine}`);
+
+  // growthAreas must never reach the corpus without the rules that govern how a
+  // weakness is phrased; a flaw retrieved without its framing is the one answer
+  // that is disqualifying in an interview.
+  const growthDocs = fs.existsSync(corpusDir)
+    ? fs.readdirSync(corpusDir).filter((f) => f.startsWith('growth-area'))
+    : [];
+  const missingFraming = growthDocs.filter(
+    (f) => !/HOW THIS MUST BE FRAMED/.test(fs.readFileSync(path.join(corpusDir, f), 'utf8'))
+  );
+  check('every growth-area doc carries its framing rules',
+    growthDocs.length > 0 && missingFraming.length === 0,
+    growthDocs.length === 0 ? 'no growth-area docs emitted' : `missing framing: ${missingFraming.join(', ')}`);
+}
+
 console.log(fail === 0 ? '\nALL PASS' : `\n${fail} FAILURES`);
 process.exit(fail === 0 ? 0 : 1);

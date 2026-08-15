@@ -11,6 +11,9 @@ skills:
   - Platform Engineering
   - LLM Evaluation
   - Guardrail Design
+sameAs: 
+  - https://github.com/thewhyman
+  - https://linkedin.com/in/thewhyman
 experience: 
   - role: Applied AI Platform Engineer (Independent)
   - company: Self-employed

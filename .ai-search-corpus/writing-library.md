@@ -19,7 +19,13 @@ articles:
   - thesis: A tool is linear: you use it, close the tab, and start over tomorrow. A partner compounds, because both sides learn. One percent better per day, across both partners, over a year is roughly 37x. Most tools give zero carry-forward, which is why they feel the same on day 200 as on day one.
   - title: The Cyborg — The Customer Is No Longer Human
   - venue: Substack
-  - thesis: As AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. That changes what 'customer experience' means and what a product has to expose to be chosen at all.
+  - thesis: Marketing's audience is changing: as AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. The buyer splits into three actors — the human, the agent and the platform — each needing different information. That changes what 'customer experience' means, what a product must expose to be chosen at all, and who marketing is actually written for. Presented as a talk to the AI Marketing Group at Health+Tech 2026.
+  - topics: 
+  -   - AI agents
+  -   - marketing
+  -   - go-to-market
+  -   - buyer behavior
+  -   - agentic commerce
 forthcoming: 
   - title: Three Months at AI Fund — What I'm Taking With Me
   - venue: Substack (thewhyman.blog)

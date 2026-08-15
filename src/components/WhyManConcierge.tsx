@@ -13,6 +13,62 @@ interface Message {
   visual?: 'harness' | 'codi';
 }
 
+/**
+ * Renders a concierge answer as readable blocks instead of one wall of text.
+ *
+ * The bot's answers are structured — growthAreas alone specifies five ordered
+ * parts per area — but the bubble used to render `msg.content` as a raw text
+ * node. HTML collapses newlines, so every paragraph ran together, and `**bold**`
+ * showed up as literal asterisks. A correct answer that cannot be read is a
+ * failed answer, so the formatting is treated as part of the response, not a
+ * nicety.
+ *
+ * Deliberately NOT a markdown dependency: the bot emits paragraphs, bullets and
+ * bold and nothing else. Parsing exactly that keeps the bundle unchanged and
+ * avoids handing arbitrary HTML to the page — everything below builds React
+ * nodes, so there is no dangerouslySetInnerHTML anywhere in this path.
+ */
+function inline(text: string, keyPrefix: string) {
+  // **bold** → <strong>, everything else verbatim
+  return text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map((part, i) =>
+    part.startsWith('**') && part.endsWith('**') && part.length > 4
+      ? <strong key={`${keyPrefix}-b${i}`} className="font-semibold text-white">{part.slice(2, -2)}</strong>
+      : <React.Fragment key={`${keyPrefix}-t${i}`}>{part}</React.Fragment>
+  );
+}
+
+function RichText({ text }: { text: string }) {
+  const blocks = String(text ?? '').replace(/\r\n/g, '\n').split(/\n{2,}/).filter(b => b.trim());
+  if (!blocks.length) return null;
+  return (
+    <div className="space-y-3">
+      {blocks.map((block, bi) => {
+        const lines = block.split('\n').filter(l => l.trim());
+        const isList = lines.length > 0 && lines.every(l => /^\s*(?:[-*•]|\d+[.)])\s+/.test(l));
+        if (isList) {
+          return (
+            <ul key={bi} className="list-disc pl-5 space-y-1.5 marker:text-teal-500/70">
+              {lines.map((l, li) => (
+                <li key={li}>{inline(l.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, ''), `${bi}-${li}`)}</li>
+              ))}
+            </ul>
+          );
+        }
+        return (
+          <p key={bi}>
+            {lines.map((l, li) => (
+              <React.Fragment key={li}>
+                {li > 0 && <br />}
+                {inline(l, `${bi}-${li}`)}
+              </React.Fragment>
+            ))}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function WhyManConcierge() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -624,7 +680,7 @@ export default function WhyManConcierge() {
                       ? 'bg-zinc-900 border border-white/5 text-zinc-100' 
                       : 'bg-teal-900/40 border border-teal-500/30 text-teal-50'
                   }`}>
-                    {msg.content}
+                    <RichText text={msg.content} />
                     {msg.visual === 'codi' && (
                       <a
                         href="https://github.com/Exponential-OS/prompt-engineering-in-action"

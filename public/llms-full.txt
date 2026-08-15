@@ -470,7 +470,15 @@
 
 - **Venue:** Substack
 
-- **Thesis:** As AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. That changes what 'customer experience' means and what a product has to expose to be chosen at all.
+- **Thesis:** Marketing's audience is changing: as AI agents increasingly mediate discovery and purchase, the entity evaluating your product is often not a person. The buyer splits into three actors — the human, the agent and the platform — each needing different information. That changes what 'customer experience' means, what a product must expose to be chosen at all, and who marketing is actually written for. Presented as a talk to the AI Marketing Group at Health+Tech 2026.
+
+##### Topics
+
+- AI agents
+- marketing
+- go-to-market
+- buyer behavior
+- agentic commerce
 
 ## AI Fund lessons
 

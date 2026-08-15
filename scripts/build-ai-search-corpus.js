@@ -11,7 +11,10 @@
  * mean something on their own.
  *
  * WHAT DELIBERATELY STAYS OUT OF RETRIEVAL
- * `basics` and `keyMetricsTripwire` are NOT emitted here. They stay pinned in the
+ * `basics` and `keyMetricsTripwire` are NOT emitted here. They are the ONLY two
+ * deliberate exclusions; every other top-level section in canonical.json must be
+ * emitted, and scripts/__tests__ enforces that so the corpus cannot silently drift
+ * behind canonical.json again. They stay pinned in the
  * system prompt on every request. The tripwire is the authoritative numbers list
  * that governs every figure the bot states; if a semantic retriever failed to
  * return it for, say, a leadership question, the model would be free to invent
@@ -60,6 +63,56 @@ if (canonical.howHeWorks) {
   add('how-he-works', 'How Anand works — operating method',
       ['method', 'execution', 'process', 'how he works', 'discipline', 'judgment', 'decision making'],
       asText(canonical.howHeWorks));
+}
+
+// ── the sections that describe HOW HE OPERATES, one doc per idea ────────────
+// These were present in canonical.json but never emitted, so a rebuild silently
+// produced a corpus missing ~20KB of real content. build-cloudflare-function.js
+// already registers every one of them as a retrievable block; this file had
+// simply drifted behind it. Parity is the invariant: a section the chatbot can
+// retrieve must also exist in the search corpus, or the two surfaces disagree.
+const SECTION_DOCS = [
+  ['leadershipStyle', 'leadership-style',
+   'How Anand leads — style, culture and the bar he sets',
+   ['leadership', 'management style', 'culture', 'how he leads', 'team', 'postmortem']],
+  ['seniorSignals', 'senior-signals',
+   'Seniority signals — how Anand operates at executive altitude',
+   ['seniority', 'executive', 'judgment', 'scope', 'ai adoption', 'productivity', 'culture under pressure']],
+  ['domainDepth', 'domain-depth',
+   'Domain depth — industries, compliance and systems Anand has owned',
+   ['industries', 'compliance', 'domain', 'regulated', 'fisma', 'hipaa', 'pci']],
+  ['education', 'education',
+   'Education, degrees and certifications',
+   ['education', 'degree', 'mba', 'emba', 'berkeley', 'haas', 'credentials', 'certifications']],
+  ['speaking', 'speaking',
+   'Speaking, teaching and talks',
+   ['speaking', 'teaching', 'talks', 'conference', 'instructor', 'workshop']],
+];
+for (const [key, name, title, tags] of SECTION_DOCS) {
+  if (canonical[key]) add(name, title, tags, asText(canonical[key]));
+}
+
+// ── growth areas: one doc per area, each carrying the framing ───────────────
+// Split per area for the chunking reason at the top of this file. The framing
+// rules ride along in EVERY area doc on purpose: they are what stop an answer
+// becoming "he struggles with X" or an interpersonal deficit, and retrieval must
+// never be able to return the flaw without the rule that governs how it is said.
+// Same principle as the pinned tripwire — retrieval decides relevance, never truth.
+if (canonical.growthAreas) {
+  const g = canonical.growthAreas;
+  const framing = [
+    g.framingRules ? `HOW THIS MUST BE FRAMED: ${g.framingRules}` : '',
+    g.answerShape ? `ANSWER SHAPE: ${g.answerShape}` : '',
+  ].filter(Boolean).join('\n\n');
+  const areas = Array.isArray(g.areas) ? g.areas : [];
+  areas.forEach((a) => {
+    add(`growth-area-${slug(a.area)}`, `Growth area — ${a.area}`,
+        ['growth areas', 'weaknesses', 'development', 'blind spots', 'self-awareness', a.area],
+        [framing, '', asText(a)].filter(Boolean).join('\n'));
+  });
+  if (!areas.length) {
+    add('growth-areas', 'Growth areas', ['growth areas', 'weaknesses'], asText(g));
+  }
 }
 
 // ── origin story ────────────────────────────────────────────────────────────
