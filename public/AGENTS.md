@@ -4,7 +4,7 @@
 
 This is the official professional site for Anand Vallamsetla, Applied AI Engineering Leader | Evaluation-First LLM & Agent Platforms | Reliability & Guardrail Design | ex-Google.
 
-Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).
+Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) — sets technical direction and writes the code. Brings 17 years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).
 
 ## What agents can find
 

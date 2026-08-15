@@ -56,7 +56,7 @@
   "basics": {
     "name": "Anand Vallamsetla",
     "title": "Senior Engineering Leader \u00b7 Applied AI Architect \u00b7 Agentic Systems & LLM Platforms",
-    "summary": "Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) \u2014 sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 10+ years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).",
+    "summary": "Hands-on engineering leader and applied AI architect with 26 years of experience (2000-present) \u2014 sets technical direction and writes the code. Built his own multi-agent harness (Exponential OS, exponentialos.io): constitution-enforced engineering principles, agentic memory and context management, control plane with model routing, composable skills and MCP integrations. Ships production agentic systems on it. Brings 17 years of engineering management including a $40B+ portfolio at Google delivering $500M+ ROI. Most recently Engineer in Residence at AI Fund, Andrew Ng's venture studio (May-Jul 2026).",
     "careerArc": "26 years, 2000 to present, in four phases. 2000-2009 consulting and distributed systems: Quidnunc (San Francisco), IONA Technologies (later acquired by Progress Software, Austin), then Ajilon as Principal and Senior Principal Consultant \u2014 architecture across 15+ enterprise programs, including SOA work that cut integration complexity ~35%. 2009-2014 first leadership roles: Trellis / Texas Guaranteed as Manager, Solutions Architecture (a direct hire out of the Ajilon engagement), then 21CT in healthcare and defense analytics. 2015-2018 Charles Schwab as Technical Director \u2014 the firm's largest internal PaaS, 99.99% availability. 2019-2025 Google as Senior SWE Manager across a ~$40B portfolio, then AI Fund and Exponential OS. State the arc when asked who he is; do not begin at Google."
   },
   "brand": {
@@ -339,7 +339,7 @@
     },
     {
       "q": "Is he a manager or an individual contributor?",
-      "a": "Both, deliberately. He sets technical direction and writes the code, and he has 10+ years of engineering management behind it \u2014 a $40B+ portfolio at Google with 5 direct reports each leading their own pods, and 50 reports at Trellis. He is targeting senior IC-architect and engineering-leadership roles equally."
+      "a": "Both, deliberately. He sets technical direction and writes the code, and he has 17 years of engineering management behind it \u2014 a $40B+ portfolio at Google with 5 direct reports each leading their own pods, and 50 reports at Trellis. He is targeting senior IC-architect and engineering-leadership roles equally."
     },
     {
       "q": "Does he do machine learning research?",
@@ -400,7 +400,7 @@
     "berkeley": "1,500+ Fortune 500 executives taught (CTOs, VPs, Directors)",
     "aifund": "~150 companies scanned across 4 segments; 36 grounded outreaches; 19 of 22 major API providers confirmed the gap",
     "hackathons": "10+ hackathon wins across AI and Blockchain",
-    "experience": "26 years (2000-present); 10+ years engineering management",
+    "experience": "26 years (2000-present); 17 years engineering management (2009-present)",
     "tenures": "AUTHORITATIVE tenure lengths \u2014 never round up. Google Jan 2019-May 2025 (6 years). Charles Schwab 2015-Mar 2018 (3 years). 21CT 2013-Dec 2014 (2 years). Trellis/Texas Guaranteed 2009-Aug 2013 (4 years). Early career Quidnunc/IONA/Ajilon 2000-2009 (9 years). AI Fund May-Jul 2026 (3 months). UC Berkeley teaching Dec 2019-Jun 2024. Total career 2000-present (26 years)."
   },
   "behavioralStories": [
@@ -611,7 +611,7 @@
   },
   "growthAreas": {
     "answerShape": "FIVE parts, in order: (1) the STRENGTH underneath, (2) how it OVER-APPLIES as a TENDENCY, (3) the EARLY SIGNAL he uses to catch it fast, (4) the GUARD he put in place, (5) what he does INSTEAD now. Parts 3-5 are the point: anyone can name a flaw, he built a system around his.",
-    "framingRules": "CRITICAL. Every area is a TENDENCY he leans toward in specific situations \u2014 never an absence of a capability. Say 'leans toward', 'defaults to', 'his instinct is'. NEVER say he does not do something, cannot do something, struggles with something, or avoids something. NEVER an interpersonal deficit \u2014 not communication, not collaboration, not teamwork, not people skills. NEVER anything that contradicts a documented credential: he managed for 10+ years, 50 engineers at Trellis and five direct reports each leading their own pods at Google, so any answer implying he does not delegate or cannot work through others is FALSE and invites 'then how did he manage for a decade?'",
+    "framingRules": "CRITICAL. Every area is a TENDENCY he leans toward in specific situations \u2014 never an absence of a capability. Say 'leans toward', 'defaults to', 'his instinct is'. NEVER say he does not do something, cannot do something, struggles with something, or avoids something. NEVER an interpersonal deficit \u2014 not communication, not collaboration, not teamwork, not people skills. NEVER anything that contradicts a documented credential: he managed for 17 years, 50 engineers at Trellis and five direct reports each leading their own pods at Google, so any answer implying he does not delegate or cannot work through others is FALSE and invites 'then how did he manage for a decade?'",
     "areas": [
       {
         "area": "Reading the temperature, not just the evidence",
