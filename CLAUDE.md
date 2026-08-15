@@ -1,53 +1,108 @@
-# TheWhyMan.com — Project Rules
+# thewhyman.com — agent guide
 
-## What This Is
+Read this before changing anything. It exists because three separate agents have
+now rediscovered the same architecture from scratch, and one of them (2026-08-15)
+spent an hour carefully repairing a generator whose output nothing reads.
 
-The hub site — Anand's personal brand and portfolio. Links to all ..OS product sites. Deployed to Cloudflare Pages via Wrangler. Next.js 15 + Tailwind + TypeScript.
+---
 
-## Workspace Mapping
+## The one rule: `data/canonical.json` is the only source of truth
 
-- **Specs & design reqs:** `$CAREER_OS_HOME/WIP/thewhyman-com-product/`
-- **Handoff:** `$CAREER_OS_HOME/WIP/thewhyman-com-product/NEXT_SESSION_HANDOFF.md`
-- **Cross-agent relay:** `$CAREER_OS_HOME/NEXT_SESSION_HANDOFF.md`
-- **Brand identity:** `$CAREER_OS_HOME/.career-os/memory/brand-identity.md`
-- **Routing manifest:** `$CAREER_OS_HOME/workspace.manifest.yaml`
+Every public surface and the chatbot are GENERATED from it. Never hand-edit a
+generated file — the next build silently overwrites you.
 
-## Engineering Principles
-
-Read `~/.claude/CLAUDE.md` for P0-P17. They govern all decisions here.
-
-## Tech Stack
-
-- **Framework:** Next.js 15, React 19, TypeScript
-- **Styling:** Tailwind CSS
-- **Deploy:** Cloudflare Pages via GitHub auto-deploy (push to main → Cloudflare builds + deploys automatically)
-- **AI:** Cloudflare Workers AI binding (`wrangler.toml` declares the `[ai]` binding)
-
-## Before You Code
-
-1. Read brand identity for tone, handles, and positioning.
-2. Read design reqs in `WIP/thewhyman-com-product/Site Requirements/`.
-
-## Dev Commands
-
-```bash
-npm run dev          # local dev server
-npm run build        # production build (must pass before pushing)
-git push             # triggers Cloudflare Pages auto-deploy via GitHub integration
+```
+data/canonical.json                 ← edit HERE, always
+  ├─ scripts/build-cloudflare-function.js  → functions/api/chat.js   (the concierge)
+  └─ scripts/build-agent-surface.js        → public/llms.txt, llms-full.txt,
+                                              AGENTS.md, robots.txt, sitemap.xml,
+                                              _headers, 404.html, .well-known/agents.json
 ```
 
-**Do NOT use `wrangler pages deploy out` directly.** Deploys flow through GitHub → Cloudflare Pages. Direct-upload projects cannot have GitHub attached after the fact (GitHub-first invariant — see workspace CLAUDE.md).
+Both run automatically in `prebuild`, so a deploy regenerates them. That means a
+stale generated file in git does **not** imply a stale live site — check the live
+surface before concluding anything.
 
-## After Every Change
+**A claim can live in FOUR places.** When changing a fact (a number, a title, a
+date), grep the whole repo, not just canonical.json. On 2026-08-14 the leadership
+span was fixed in canonical.json and verified live on AGENTS.md — and the chatbot
+kept saying the old number for another day, because the claim was ALSO hardcoded
+in prose inside `build-cloudflare-function.js`'s `SYSTEM_PROMPT`. Verify the
+surface the user actually touches, not the one that is easy to curl.
 
-Build must pass. Check the live site before reporting done (Zero-QA-Tax).
+---
 
-## Git Strategy
+## What is public is already decided: `_publicationBoundaries`
 
-- **Direct-to-main.** No PRs, no feature branches.
-- **Atomic commits.** Each commit is one logical change with all artifacts in its blast radius (P9).
+`canonical.json._publicationBoundaries` is an explicit publication-approval list.
+`build-agent-surface.js` projects canonical through it before rendering, so a
+section that is not declared there cannot reach a public surface.
 
-## Boundaries
+**Deliberately NOT public** (do not "fix" these):
 
-- **This is a public repo.** No PII, no private career data, no API keys.
-- **This is the HUB, not the products.** Product sites live in their own repos. This site links to them.
+| Section | Why it stays private |
+|---|---|
+| `growthAreas` | Anand's weaknesses. The concierge answers them when asked; broadcasting them to every crawler reading llms-full.txt is a different act. |
+| `keyMetricsTripwire` | The authoritative-numbers guard. It is pinned into the system prompt so retrieval can never decide what is TRUE, only what is relevant. |
+| `seniorSignals`, `exponentialOsDepth` | Not declared. Treat as intentional unless Anand says otherwise. |
+| `education` | Not declared public, but IS registered in the concierge's block list (added after the Berkeley EMBA dinner defect, 2026-08-13). So the bot can state his degrees and the public surface cannot. That asymmetry may be intentional or an oversight — **ask Anand, do not resolve it silently.** |
+
+Two tests enforce both directions. Declared-but-unrendered is a silent loss of
+intended content; undeclared-but-rendered is a leak. The second is the one that
+hurts, so it is asserted separately.
+
+---
+
+## The concierge (`functions/api/chat.js`)
+
+Generated. Runs on Cloudflare Workers AI. Its knowledge is assembled from
+`BLOCKS` in `build-cloudflare-function.js`: `always: true` blocks (`basics`,
+`keyMetricsTripwire`) are the spine and always included; the rest are selected by
+KEYWORD MATCH against the user's message. If the bot "does not know" something
+that is in canonical.json, the usual cause is a missing keyword in that block's
+`keys`, not missing data.
+
+**Formatting is part of the answer.** The panel renders paragraphs, `- ` bullets
+and `**bold**` via the `RichText` component in `src/components/WhyManConcierge.tsx`.
+Before 2026-08-15 it rendered `msg.content` as a raw text node, so HTML collapsed
+every newline and answers arrived as one unreadable wall — worst on the most
+structured answers, since `growthAreas` specifies five ordered parts per area.
+`SYSTEM_PROMPT` rule 4e tells the model to emit that structure. If you change one,
+change the other.
+
+---
+
+## Things that were tried and removed — do not resurrect
+
+**`.ai-search-corpus/` and `scripts/build-ai-search-corpus.js` (deleted 2026-08-15).**
+One-doc-per-idea corpus for AI search. 58 files, 248KB, committed. It had drifted
+badly behind canonical.json and was repaired in good faith — before anyone checked
+that **nothing read it**: not `prebuild`, not `deploy.yml`, not the site (verified
+404). If you find yourself reviving it, first name the consumer.
+
+The lesson generalises, and it is the reason this file exists: before fixing a
+generator, establish that its output has a reader.
+
+---
+
+## Before you claim it works
+
+- `npm run build` then `npm test`. Both must exit 0. Four suites, all `ALL PASS`.
+- Many assertions read `out/`, so **without a build you will see ~50-77 spurious
+  failures** and conclude you broke something. Build first.
+- After deploying, verify the SURFACE THE USER TOUCHES. `curl`ing AGENTS.md is not
+  evidence about the chatbot.
+
+## Deploy
+
+Cloudflare Pages, auto-deploys on push to `main` (`.github/workflows/deploy.yml`
+→ `wrangler pages deploy out`). A push-time IP gate scans public files and may
+`WARN` with zero findings when its judge returns non-JSON; that is a tooling
+hiccup, not a finding.
+
+## Repo conventions
+
+- Direct commits to `main` are blocked by a hook. Use a feature branch, then
+  `merge --ff-only`.
+- Never commit secrets; `LINEAR_API_KEY` and friends live in `~/cyborg/.env`.
+- Related workspace context lives in `~/anand-career-os`, which is a separate repo.
