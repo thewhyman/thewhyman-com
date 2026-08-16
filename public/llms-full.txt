@@ -544,6 +544,68 @@
 
 - **Detail:** Categories I saw close in weeks that would have taken quarters two years ago. Speed of learning matters more than speed of building. A studio like AI Fund is one of the few environments engineered specifically for that compression — the entire operating model is "run more hypothesis-test loops per week than you could run alone." Eli insisted on this one: you can't reason your way to the destination. You start with a hypothesis. You test it with real users. You pivot on what you learn. You start over with a sharper hypothesis. That's the loop. There is no other loop. Every one of the nine lesso
 
+## Leadership
+
+- **Culture:** No-blame postmortems, and engineers who own outcomes rather than tickets. He has run this at Google across a $40B portfolio and at Trellis across 50 engineers.
+
+- **Scope:** Peaked at 16 reports at Google (5 direct, each leading a pod) across a ~$40B portfolio. 6 senior architects and 50+ engineers influenced at Trellis. A 15-person core team at 21CT.
+
+- **How He Leads:** Sets technical direction and writes the code himself, so reviews are grounded rather than delegated. Owns P&L on multi-million-dollar vendor contracts and runs build-vs-buy analysis rather than accepting a vendor demo.
+
+- **Disagreement:** He will take a technical disagreement to senior VPs with the case built, and has accepted personal cost for it — he was removed from a project after successfully arguing the business's preferred vendor carried the same flaw that killed the predecessor system. The system shipped and returned $51M over five years.
+
+## Domain depth
+
+- **Industries:** Seven regulated or high-stakes verticals across 26 years: financial services and brokerage (Charles Schwab), federal government and student-loan finance (Trellis / Texas Guaranteed), healthcare and defense analytics (21CT), hyperscale cloud, datacenter construction and supply chain (Google), enterprise software and systems integration (IONA Technologies, Ajilon), higher education (UC Berkeley Executive Education faculty), and venture-stage AI (AI Fund).
+
+- **Regulatory Regimes Owned:** He has personally owned compliance architecture, not merely worked near it, across three regulated categories. Federal government security: at Trellis, a federal student-loan guarantor, he led FISMA compliance — federal government security compliance — as an architect certified against NIST standards, the US body that writes those standards and the basis for both FISMA and FedRAMP. Credit-card security: he led PCI-DSS compliance — credit-card data security — at the same organisation, running OWASP Top 10 application security through static and dynamic code analysis, which qualified the company for federal government contracts. Healthcare data privacy: at 21CT he owned HIPAA-compliant architecture — healthcare data privacy — for a $4M Medicaid case-management system deployed across agencies. Regulated financial services: at Charles Schwab he delivered 99.99% availability, roughly under an hour of unplanned downtime a year, on the firm's largest internal developer platform.
+
+- **Security Posture:** He treats security as part of the architecture rather than a review at the end. For a Medicaid eligibility assistant he designed a five-layer defence after a $1 edge case failed in testing, replacing the AI model's own arithmetic with a deterministic calculation engine so eligibility could not be decided by a guess. At Google he took the first-ever first-party Android app to the public Play Store, which meant clearing both Google's internal security review and Play Store policy.
+
+- **Architecture Credentials:** He authored the '12 Cloud Native Principles', which became the reference architecture for 7 trading and compliance platforms — meaning other teams built to his standard. He runs vendor selection on evidence: a structured 14-vendor evaluation with working proof-of-concepts rather than vendor demos, and build-versus-buy analysis with profit-and-loss ownership on multi-million-dollar contracts. At Trellis he was the sole architectural leader, directly managing 6 senior architects.
+
+- **Certifications:** Enterprise architecture: TOGAF — The Open Group Architecture Framework, the standard enterprise-architecture method used to structure and govern large IT estates. Application and infrastructure security: certified as a federal security architect against NIST standards for FISMA — federal government security compliance — which is what qualified his employer for federal government contracts; plus PCI-DSS, credit-card data security, and OWASP Top 10 application security through static and dynamic code analysis. Healthcare data privacy: HIPAA — the US law protecting patient health data — owned in architecture on a $4M Medicaid case-management system. Big data and analytics: BigData certification covering data engineering, BI tooling and analytics. Agile development: Certified ScrumMaster (CSM) — running the delivery process for engineering teams. Agile product management: Certified Scrum Product Owner (CSPO) — owning backlog and product direction. Blockchain applications: Blockchain Architecture, CalTech CTME (April 2022). Applied AI: Perplexity AI Business Fellow (January 2025). Business and leadership: Executive MBA, UC Berkeley Haas School of Business.
+
+- **Why This Matters:** For a senior architect or engineering-leadership role the differentiator is range across regulated industries plus compliance architecture he was personally named on. Most candidates have one industry and have worked adjacent to compliance. He has shipped in seven and has been the named architect on federal, payment-card and patient-data compliance.
+
+### Glossary
+
+- **FISMA:** FISMA — federal government security compliance (the US law governing security of federal systems)
+
+- **NIST:** NIST — the US body that writes federal security standards; the basis for FISMA and FedRAMP
+
+- **PCI DSS:** PCI-DSS — credit-card data security compliance
+
+- **HIPAA:** HIPAA — healthcare data privacy compliance
+
+- **OWASP Top 10:** OWASP Top 10 — application security; static and dynamic code analysis against the industry's top web vulnerability list
+
+- **Paa S:** internal developer platform (PaaS) — the shared platform other engineering teams build and deploy on
+
+- **SOA:** SOA — service-oriented architecture; systems integration across separate business systems
+
+- **99.99% availability:** 99.99% availability — roughly under an hour of unplanned downtime per year
+
+- **Industry Credential Map:** Each industry, with the compliance or reliability standard he personally owned in it. Federal government and student-loan finance (Trellis / Texas Guaranteed): FISMA, federal government security compliance, as a NIST-certified architect; PCI-DSS, credit-card data security; and OWASP Top 10 application security through static and dynamic code analysis. Healthcare and defense analytics (21CT): HIPAA, healthcare data privacy, on a $4M Medicaid case-management system deployed across agencies. Financial services and brokerage (Charles Schwab): 99.99% availability, roughly under an hour of unplanned downtime a year, on the firm's largest internal developer platform. Hyperscale cloud, datacenter construction and supply chain (Google): $500M+ ROI across a ~$40B portfolio, and clearing Google's internal security review plus Play Store policy to ship a first-party Android app publicly. Enterprise software and systems integration (IONA Technologies, Ajilon): service-oriented architecture across 15+ enterprise programs, cutting integration complexity by roughly 35%. Higher education (UC Berkeley Executive Education): taught AI systems design and governance to 1,500+ Fortune 500 executives. Venture-stage AI (AI Fund, Andrew Ng's studio): two product bets taken from discovery to shipped build.
+
+- **Certifications Short:** Certified across eight areas: enterprise architecture (TOGAF), application and infrastructure security (FISMA/NIST, OWASP Top 10, PCI-DSS), healthcare data privacy (HIPAA), big data and analytics, agile development (Certified ScrumMaster), agile product management (Certified Scrum Product Owner), blockchain applications (CalTech), and applied AI (Perplexity AI Business Fellow) — plus an Executive MBA from UC Berkeley Haas.
+
+## Speaking
+
+- **Summary:** Keynote speaker, conference speaker and university faculty. He has taught 1,500+ Fortune 500 leaders and spoken at SXSW, Step SF and an industry keynote.
+
+- **Keynote:** HealthTech Summit 2026 keynote — AIify.io HealthTech Summit, San Francisco, 14-16 January 2026, part of HealthTech Week and timed with the JPM Healthcare conference. Talk: 'Intelligence Systems for Health, Performance, and Resilience — A Human-Centered Approach to Behavioral Health.' Its argument: automation redistributes risk rather than removing it, so the goal is clinician empowerment, not replacement. Audience was healthcare leaders, AI practitioners and JPM Healthcare Week attendees.
+
+- **Conferences:** Invited talks at AI and technology conferences including SXSW and Step SF.
+
+- **University Faculty:** UC Berkeley Executive Education, faculty instructor in AI and Emerging Technologies, December 2019 to June 2024 — 4 years 7 months, concurrent with his Google role. He designed the curriculum, spanning AI strategy, LLM systems, agent architectures and governance frameworks, and taught 1,500+ Fortune 500 leaders: CTOs, VPs and Directors. Selected for it by Vinay Roy, former CPO at Apple and NVIDIA.
+
+- **Recurring Speaker:** Recurring speaker at the Austin Java User Group, where he gave the inaugural talk on his '12 Cloud Native Principles' framework, plus talks on big data with Hadoop, continuous improvement, and AI/ML topics.
+
+- **Recent:** 'Your Cyborg Goes to Work' — May 2026. Detail at thewhyman.com/talks.
+
+- **Range:** The through-line across both talks and writing: translating technical AI into business decisions for non-technical executives, and treating reliability and evaluation as architecture rather than an afterthought.
+
 ## Public LinkedIn profile
 
 - **Name:** Anand Vallamsetla

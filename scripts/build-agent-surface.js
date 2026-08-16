@@ -544,6 +544,22 @@ function buildLlmsFull(canonical, linkedin) {
     '',
     renderMarkdownValue(canonical.aiFundLessons),
     '',
+    // Declared public in _publicationBoundaries but previously never rendered.
+    // The publication decision was already made in canonical.json; the renderer
+    // simply had not caught up, so approved content never reached the surface.
+    // A test below asserts declared === rendered so this cannot drift again.
+    '## Leadership',
+    '',
+    renderMarkdownValue(canonical.leadershipStyle),
+    '',
+    '## Domain depth',
+    '',
+    renderMarkdownValue(canonical.domainDepth),
+    '',
+    '## Speaking',
+    '',
+    renderMarkdownValue(canonical.speaking),
+    '',
     '## Public LinkedIn profile',
     '',
     renderMarkdownValue(linkedin),

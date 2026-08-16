@@ -857,75 +857,60 @@ check('public mechanism guard fails hard and names the offending mechanism',
   [cleanMechanismLeakResult?.stdout, cleanMechanismLeakResult?.stderr].filter(Boolean).join('\n'));
 
 
-// ── XOS-238: the search corpus must not drift behind canonical.json ─────────
-// A rebuild once silently dropped ~20KB because build-ai-search-corpus.js had
-// fallen behind sections that were added to canonical.json (and that the chatbot
-// already retrieved). The failure was invisible: the generator exits 0 and emits
-// a smaller, quietly poorer corpus. This pins the invariant instead of trusting
-// whoever runs the build next to read a 13-file diff.
+// ── XOS-238: what canonical.json declares public must actually be published ──
+// Two failures sat behind the original report, and only the second one mattered.
+//
+// 1. `.ai-search-corpus/` and its generator were DELETED. The generator had
+//    drifted badly behind canonical.json, but the decisive fact is that nothing
+//    read its output: not prebuild, not deploy.yml, not the site. Repairing a
+//    generator whose artifact nobody consumes is motion, not progress.
+//
+// 2. The real defect is here. `_publicationBoundaries` in canonical.json is an
+//    explicit publication-approval list, so what may be published is already
+//    decided. But three approved sections (leadershipStyle, domainDepth,
+//    speaking) were never rendered into llms-full.txt. Content cleared for
+//    publication silently never reached the published surface, which is a
+//    quieter failure than publishing something you should not have: nothing
+//    looks broken, the file is just poorer than intended.
 {
   const canonicalPath = path.join(ROOT, 'data/canonical.json');
-  const corpusDir = path.join(ROOT, '.ai-search-corpus');
-  // The ONLY two deliberate exclusions, documented at the top of the generator:
-  // they stay pinned in the system prompt so retrieval can never decide truth.
-  const PINNED_NOT_RETRIEVED = new Set(['basics', 'keyMetricsTripwire']);
-
   const canonical = JSON.parse(fs.readFileSync(canonicalPath, 'utf8'));
-  const sections = Object.keys(canonical).filter((k) => !k.startsWith('_'));
-  const corpus = fs.existsSync(corpusDir)
-    ? fs.readdirSync(corpusDir).filter((f) => f.endsWith('.md'))
-        .map((f) => fs.readFileSync(path.join(corpusDir, f), 'utf8')).join('\n')
-    : '';
+  const declared = Object.keys(canonical._publicationBoundaries || {});
+  const surfaceSrc = fs.readFileSync(path.join(ROOT, 'scripts/build-agent-surface.js'), 'utf8');
 
-  // Test the OUTPUT, not the implementation. An earlier version grepped the
-  // generator source for `canonical.<key>`, which silently passed sections
-  // emitted through bracket access: it tested how the code was written rather
-  // than what it produced. Instead take the longest STRING LEAF in each section
-  // (asText emits string values verbatim) and require it to survive into the
-  // corpus. If a section is emitted at all, its longest sentence is there.
-  const longestLeaf = (v) => {
-    let best = '';
-    const walk = (x) => {
-      if (typeof x === 'string') { if (x.length > best.length) best = x; return; }
-      if (Array.isArray(x)) return x.forEach(walk);
-      if (x && typeof x === 'object') return Object.entries(x).forEach(([k, val]) => { if (!k.startsWith('_')) walk(val); });
-    };
-    walk(v);
-    return best;
-  };
-  const norm = (t) => t.replace(/\s+/g, ' ').trim();
-  const corpusFlat = norm(corpus);
-  const unemitted = sections.filter((k) => {
-    if (PINNED_NOT_RETRIEVED.has(k)) return false;
-    const leaf = norm(longestLeaf(canonical[k])).slice(0, 60);
-    return leaf.length > 25 && !corpusFlat.includes(leaf);
-  });
-  check('every canonical.json section is emitted to the search corpus (or pinned on purpose)',
-    unemitted.length === 0,
-    unemitted.length
-      ? `Never emitted and not pinned: ${unemitted.join(', ')}. Either emit them in ` +
-        'scripts/build-ai-search-corpus.js or add them to PINNED_NOT_RETRIEVED with a documented reason.'
+  const unrendered = declared.filter((k) => !new RegExp(`canonical\\.${k}\\b`).test(surfaceSrc));
+  check('every section declared public in _publicationBoundaries is actually rendered',
+    unrendered.length === 0,
+    unrendered.length
+      ? `Declared public but never rendered: ${unrendered.join(', ')}. Either render them in ` +
+        'scripts/build-agent-surface.js or remove them from _publicationBoundaries. A section approved ' +
+        'for publication that never reaches a surface is a silent loss of intended content.'
       : '');
 
-  // Content spot-check: the leadership culture line lives in leadershipStyle now,
-  // and vanished from the corpus entirely when that section went unemitted.
-  const cultureLine = ((canonical.leadershipStyle || {}).culture || '').slice(0, 40);
-  check('leadership culture line survives a corpus rebuild',
-    !cultureLine || corpus.includes(cultureLine),
-    `Expected the corpus to contain: ${cultureLine}`);
+  // The inverse guard: nothing may be published that was not declared. This is
+  // the direction that leaks, so it is asserted separately and explicitly.
+  const withheld = Object.keys(canonical).filter((k) => !k.startsWith('_') && !declared.includes(k));
+  const leaked = withheld.filter((k) => new RegExp(`canonical\\.${k}\\b`).test(surfaceSrc));
+  check('nothing undeclared is rendered to a public surface',
+    leaked.length === 0,
+    leaked.length ? `Rendered without a publication boundary: ${leaked.join(', ')}` : '');
 
-  // growthAreas must never reach the corpus without the rules that govern how a
-  // weakness is phrased; a flaw retrieved without its framing is the one answer
-  // that is disqualifying in an interview.
-  const growthDocs = fs.existsSync(corpusDir)
-    ? fs.readdirSync(corpusDir).filter((f) => f.startsWith('growth-area'))
-    : [];
-  const missingFraming = growthDocs.filter(
-    (f) => !/HOW THIS MUST BE FRAMED/.test(fs.readFileSync(path.join(corpusDir, f), 'utf8'))
-  );
-  check('every growth-area doc carries its framing rules',
-    growthDocs.length > 0 && missingFraming.length === 0,
-    growthDocs.length === 0 ? 'no growth-area docs emitted' : `missing framing: ${missingFraming.join(', ')}`);
+  // growthAreas is Anand's weaknesses and keyMetricsTripwire is the internal
+  // numbers guard. Neither is declared public, and both must stay that way:
+  // answering a weakness question when asked is a different act from
+  // broadcasting weaknesses to every crawler that reads llms-full.txt.
+  const llmsFull = fs.existsSync(path.join(ROOT, 'public/llms-full.txt'))
+    ? fs.readFileSync(path.join(ROOT, 'public/llms-full.txt'), 'utf8') : '';
+  const weaknessProbe = (((canonical.growthAreas || {}).areas || [])[0] || {}).area || '';
+  check('growth areas are NOT published to the public agent surface',
+    !weaknessProbe || !llmsFull.includes(weaknessProbe),
+    `llms-full.txt must not contain: ${weaknessProbe}`);
+
+  // Content spot-check on the section whose absence started this investigation.
+  const cultureLine = ((canonical.leadershipStyle || {}).culture || '').slice(0, 40);
+  check('the leadership culture line reaches llms-full.txt',
+    !cultureLine || llmsFull.includes(cultureLine),
+    `Expected llms-full.txt to contain: ${cultureLine}`);
 }
 
 console.log(fail === 0 ? '\nALL PASS' : `\n${fail} FAILURES`);
