@@ -307,8 +307,14 @@ const BLOCKS = {
     keys: ['co-dialectic','codialectic','codi','open source','open-source','socratic','dialectic','prompt','plato'] },
   interviewQA:        { data: canonicalData.interviewQA,
     keys: ['why looking','why is he looking','role','roles','fit','hands-on','hands on','manager or','ic or','ml research','machine learning research','depth','eval','evals','evaluation','quality','rag','fine-tun','salary','compensation','pay','leave','leaving','tenure','next','targeting','remote','relocat','visa','differentiat','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
+  // DISCLOSURE-GATED. Story[0] carries what a disagreement cost him personally. That is the right
+  // answer to an explicit behavioral probe and the wrong answer to "how does he ship?" — so the
+  // generic execution tail ('execute','ship','deliver','process','approach','method','decide',
+  // 'judgment','discipline') was REMOVED from these keys on 2026-09-10. Do not add it back: those
+  // words already route to howHeWorks, interviewQA and aiFundLessons, which answer execution
+  // questions without a cost disclosure. Keys here must stay probes, not topics.
   behavioralStories:  { data: canonicalData.behavioralStories,
-    keys: ['tell me about a time','failure','failed','fail','mistake','disagree','conflict','initiative','pushback','migration','validate','validating','conviction','stopped','killed','wrong','execute','execution','ship','ships','shipping','deliver','delivery','how does he work','how he works','process','approach','method','decide','decision','judgment','discipline'] },
+    keys: ['tell me about a time','failure','failed','fail','mistake','disagree','conflict','initiative','pushback','migration','validate','validating','conviction','stopped','killed','wrong'] },
   // Talks and teaching. Separate from writingLibrary — "thought leadership"
   // should return BOTH, so the keys overlap deliberately.
   speaking:           { data: canonicalData.speaking,
