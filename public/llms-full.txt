@@ -220,6 +220,18 @@
 - Built RAG pipelines and predictive modeling PoCs to demonstrate grounded NLP functionality.
 - Pitched to VCs and secured recognition for a multimodal AI architecture addressing clinical risk management.
 
+##### LetMeTop — adaptive learning built before the category existed
+
+- **Role:** Co-Founder and CTO
+
+###### Achievements
+
+- Co-founded and led engineering for an early adaptive learning platform for IIT exam aspirants, built during India's low-connectivity era — before 'AI-powered learning' was a product category.
+- Architected an offline-first adaptive test-prep system end-to-end, including the personalized scoring models and the analytics used to measure learning improvement.
+- Piloted across multiple centers with measurable learner improvement.
+- Secured lead investor commitment for expansion; not pursued due to market timing.
+- His earliest founder role, and the first instance of a pattern that repeats: building the adaptive-learning idea a decade before the tooling existed to make it easy.
+
 #### Awards
 
 ##### Product Excellence Award (2nd Prize)

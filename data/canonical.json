@@ -224,6 +224,19 @@
             "Built RAG pipelines and predictive modeling PoCs to demonstrate grounded NLP functionality.",
             "Pitched to VCs and secured recognition for a multimodal AI architecture addressing clinical risk management."
           ]
+        },
+        {
+          "title": "LetMeTop — adaptive learning built before the category existed",
+          "role": "Co-Founder and CTO",
+          "_source": "Public LinkedIn profile. Anand, 2026-09-10: LinkedIn 'is the absolute canonical for what i want people to see', and anything already public there needs no further gate. These bullets are the LinkedIn-current list recorded in brain/identity/experience-history.md section 4.10 — do not embellish beyond them.",
+          "_noPeriod": "DELIBERATE: no period field. Anand, 2026-09-10: 'canonical may have been out of date with dates etc. i had to change dates for each of the roles to score high on linkedin profile scoring.' So the dates in this file are NOT known to match the live LinkedIn profile, and LinkedIn is the canonical public record. Publishing a date here that contradicts the profile is worse than publishing none — a recruiter who spots the mismatch reads it as inconsistency about his own history. Do not add a period to this entry, or trust any other period in this file, until reconciled against the live profile. Tracked as a pending date audit.",
+          "achievements": [
+            "Co-founded and led engineering for an early adaptive learning platform for IIT exam aspirants, built during India's low-connectivity era — before 'AI-powered learning' was a product category.",
+            "Architected an offline-first adaptive test-prep system end-to-end, including the personalized scoring models and the analytics used to measure learning improvement.",
+            "Piloted across multiple centers with measurable learner improvement.",
+            "Secured lead investor commitment for expansion; not pursued due to market timing.",
+            "His earliest founder role, and the first instance of a pattern that repeats: building the adaptive-learning idea a decade before the tooling existed to make it easy."
+          ]
         }
       ],
       "awards": [
