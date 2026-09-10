@@ -239,11 +239,30 @@ const BLOCKS = {
   // Weakness / growth-area questions. WITHOUT this block the model improvised and
   // produced "communication and collaboration" -- an interpersonal deficit, which
   // is the one answer that is disqualifying in an interview. See the prompt rule.
+  // ⚠️ KEYS HERE ARE LOAD-BEARING — widened 2026-09-10 after a live eval scored the probe class 44/100.
+  // The block content is good; it simply never LOADED for the way people actually ask. Two measured
+  // failures, both on the real site:
+  //   "What feedback has he gotten that he found hard to hear?" -> 24/100. The old key was the literal
+  //     string 'feedback he'; the question says "feedback HAS he", so it missed and fell through to
+  //     writingLibrary, which answered "He has not published on this topic."
+  //   "Where has his judgment failed him?" -> 10/100. No matching key at all, so the model improvised a
+  //     weakness answer from an EMPTY weakness context and produced a denial ("his judgment has not
+  //     failed him... he has never shipped a product that did not beat the baseline") followed by the
+  //     same sentence repeated a dozen times.
+  // That is the failure mode to keep in mind: with no growthAreas loaded, the model does not say "I do
+  // not know" — it claims a flawless record and stutters. On a hiring surface that reads as someone who
+  // cannot admit a mistake, on a visibly broken page. Worse than the disclosure leak this file also fixes.
+  // Every key below must stay a genuine PROBE (an explicit invitation to discuss a failing), never a
+  // neutral topic word, because this block is allowed to disclose what a past disagreement cost him.
+  // Adding a topic word here would re-open that leak AND fail scripts/__tests__/disclosure-boundary.test.js.
   growthAreas:        { data: canonicalData.growthAreas,
-    keys: ['weakness','weaknesses','improve','improvement','improving','growth area','growth areas',
+    keys: ['weakness','weaknesses','weak','weakest','improve','improvement','improving','growth area','growth areas',
            'development area','blind spot','blind spots','work on','working on','shortcoming','shortcomings',
-           'limitation','limitations','struggle','struggles','biggest opportunity','area to improve',
-           'what is he bad at','not good at','gets wrong','criticism','feedback he'] },
+           'limitation','limitations','struggle','struggles','struggled','biggest opportunity','area to improve',
+           'what is he bad at','not good at','gets wrong','criticism','criticized','feedback he','feedback has he',
+           'feedback','hard to hear','judgment failed','failed him','bad judgment','misjudged','flaw','flaws',
+           'downside','red flag','self-aware','self aware','learned the hard way','mistake','mistakes',
+           'where has he struggled','room to grow','coachable','tough feedback'] },
 
   // The 2026 senior-candidate separator per field research: AI adoption inside the
   // org WITH a measurable productivity number. Also carries culture-under-pressure.

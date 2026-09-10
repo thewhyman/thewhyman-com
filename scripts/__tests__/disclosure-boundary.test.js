@@ -51,12 +51,16 @@ const PROBE_KEYS = new Set([
   'tell me about a time', 'failure', 'failed', 'fail', 'mistake', 'disagree',
   'conflict', 'pushback', 'wrong', 'stopped', 'killed', 'conviction',
   'initiative', 'migration', 'validate', 'validating',
-  'weakness', 'weaknesses', 'improve', 'improvement', 'improving',
+  'weakness', 'weaknesses', 'weak', 'weakest', 'improve', 'improvement', 'improving',
   'growth area', 'growth areas', 'development area', 'blind spot', 'blind spots',
   'work on', 'working on', 'shortcoming', 'shortcomings', 'limitation',
-  'limitations', 'struggle', 'struggles', 'biggest opportunity',
+  'limitations', 'struggle', 'struggles', 'struggled', 'biggest opportunity',
   'area to improve', 'what is he bad at', 'not good at', 'gets wrong',
-  'criticism', 'feedback he',
+  'criticism', 'criticized', 'feedback he', 'feedback has he', 'feedback',
+  'hard to hear', 'judgment failed', 'failed him', 'bad judgment', 'misjudged',
+  'flaw', 'flaws', 'downside', 'red flag', 'self-aware', 'self aware',
+  'learned the hard way', 'mistakes', 'where has he struggled', 'room to grow',
+  'coachable', 'tough feedback',
 ]);
 
 let failures = 0;
