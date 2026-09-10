@@ -1,4 +1,11 @@
-name = "thewhyman-com"
+# Project name must match the Cloudflare Pages project, or the build fails validation.
+# This is "thewhyman-site", NOT "thewhyman-com", and that is deliberate: the original
+# "thewhyman-com" project was created by `wrangler pages deploy` (Direct Upload), and Cloudflare
+# permanently bars Direct Upload projects from ever attaching Git. Reusing the name would have
+# required deleting that project first, which Cloudflare refuses — "too many deployments to be
+# deleted" — and purging them needs API auth that had already expired. The .pages.dev hostname is
+# never seen by visitors; thewhyman.com and www.thewhyman.com are what matter, and they point here.
+name = "thewhyman-site"
 pages_build_output_dir = "out"
 compatibility_date = "2024-04-06"
 compatibility_flags = ["nodejs_compat"]
