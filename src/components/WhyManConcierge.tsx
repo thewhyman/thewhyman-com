@@ -591,7 +591,7 @@ export default function WhyManConcierge() {
                 Ask my AI anything
               </span>
               <span className="block text-sm text-white/90 leading-snug">
-                Questions about Anand? No scheduling needed — and it's a live peek at the agent systems he builds.
+                Questions about Anand? No scheduling needed — and it&apos;s a live peek at the agent systems he builds.
               </span>
               <span className="block text-xs text-teal-400/80 mt-1.5">Click the bot →</span>
             </button>
