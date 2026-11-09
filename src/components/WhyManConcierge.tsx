@@ -75,7 +75,7 @@ export default function WhyManConcierge() {
     { 
       id: 1, 
       role: 'bot', 
-      content: "Welcome — I'm The Why Man Concierge. This is a virtual interview: ask me anything about Anand right here, no scheduling, no waiting. What he's built, how he leads, where he's failed and what he did about it. Start with one of these, or ask your own."
+      content: "Welcome — I'm The Why Man Concierge, Anand's AI. Ask me anything about him — right here, no scheduling, and totally optional before you book time with him directly. What he's built, how he leads, where he's failed and what he did about it. Start with one of these, or ask your own. (And yes — this chat is a small live demo of the agent systems he builds.)"
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -588,10 +588,10 @@ export default function WhyManConcierge() {
               className="relative block text-left bg-[#0a0a0a] border border-teal-500/40 rounded-2xl rounded-br-sm px-4 py-3 shadow-[0_0_30px_rgba(20,184,166,0.18)] hover:border-teal-400/70 transition-all"
             >
               <span className="block text-[11px] uppercase tracking-widest text-teal-400 mb-1">
-                Virtual interview
+                Ask my AI anything
               </span>
               <span className="block text-sm text-white/90 leading-snug">
-                Want to interview The Why Man? Ask my AI anything — right here, no scheduling.
+                Questions about Anand? No scheduling needed — and it's a live peek at the agent systems he builds.
               </span>
               <span className="block text-xs text-teal-400/80 mt-1.5">Click the bot →</span>
             </button>
@@ -612,7 +612,7 @@ export default function WhyManConcierge() {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           onClick={() => setIsOpen(true)}
-          aria-label="Virtually interview The Why Man"
+          aria-label="Ask Anand's AI assistant anything"
           className="fixed bottom-6 right-6 w-14 h-14 md:w-20 md:h-20 rounded-full bg-teal-500 text-black flex items-center justify-center shadow-[0_0_40px_rgba(20,184,166,0.3)] hover:bg-teal-400 transition-all z-50 group border-4 border-[#050505]"
         >
           <div className="absolute inset-0 rounded-full bg-teal-500 animate-ping opacity-20 group-hover:opacity-0" />

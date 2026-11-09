@@ -70,7 +70,7 @@ export default function RouteCTA({
         </div>
 
         <p className="mt-6 text-xs text-zinc-600">
-          Prefer to ask first? Interview my AI concierge — bottom right of any page.
+          Prefer to skip ahead? Ask my AI concierge anything — bottom right of any page.
         </p>
       </div>
     </section>
