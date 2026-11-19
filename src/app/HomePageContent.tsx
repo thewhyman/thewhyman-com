@@ -243,7 +243,7 @@ export default function HeroPage({ faq }: { faq?: React.ReactNode }) {
                 <Rocket className="text-emerald-400 w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 uppercase tracking-tighter text-emerald-400">INVENT</h3>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-10">Founder, ExponentialOS. Patent filed (exponential OS architecture). 10x Hackathon Champion. Compressing 6-month cycles to 6 seconds.</p>
+              <p className="text-zinc-400 text-sm leading-relaxed mb-10">Founder, ExponentialOS. Patent filed (exponential OS architecture). 10x Hackathon Champion. Compressing a 6-month cycle to 30 seconds.</p>
               <Link href="/invent-details" className="text-xs font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2 hover:gap-4 transition-all group/link">
                 View Case Studies <ChevronRight className="w-4 h-4" />
               </Link>
